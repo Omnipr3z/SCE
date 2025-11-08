@@ -19,15 +19,13 @@ project/movies/
 project/css/
 
 # Fichiers de données de base de RMMZ (on ne garde que nos scripts)
-project/data/
-# Garder nos fichiers de données custom
-!project/data/SC/
-!project/data/SC/**
+project/data/*.json
 
 # Fichiers de base des plugins de RMMZ (on ne garde que nos scripts)
 project/js/libs/
 project/js/main.js
 project/js/rmmz_*.js
+project/js/plugins/========*.js
 
 # --- Fichiers de développement et système ---
 project/game.rmmzproject

@@ -33,19 +33,24 @@
  * SC_InputConfig.js.
  */
 
-class InputManager {
+// --- Surcharge de Input ---
 
+// Sauvegarde de la méthode originale
+const _Input_initialize = Input.initialize;
+class InputManager {
     /**
      * Initialise le gestionnaire d'entrées avec les mappages par défaut.
      * Cette méthode est appelée par le SystemLoader.
      */
-    initialize() {
+    initialize() { // Cette méthode sera appelée dans le contexte de l'objet Input
+        _Input_initialize.call(Input, ...arguments);
+
         this.keyMapper = {}; // Remplace Input.keyMapper
         this._nameToCodeMap = {}; // Map pour optimiser la recherche nom -> code
         this._codeToActionMap = {}; // Map pour optimiser la recherche code -> action
         this._reservedActions = new Set(); // Pour les actions non modifiables par le joueur
         this._editableActions = new Set(); // Pour les actions modifiables par le joueur
-
+        
         this.buildNameToCodeMap();
         this.loadDefaultKeyMappings();
     }
@@ -66,6 +71,7 @@ class InputManager {
     loadDefaultKeyMappings() {
         const mappings = SC.InputConfig.keyMappings;
         for (const actionName in mappings) {
+            $debugTool.logKeyMapping(actionName, mappings[actionName]);
             const keyName = mappings[actionName];
             this.assignKey(actionName, keyName);
         }
@@ -158,6 +164,8 @@ class InputManager {
         return this._editableActions.has(actionName);
     }
 }
+
+
 
 // Enregistrement du plugin auprès du SystemLoader
 SC._temp = SC._temp || {};

@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v0.3.0] Chargeur de système, dépendances et instances.
+ * @plugindesc !SC [v0.4.0] Chargeur de système, dépendances et instances.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/INRAL
  * @help sysLoader.js
@@ -26,6 +26,7 @@
  *   - Gère la surcharge des classes statiques via le paramètre `surchargeClass`.
  * 
  * ▸ Historique :
+ *   v0.4.0 - 2024-07-30 : Correction de la surcharge en l'ancrant à Scene_Boot.create. Séparation de la logique d'instanciation.
  *   v0.3.0 - Ajout de la gestion de création d'instances et de surcharge de classes.
  *   v0.2.1 - Chargement automatique de base + vérification de dépendances.
  */
@@ -67,20 +68,24 @@ class System_Loader {
         return allDependenciesOk;
     }
 
-    initializeScPlugins() {
+    surchargeStaticClasses() {
+        $debugTool.group("SC STATIC CLASS SURCHARGE");
+        for (const pluginKey in this._pluginsList) {
+            const plugin = this._pluginsList[pluginKey];
+            if (plugin.surchargeClass && plugin.createObj && plugin.createObj.classProto) {
+                const methodsToSurcharge = new plugin.createObj.classProto();
+                this._extendStaticClass(methodsToSurcharge, plugin.surchargeClass);
+                $debugTool.log(`🔌 ${plugin.icon} ${plugin.name.toUpperCase()} → Surchargé sur ${plugin.surchargeClass}`);
+            }
+        }
+        $debugTool.groupEnd();
+    }
+
+    createScGameObjects() {
         $debugTool.group("SC GAME OBJECT CREATION");
         for (const pluginKey in this._pluginsList) {
             const plugin = this._pluginsList[pluginKey];
-            if (!plugin.createObj) continue;
-
-            // Cas 1: Surcharge d'une classe statique
-            if (plugin.surchargeClass) {
-                const newInstance = new plugin.createObj.classProto();
-                this._extendStaticInstance(newInstance, plugin.surchargeClass);
-                $debugTool.drawInstanceCreated(plugin);
-            }
-            // Cas 2: Création d'une instance globale standard
-            else if (plugin.createObj.autoCreate && !window[plugin.createObj.instName]) {
+            if (plugin.createObj && plugin.createObj.autoCreate && !plugin.surchargeClass && !window[plugin.createObj.instName]) {
                 window[plugin.createObj.instName] = new plugin.createObj.classProto();
                 $debugTool.drawInstanceCreated(plugin);
             }
@@ -88,24 +93,35 @@ class System_Loader {
         $debugTool.groupEnd();
     }
 
-    _extendStaticInstance(instance, originalClassName) {
+    _extendStaticClass(surchargeObject, originalClassName) {
         const originalStaticClass = window[originalClassName];
         if (!originalStaticClass) {
             $debugTool.error(`Cannot surcharge: Original static class "${originalClassName}" not found.`);
             return;
         }
 
-        // Copier les propriétés/méthodes de l'objet statique original vers la nouvelle instance
-        for (const key in originalStaticClass) {
-            // On ne copie que si la propriété n'est pas déjà définie sur l'instance
-            // (les méthodes de la classe ont la priorité)
-            if (typeof instance[key] === 'undefined') {
-                instance[key] = originalStaticClass[key];
+        // Parcourir les méthodes de notre classe de surcharge (DataManager_SC, etc.)
+        for (const methodName of Object.getOwnPropertyNames(surchargeObject.constructor.prototype)) {
+            if (methodName === 'constructor') continue;
+
+            // Sauvegarder la méthode originale (alias)
+            const originalMethod = originalStaticClass[methodName];
+
+            // Remplacer la méthode sur la classe statique originale
+            originalStaticClass[methodName] = function() {
+                return surchargeObject[methodName].apply(surchargeObject, arguments);
             }
         }
-
-        // Remplacer l'objet statique global par notre nouvelle instance améliorée
-        window[originalClassName] = instance;
     }
 }
-$simcraftLoader = new System_Loader();
+const $simcraftLoader = new System_Loader();
+
+// --- Point d'entrée pour la surcharge ---
+// On s'accroche à Scene_Boot.create, qui est appelé avant DataManager.loadDatabase.
+// C'est le moment idéal pour surcharger les classes statiques.
+
+const _Scene_Boot_create = Scene_Boot.prototype.create;
+Scene_Boot.prototype.create = function() {
+    $simcraftLoader.surchargeStaticClasses(); // On surcharge AVANT l'appel original
+    _Scene_Boot_create.call(this, ...arguments);
+};

@@ -34,6 +34,13 @@
  *   v1.0.0 - 2024-07-29 : Création initiale et ajout de la gestion du clic droit.
  */
 
+// --- Surcharge de TouchInput ---
+
+const _TouchInput_initialize = TouchInput.initialize;
+const _TouchInput_clear = TouchInput.clear;
+const _TouchInput_onRightButtonDown = TouchInput._onRightButtonDown;
+const _TouchInput_isCancelled = TouchInput.isCancelled;
+
 class TouchInputManager {
 
     /**
@@ -41,28 +48,17 @@ class TouchInputManager {
      * Cette méthode est appelée par le SystemLoader lors de la surcharge.
      */
     initialize() {
-        // Appelle la méthode d'initialisation originale de TouchInput
-        // pour s'assurer que tous les listeners de base sont en place.
-        super.initialize(...arguments);
+        _TouchInput_initialize.call(TouchInput, ...arguments);
 
-        // Surcharge de la méthode _onRightButtonDown pour gérer notre propre état
-        // et conditionner le comportement d'annulation.
-        const _alias_onRightButtonDown = this._onRightButtonDown;
-        this._onRightButtonDown = function(event) {
-            // Si l'annulation par clic droit est active, on exécute le comportement natif.
-            if (this.isCancelOnRightClick()) {
-                _alias_onRightButtonDown.call(this, event);
-            }
-            // On met à jour notre propre état "pressé" dans tous les cas.
-            this._rightButtonPressed = true;
-        };
+        // On ne peut pas surcharger _onRightButtonDown directement dans la classe
+        // car elle est définie dans le initialize original. On doit donc aliasser
+        // la méthode clear() qui est appelée juste après.
+        this.clear();
+    }
 
-        // Surcharge de la méthode clear pour réinitialiser notre nouvel état.
-        const _alias_clear = this.clear;
-        this.clear = function() {
-            _alias_clear.call(this);
-            this._rightButtonPressed = false;
-        };
+    clear() {
+        _TouchInput_clear.call(TouchInput, ...arguments);
+        this._rightButtonPressed = false;
     }
 
     /**
@@ -71,16 +67,6 @@ class TouchInputManager {
      */
     isRightPressed() {
         return this._rightButtonPressed;
-    }
-
-    /**
-     * [NOUVEAU] Vérifie si le bouton droit de la souris vient d'être pressé (une seule frame).
-     * @returns {boolean}
-     */
-    isRightTriggered() {
-        // Le comportement standard de RMMZ pour le clic droit est de déclencher "isCancelled".
-        // Nous nous lions à ce comportement pour garantir la cohérence.
-        return this.isCancelled();
     }
 
     /**
@@ -108,21 +94,34 @@ class TouchInputManager {
     }
 
     /**
+     * [NOUVEAU] Vérifie si le curseur de la souris survole une zone rectangulaire.
+     * @param {Rectangle} rect Le rectangle à vérifier (doit avoir x, y, width, height).
+     * @returns {boolean}
+     */
+    isHover(rect) {
+        const x = this._x;
+        const y = this._y;
+        return (
+            rect && x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height
+        );
+    }
+
+    /**
      * [NOUVEAU] Détermine si le clic droit doit déclencher une annulation.
      * Cette méthode est un placeholder destiné à être surchargé par d'autres plugins
      * pour créer des logiques conditionnelles (ex: dépendre d'un interrupteur).
      * @returns {boolean}
      */
     isCancelOnRightClick() {
-        return false; // Par défaut, le clic droit n'annule plus avec ce plugin chargée.
+        return true; // Par défaut, le clic droit annule toujours.
     }
 
     /**
-     * [SURCHARGE] La logique d'annulation est maintenant gérée dans _onRightButtonDown.
-     * Cette méthode est conservée pour la cohérence de l'API.
+     * [SURCHARGE] Vérifie si l'action d'annulation a été déclenchée.
+     * Le clic droit est maintenant une source d'annulation conditionnelle.
      */
     isCancelled() {
-        return super.isCancelled(...arguments);
+        return _TouchInput_isCancelled.call(TouchInput, ...arguments);
     }
 }
 
@@ -130,7 +129,7 @@ class TouchInputManager {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_TouchInputManager",
-    version: "1.0.0",
+    version: "1.0.1",
     icon: "🖱️",
     author: AUTHOR,
     license: LICENCE,
@@ -140,3 +139,14 @@ SC._temp.pluginRegister = {
     autoSave: false
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);
+
+// --- Application des patchs après l'enregistrement ---
+
+// On ne peut pas surcharger _onRightButtonDown directement dans la classe
+// car elle est définie dans le initialize original. On le fait donc ici.
+TouchInput._onRightButtonDown = function(event) {
+    if (this.isCancelOnRightClick()) {
+        _TouchInput_onRightButtonDown.call(this, event);
+    }
+    this._rightButtonPressed = true;
+};

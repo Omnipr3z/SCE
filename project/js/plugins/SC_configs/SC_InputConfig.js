@@ -71,9 +71,6 @@
 var Imported = Imported || {};
 Imported.SC_InputConfig = true;
 
-var SC = SC || {};
-SC.InputConfig = SC.InputConfig || {};
-
 (function($) { // $ = SC.InputConfig
     'use strict';
 
@@ -103,4 +100,17 @@ SC.InputConfig = SC.InputConfig || {};
         $.keyMappings[mapping.inputCode] = mapping.keyName;
     });
 
-})(SC.InputConfig);
+})(SC.InputConfig = SC.InputConfig || {});
+// Enregistrement du plugin auprès du SystemLoader
+SC._temp = SC._temp || {};
+SC._temp.pluginRegister = {
+    name: "SC_InputConfig",
+    version: "1.0.0",
+    icon: "🔠",
+    author: AUTHOR,
+    license: LICENCE,
+    dependencies: ["SC_SystemLoader"],
+    createObj: { autoCreate: false},
+    autoSave: false // La configuration des touches sera gérée par un système de config joueur plus tard
+};
+$simcraftLoader.checkPlugin(SC._temp.pluginRegister);

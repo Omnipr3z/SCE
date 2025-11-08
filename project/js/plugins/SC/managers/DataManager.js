@@ -1,8 +1,8 @@
 /**
  * ╔════════════════════════════════════════╗
  * ║                                        ║
- * ║        ███████╗ ██████╗███████╗        ║
- * ║        ██╔════╝██╔════╝██╔════╝        ║
+ * ║        ███████╗ ██████╗ ███████╗        ║
+ * ║        ██╔════╝██╔════╝ ██╔════╝        ║
  * ║        ███████╗██║     █████╗          ║
  * ║        ╚════██║██║     ██╔══╝          ║
  * ║        ███████║╚██████╗███████╗        ║
@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v0.3.1] Gestionnaire de données étendu de SimCraft Engine
+ * @plugindesc !SC [v0.4.1] Gestionnaire de données étendu de SimCraft Engine
  * @author By '0mnipr3z' ©2024-2025 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/INRAL
  * @help DataManager.js
@@ -40,12 +40,16 @@
  *   - Debug_Tools.js pour le logging via $debugTool.
  *
  * ▸ Historique :
+ *   v0.4.1 - 2024-07-30 : Correction de l'appel à SystemLoader pour utiliser createScGameObjects.
+ *   v0.4.0 - 2024-07-29 : Refactorisation en classe + surcharge via SystemLoader.
  *   v0.3.1 - 2024-07-29 : Mise à jour de la documentation et de l'en-tête.
  *   v0.3.0 - Refactorisation en classe propre + héritage dynamique au lieu de remplacement complet.
  *   v0.2.1 - Ajout du chargement des données de carte SC (statique et dynamique).
  *   v0.2.0 - Refonte en classe complète au lieu d'aliasing.
  *   v0.1.0 - Version initiale avec gestion des données et sauvegardes SC.
  */
+
+// --- Surcharge de DataManager ---
 
 // Sauvegarde des méthodes originales que nous allons surcharger
 const _DataManager_loadDatabase = DataManager.loadDatabase;
@@ -55,19 +59,17 @@ const _DataManager_makeSaveContents = DataManager.makeSaveContents;
 const _DataManager_extractSaveContents = DataManager.extractSaveContents;
 const _DataManager_loadMapData = DataManager.loadMapData;
 const _DataManager_isMapLoaded = DataManager.isMapLoaded;
-
-class Data_Manager_SC {
+class DataManager_SC {
 
     // Nouvelle méthode pour charger les données spécifiques à SimCraft
-    SC_loadData() {
+    loadScData() {
         for (const pluginKey in $simcraftLoader._pluginsList) {
             const plugin = $simcraftLoader._pluginsList[pluginKey];
             if (plugin.loadDataFiles && plugin.loadDataFiles.length > 0) {
-                SC.totalDataFilesToLoad += plugin.loadDataFiles.length;
                 plugin.loadDataFiles.forEach((datafile) => {
                     if (!window[datafile.instName]) {
                         let src = `${datafile.filename}`;
-                        this.SC_loadDataFile(datafile.instName, src);
+                        this.loadScDataFile(datafile.instName, src);
                     }
                 }, this);
             }
@@ -75,9 +77,10 @@ class Data_Manager_SC {
     }
 
     // Nouvelle méthode pour charger un fichier de données SC
-    SC_loadDataFile(name, src) {
+    loadScDataFile(name, src) {
         const xhr = new XMLHttpRequest();
-        const url = "data/SC/" + src + ".json";
+        // Correction: Ne pas ajouter .json si le nom de fichier le contient déjà.
+        const url = "data/SC/" + (src.endsWith('.json') ? src : src + ".json");
         window[name] = null;
         xhr.open("GET", url);
         xhr.overrideMimeType("application/json");
@@ -87,8 +90,22 @@ class Data_Manager_SC {
         xhr.send();
     }
 
+    // Nouvelle méthode pour gérer les erreurs de chargement XHR
+    onXhrError(name, src, url) {
+        const error = { name: name, src: src, url: url };
+        $debugTool.error(`Failed to load: ${url}`, error);
+    }
+
+    // Nouvelle méthode pour gérer le succès de chargement XHR
+    onXhrLoad(xhr, name, src, url) {
+        if (xhr.status < 400) {
+            window[name] = JSON.parse(xhr.responseText);
+            $debugTool.log(`Loaded: ${url}`, window[name]);
+        }
+    }
+
     // Nouvelle méthode pour extraire les métadonnées des commentaires d'événements
-    SC_extractEventMetaFromFirstComment(event) {
+    extractEventMetaFromFirstComment(event) {
         if (!event) return {};
         const firstPage = event.pages[0];
         if (!firstPage) return {};
@@ -124,13 +141,13 @@ class Data_Manager_SC {
 
     // Surcharge de loadDatabase
     loadDatabase() {
-        _DataManager_loadDatabase.call(this); // Appel de la méthode originale
-        this.SC_loadData(); // Ajout de notre logique
+        _DataManager_loadDatabase.call(DataManager, ...arguments); // Appel de la méthode originale
+        this.loadScData(); // Ajout de notre logique
     }
 
     // Surcharge de isDatabaseLoaded
     isDatabaseLoaded() {
-        const baseLoaded = _DataManager_isDatabaseLoaded.call(this); // Appel de la méthode originale
+        const baseLoaded = _DataManager_isDatabaseLoaded.call(DataManager, ...arguments); // Appel de la méthode originale
         if (!baseLoaded) return false;
 
         // Vérification que nos propres fichiers sont chargés
@@ -146,22 +163,18 @@ class Data_Manager_SC {
             }
         };
         
-        if (baseLoaded && scFilesLoaded && SC.totalDataFilesLoaded >= SC.totalDataFilesToLoad) {
-            $debugTool.groupEnd();
-            return true;
-        }
-        return false;
+        return baseLoaded && scFilesLoaded;
     }
 
     // Surcharge de createGameObjects
     createGameObjects() {
-        _DataManager_createGameObjects.call(this); // Appel de la méthode originale
-        $simcraftLoader.initializeScPlugins(); // On délègue la création des objets SC
+        _DataManager_createGameObjects.call(DataManager, ...arguments); // Appel de la méthode originale
+        $simcraftLoader.createScGameObjects(); // On délègue la création des objets SC
     }
 
     // Surcharge de makeSaveContents
     makeSaveContents() {
-        const contents = _DataManager_makeSaveContents.call(this); // Appel de la méthode originale
+        const contents = _DataManager_makeSaveContents.call(DataManager, ...arguments); // Appel de la méthode originale
         for (const elementKey in $simcraftLoader._pluginsList) {
             let element = $simcraftLoader._pluginsList[elementKey];
             if (element.autoSave) {
@@ -181,7 +194,7 @@ class Data_Manager_SC {
 
     // Surcharge de extractSaveContents
     extractSaveContents(contents) {
-        _DataManager_extractSaveContents.call(this, contents); // Appel de la méthode originale
+        _DataManager_extractSaveContents.call(DataManager, ...arguments); // Appel de la méthode originale
         for (const elementKey in $simcraftLoader._pluginsList) {
             let element = $simcraftLoader._pluginsList[elementKey];
             if (element.autoSave) {
@@ -204,7 +217,7 @@ class Data_Manager_SC {
 
     // Surcharge de loadMapData
     loadMapData(mapId) {
-        _DataManager_loadMapData.call(this, mapId); // Appel de la méthode originale
+        _DataManager_loadMapData.call(DataManager, ...arguments); // Appel de la méthode originale
         if (mapId > 0) {
             this.loadMapScData(mapId);
         }
@@ -213,8 +226,8 @@ class Data_Manager_SC {
     // Nouvelle méthode
     loadMapScData(mapId) {
         if (mapId > 0) {
-            const filename = "SC/Map%1.json".format(mapId.padZero(3));
-            this.loadDataFile("$dataScMap", filename);
+            const filename = "Map%1.json".format(mapId.padZero(3));
+            this.loadScDataFile("$dataScMap", filename);
         } else {
             window.$dataScMap = null;
         }
@@ -224,15 +237,17 @@ class Data_Manager_SC {
     isMapLoaded() {
         // La carte n'est considérée comme chargée que si $dataMap ET $dataScMap
         // sont tous les deux chargés avec succès (ou si $dataScMap n'est pas nécessaire).
-        return _DataManager_isMapLoaded.call(this) && !!$dataScMap;
+        return _DataManager_isMapLoaded.call(DataManager, ...arguments) && !!$dataScMap;
     }
 }
+
+
 
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_DataManagerAddOns",
-    version: "0.3.0",
+    version: "0.4.0",
     icon: "💾",
     author: AUTHOR,
     license: LICENCE,
@@ -240,7 +255,7 @@ SC._temp.pluginRegister = {
     loadDataFiles: [],
     createObj: { 
         autoCreate: true,
-        classProto: Data_Manager_SC 
+        classProto: DataManager_SC 
     },
     surchargeClass: "DataManager",
     autoSave: false

@@ -137,6 +137,47 @@ Voici une explication de chaque propriété de l'objet `pluginRegister` :
 
 *   **`surchargeClass`** (String, Optionnel)
     La fonctionnalité la plus avancée. Indique le nom d'une classe statique du moteur (ex: `"DataManager"`, `"SceneManager"`) que votre classe va "étendre". Le `SystemLoader` se chargera de fusionner votre classe avec la classe de base.
+
+    **⚠️ Important : Gérer le contexte `this` lors de la surcharge**
+
+    Lorsque vous surchargez une classe statique, il y a une subtilité cruciale à comprendre concernant le mot-clé `this`.
+
+    *   À l'intérieur des méthodes de votre classe de surcharge (ex: `DataManager_SC`), `this` fait référence à **l'instance de votre classe de surcharge**, et non à la classe statique de base (ex: `DataManager`).
+    *   Ceci est intentionnel et vous permet d'avoir des propriétés et des méthodes propres à votre module (ex: `this.myCustomData`, `this.myHelperFunction()`).
+
+    Cependant, lorsque vous devez appeler la méthode *originale* que vous avez surchargée, il est **impératif** de lui redonner son contexte d'origine.
+
+    **Comment faire :**
+
+    1.  **Sauvegardez la méthode originale** au début de votre fichier :
+        ```javascript
+        const _DataManager_loadDatabase = DataManager.loadDatabase;
+        ```
+
+    2.  **Définissez votre classe de surcharge** sans constructeur. Le `SystemLoader` s'en occupe.
+
+    3.  Dans votre méthode de surcharge, utilisez `.call(NomDeLaClasseOriginale, ...arguments)` pour appeler la fonction de base :
+
+        ```javascript
+        class DataManager_SC {
+            loadDatabase() {
+                // Mauvaise pratique : `this` est l'instance de DataManager_SC,
+                // ce qui causera une erreur dans la méthode originale.
+                // _DataManager_loadDatabase.call(this, ...arguments);
+
+                // Bonne pratique : On passe explicitement la classe originale comme contexte.
+                _DataManager_loadDatabase.call(DataManager, ...arguments);
+
+                // Ici, vous pouvez ajouter votre propre logique.
+                this.loadMyCustomData();
+            }
+
+            loadMyCustomData() {
+                // ... votre code ...
+            }
+        }
+        ```
+
     ```javascript
     // Dans le cas de notre DataManager.js
     surchargeClass: "DataManager",
