@@ -40,3 +40,4 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
 # CORE ENGINE
 - [JsExtender](DOC/JsExtender.md)
 - [Engine Core & Autoloader](DOC/AutoLoader.md)
+- [Input Manager](DOC/InputEx.md)

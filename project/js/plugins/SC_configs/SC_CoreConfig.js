@@ -80,18 +80,3 @@ const LOG_HEADER =
  ║  ╚══════╝   ╚═════╝  ╚══════╝  ║          Debug:      ${DEBUG_OPTIONS.debug ? "✔️ On " : "❌ Off"}    
  ║ S I M C R A F T   E N G I N E  ║          Deep Log:   ${DEBUG_OPTIONS.deep ? "✔️ On " : "❌ Off"}    
  ║________________________________║`;
-
-// --- Enregistrement du plugin ---
-SC._temp.pluginRegister = {
-    name: "SC_CoreConfig",
-    version: "0.3.0",
-    author: AUTHOR,
-    license: LICENCE,
-    dependencies: [],
-    loadDataFiles: [],
-    createObj: { autoCreate: false },
-    autoSave: false
-};
-// On ne peut pas utiliser $simcraftLoader ici car il n'existe pas encore.
-// Ce plugin doit être le premier à être chargé.
-// Le SystemLoader s'auto-enregistrera de toute façon.

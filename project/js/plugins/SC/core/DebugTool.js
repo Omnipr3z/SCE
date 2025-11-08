@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Outil de debug console de SimCraft Engine
+ * @plugindesc !SC [v1.0.1] Outil de debug console de SimCraft Engine
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/INRAL
  * @help DebugTool.js
@@ -40,11 +40,12 @@
  *   - Utilisation recommandée en ENV: DEV
  * 
  * ▸ Historique :
+ *   v1.0.1 - Ajout des commentaires de méthodes
  *   v1.0.0 - Version initiale de l’outil debug
  */
 /*:en
  * @target MZ
- * @plugindesc !SC [v1.0.0] Console debugging tool for SimCraft Engine
+ * @plugindesc !SC [v1.0.1] Console debugging tool for SimCraft Engine
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/INRAL
  * @help DebugTool.js
@@ -71,17 +72,28 @@
  *   - Recommended for use in ENV: DEV
  *
  * ▸ Releases :
+ *   v1.0.1 - Added method comments
  *   v1.0.0 - Initial version of the debug tool
  */
 class DebugTool{
+    /**
+     * Initializes the debug tool, prints the header, and sets up internal state.
+     */
     constructor(){
         this.scHeader();
         this._objCreated = {};
         this._groupCreated = {};
     }
+    /**
+     * Getter to check if debugging is enabled based on global configuration.
+     * @returns {boolean}
+     */
     get debugLog(){
         return DEBUG_OPTIONS.debug && DEBUG_OPTIONS.env.toUpperCase() == "DEV";
     }
+    /**
+     * Displays the help menu for the debug tool.
+     */
     get help(){
         if(DEBUG_OPTIONS.env != "DEV")return;
         this.helperTop();
@@ -89,6 +101,10 @@ class DebugTool{
         this.drawMenuHelper();
     }
     //console manipulation
+    /**
+     * Starts a collapsed console group if it hasn't been created yet.
+     * @param {string} key - The name of the group.
+     */
     group(key){
         if(!this._groupCreated)
             this._groupCreated = {};
@@ -102,24 +118,42 @@ class DebugTool{
         }
             
     }
+    /**
+     * Ends the current console group.
+     */
     groupEnd(){
         if(this.debugLog)
             console.groupEnd();
     }
+    /**
+     * Logs a standard message to the console.
+     * @param {string} txt - The message to log.
+     */
     log(txt){
         if(this.debugLog)
             console.log(txt);
     }
+    /**
+     * Logs a warning message to the console.
+     * @param {string} txt - The warning message.
+     */
     warn(txt){
         if(this.debugLog)
             console.warn(txt);
     }
+    /**
+     * Logs an error message and throws an exception.
+     * @param {string} txt - The error message.
+     */
     error(txt){
         if(this.debugLog)
             console.error(txt);
         throw new Error(txt);
     }
     //console contents
+    /**
+     * Displays the SimCraft Engine header in the console.
+     */
     scHeader(){
         let line = "                 ".repeat(4) + "\n";
         console.log.apply(console, [`${line}%c${line}${LOG_HEADER}\n${line}`,'background: #124DA0; padding:0px 5px; color:white']);
@@ -128,12 +162,17 @@ class DebugTool{
     }
 
 
-
+    /**
+     * Draws the content of the help menu based on the current state.
+     */
     drawMenuHelper(){
         switch(this._helperMenu[0]){
             case 0:console.log("Le Helper est encore inactif...")
         }
     }
+    /**
+     * Clears the console and displays the help menu header.
+     */
     helperTop(){
         console.clear();
         console.log.apply(console, [`%c
@@ -150,6 +189,11 @@ class DebugTool{
     }
     
 
+    /**
+     * Displays an error for a missing data file.
+     * @param {string} instName - The name of the instance that failed to create.
+     * @param {string} filename - The name of the missing file.
+     */
     drawDatafileError(instName, filename){
         let txt =
 `\u{1F4C4} ERROR: ${instName} database not created !!!
@@ -157,6 +201,11 @@ class DebugTool{
         
         this.error(txt);
     }
+    /**
+     * Displays a confirmation that a data file has been loaded.
+     * @param {string} instName - The name of the data instance.
+     * @param {string} path - The path to the loaded file.
+     */
     drawDatafileLoaded(instName, path){
         let txt;
         if(instName == "$dataMap"){
@@ -170,6 +219,11 @@ class DebugTool{
         
         this.log(txt);
     }
+    /**
+     * Displays an error for a missing plugin dependency.
+     * @param {object} plugin - The plugin that is missing a dependency.
+     * @param {string} requiredDependency - The name of the required dependency.
+     */
     drawDependencyError(plugin, requiredDependency){
         let txt =
 `\u{1F4E5} ERROR: ${plugin.name} not loaded !!!
@@ -178,25 +232,45 @@ class DebugTool{
         this.error(txt);
     }
 
+    /**
+     * Confirms that plugin save data has been loaded.
+     * @param {object} plugin - The plugin whose data was loaded.
+     */
     drawPluginSavefileLoaded(plugin){
         let txt = `\u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Savefile data loaded\n`;
         this.log(txt);
     }
+    /**
+     * Displays an error for corrupted plugin save data.
+     * @param {object} plugin - The plugin with corrupted data.
+     */
     drawPluginSavefileLoadError(plugin){
         let txt = `ERROR !!! \u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Saved data not loaded\n`;
         txt += `Savefile corrupted !`;
         this.error(txt);
     };
+    /**
+     * Displays an error if a plugin's 'loadSavefileData' method is missing.
+     * @param {object} plugin - The plugin missing the method.
+     */
     drawPluginSavefileLoadMethodError(plugin){
         let txt = `ERROR !!! \u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Save method not exists!\n`;
         txt += `".loadSavefileData(data) is not exist on ${plugin.createObj.instName}!`;
         this.error(txt);
 
     }
+    /**
+     * Confirms that plugin data has been saved.
+     * @param {object} plugin - The plugin whose data was saved.
+     */
     drawPluginSavefileSaved(plugin){
         let txt = `\u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Savefile data saved\n`;
         this.log(txt);
     }
+    /**
+     * Displays an error if a plugin's 'makeSavefileData' method is missing.
+     * @param {object} plugin - The plugin missing the method.
+     */
     drawPluginSavefileSaveMethodError(plugin){
         let txt = `ERROR !!! \u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Save method not exists!\n`;
         txt += `".makeSavefileData() is not exist on ${plugin.createObj.instName}!`;
@@ -205,6 +279,10 @@ class DebugTool{
     }
 
 
+    /**
+     * Displays a confirmation that a plugin has been loaded.
+     * @param {object} plugin - The loaded plugin.
+     */
     drawPluginLoaded(plugin){
         let txt = `\u{1F4E5} ${plugin.icon} ${plugin.name.camelToSnake().toUpperCase()} \u{2192} Loaded\n`;
 
@@ -216,11 +294,20 @@ class DebugTool{
         )
         this.log(txt);
     }
+    /**
+     * Logs the creation of a plugin instance.
+     * @param {object} plugin - The plugin whose instance was created.
+     */
     drawInstanceCreated(plugin){
         let txt = 
 `${plugin.icon} ${plugin.name.toUpperCase()} \u{2192} ${plugin.createObj.instName} instance created`;
         this.log(txt);
     }
+    /**
+     * Logs the creation or recreation of a base RMMZ engine instance.
+     * @param {string} instName - The name of the instance.
+     * @param {string} className - The class name of the instance.
+     */
     drawBaseInstanceCreated(instName, className){
         let txt;
         if(!this._objCreated)
@@ -237,6 +324,10 @@ class DebugTool{
         if(this._objCreated[className] < 2)
             this.log(txt);
     }
+    /**
+     * Logs the initialization of a scene.
+     * @param {string} name - The name of the scene.
+     */
     logInitScene(name){
 
         if(DEBUG_OPTIONS.deep || name == "Scene_Map"){
@@ -245,10 +336,6 @@ class DebugTool{
             
         }
     }
-    logPlantation(plantation = 24){
-        console.log(plantation);
-        console.log(plantation.currentStep())
-        console.log(plantation.nextStepData())
-    }
 }
+
 const $debugTool = new DebugTool();

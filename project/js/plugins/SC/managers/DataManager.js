@@ -12,8 +12,8 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v0.3.0] Gestionnaire de données étendu de SimCraft Engine
- * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
+ * @plugindesc !SC [v0.3.1] Gestionnaire de données étendu de SimCraft Engine
+ * @author By '0mnipr3z' ©2024-2025 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/INRAL
  * @help DataManager.js
  * 
@@ -40,13 +40,12 @@
  *   - Debug_Tools.js pour le logging via $debugTool.
  *
  * ▸ Historique :
+ *   v0.3.1 - 2024-07-29 : Mise à jour de la documentation et de l'en-tête.
  *   v0.3.0 - Refactorisation en classe propre + héritage dynamique au lieu de remplacement complet.
  *   v0.2.1 - Ajout du chargement des données de carte SC (statique et dynamique).
  *   v0.2.0 - Refonte en classe complète au lieu d'aliasing.
  *   v0.1.0 - Version initiale avec gestion des données et sauvegardes SC.
  */
-
-// On ne touche plus aux variables globales ici, elles sont déjà définies dans rmmz_managers.js
 
 // Sauvegarde des méthodes originales que nous allons surcharger
 const _DataManager_loadDatabase = DataManager.loadDatabase;

@@ -10,111 +10,169 @@
  * ║     S I M C R A F T   E N G I N E      ║
  * ║________________________________________║
  */
-/*:fr
+/*:
  * @target MZ
- * @plugindesc !SC [v0.1.1] Gestionnaire d'entrées étendu de SimCraft Engine
- * @author By '0mnipr3z' ©2025 licensed under CC BY-NC-SA 4.0
- * @url https://github.com/simcraft/sce
- * @help InputManager.js
+ * @plugindesc !SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.
+ * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
+ * @url https://github.com/Omnipr3z/INRAL
+ * @base SC_SystemLoader
+ * @orderAfter SC_InputConfig
+ *
+ * @help
+ * InputManager.js
  * 
- *    ██╗███╗   ██╗██████╗ ██╗   ██╗████████╗
- *    ██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝
- *    ██║██╔██╗ ██║██████╔╝██║   ██║   ██║   
- *    ██║██║╚██╗██║██╔══██╗██║   ██║   ██║   
- *    ██║██║ ╚████║██║  ██║╚██████╔╝   ██║   
- *    ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝    ╚═╝   
- * 
- * Ce plugin remplace le `keyMapper` de l'objet `Input` natif de RMMZ
- * pour inclure un mapping de touches plus complet (lettres, chiffres, etc.).
- * Il fait partie du SimCraft Engine.
+ * Ce module remplace la gestion des entrées de base de RPG Maker MZ pour permettre
+ * une configuration dynamique des touches. Il est conçu pour être utilisé avec
+ * un fichier de configuration externe (SC_InputConfig.js) qui définit les mappings
+ * par défaut, et pour anticiper une future scène de configuration des touches en jeu.
  *
- * ▸ Fonctionnalités Clés :
- *   - Remplace `Input.keyMapper` avec un ensemble de touches étendu.
- *   - Permet d'utiliser des noms de touches (ex: 'a', 'b', 'space') dans
- *     les autres plugins et scripts.
+ * Historique:
+ * V1.0.0 (2025-11-08): Implémentation initiale de la classe InputManager.
  *
- * ▸ Nécessite :
- *   - SC_SystemLoader.js pour l'objet $simcraftLoader.
- *
- * ▸ Historique :
- *   v0.1.1 - 2025-11-08 : Nettoyage et extension du keyMapper (numpad, flèches, etc.).
- *          - Transformation du keyMapper en nouvelle entité de remappage keyboardMapper.
- *   v0.1.0 - 2025-11-08 : Création initiale et remplacement du keyMapper.
+ * Ce plugin ne nécessite pas de paramètres, il lit sa configuration depuis
+ * SC_InputConfig.js.
  */
 
-Input.keyboardMapper = {
-    // --- Touches de base ---
-    9: "tab",               // tab
-    13: "enter",            // enter
-    16: "shft",             // shift
-    17: "ctrl",             // control
-    18: "alt",              // alt
-    27: "esc",              // escape
-    32: "space",            // space
-    33: "page_up",          // pageup
-    34: "page_down",        // pagedown
-    35: "end",  
-    36: "home",
-    45: "insert",           // insert
-    46: "delete",
+class InputManager {
 
-    // --- Flèches ---
-    37: "left_arrow",    // left arrow
-    38: "up_arrow",      // up arrow
-    39: "right_arrow",   // right arrow
-    40: "down_arrow",    // down arrow
+    /**
+     * Initialise le gestionnaire d'entrées avec les mappages par défaut.
+     * Cette méthode est appelée par le SystemLoader.
+     */
+    initialize() {
+        this.keyMapper = {}; // Remplace Input.keyMapper
+        this._nameToCodeMap = {}; // Map pour optimiser la recherche nom -> code
+        this._codeToActionMap = {}; // Map pour optimiser la recherche code -> action
+        this._reservedActions = new Set(); // Pour les actions non modifiables par le joueur
+        this._editableActions = new Set(); // Pour les actions modifiables par le joueur
 
-    // --- Lettres ---
-    65: 'A', 66: 'B', 67: 'C', 68: 'D', 69: 'E', 70: 'F', 71: 'G', 72: 'H', 73: 'I', 74: 'J', 75: 'K', 76: 'L', 77: 'M', 78: 'N', 79: 'O', 80: 'P', 81: 'Q', 82: 'R', 83: 'S', 84: 'T', 85: 'U', 86: 'V', 87: 'W', 88: 'X', 89: 'Y', 90: 'Z',
+        this.buildNameToCodeMap();
+        this.loadDefaultKeyMappings();
+    }
 
-    // --- Chiffres (ligne supérieure) ---
-    48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9',
+    /**
+     * Construit une map inversée pour un accès rapide du nom de touche à son code.
+     */
+    buildNameToCodeMap() {
+        for (const code in Input.keyboardMapper) {
+            const name = Input.keyboardMapper[code];
+            this._nameToCodeMap[name] = parseInt(code);
+        }
+    }
 
-    // --- Pavé numérique ---
-    96: 'numpad_0',
-    97: 'numpad_1',
-    98: 'numpad_2',
-    99: 'numpad_3',
-    100: 'numpad_4',
-    101: 'numpad_5',
-    102: 'numpad_6',
-    103: 'numpad_7',
-    104: 'numpad_8',
-    105: 'numpad_9',
-    106: 'numpad_multiply',
-    107: 'numpad_add',
-    109: 'numpad_subtract',
-    110: 'numpad_decimal',
-    111: 'numpad_divide',
+    /**
+     * Charge les mappages de touches par défaut depuis SC.InputConfig.
+     */
+    loadDefaultKeyMappings() {
+        const mappings = SC.InputConfig.keyMappings;
+        for (const actionName in mappings) {
+            const keyName = mappings[actionName];
+            this.assignKey(actionName, keyName);
+        }
+    }
 
-    // --- Touches de fonction ---
-    112: 'F1', 113: 'F2', 114: 'F3', 115: 'F4', 116: 'F5', 117: 'F6', 118: 'F7', 119: 'F8', 120: 'F9', 121: 'F10', 122: 'F11', 123: 'F12',
-    
-    // --- Autres touches ---
-    8: 'backspace',
-    19: 'pause',
-    20: 'capslock',
-    186: 'semicolon',
-    187: 'equals',
-    188: 'comma',
-    189: 'minus',
-    190: 'period',
-    191: 'slash',
-    192: 'grave',
-    219: 'openbracket',
-    220: 'backslash',
-    221: 'closebracket',
-    222: 'apostrophe'
-};
+    /**
+     * Assigne un code de touche à un code d'entrée.
+     * Gère les conflits et les erreurs.
+     * @param {string} actionName Le nom de l'action (ex: 'ok', 'cancel').
+     * @param {string} keyName Le nom de la touche.
+     */
+    assignKey(actionName, keyName) {
+        const keyCode = this._nameToCodeMap[keyName];
 
-// --- Enregistrement du plugin ---
+        if (keyCode === undefined) {
+            $debugTool.warnUnknowKey(keyName, actionName);
+            return;
+        }
+
+        // Vérifie si la touche est déjà assignée à une autre action
+        const existingAction = this._codeToActionMap[keyCode];
+        if (existingAction && existingAction !== actionName) {
+            $debugTool.errorKeyConflict(keyName, existingAction, actionName);
+            return;
+        }
+
+        // Supprime l'ancienne assignation de l'action si elle existait
+        const oldKeyCode = this.keyMapper[actionName];
+        if (oldKeyCode) {
+            delete this._codeToActionMap[oldKeyCode];
+        }
+
+        // Assigne la nouvelle touche
+        this.keyMapper[actionName] = keyCode;
+        this._codeToActionMap[keyCode] = actionName;
+        $debugTool.logKeyAssigned(keyName, keyCode, actionName);
+    }
+
+    /**
+     * Récupère le nom de l'action à partir du keyCode.
+     * @param {number} keyCode Le code numérique de la touche.
+     * @returns {string|null} Le nom de l'action ou null si non trouvé.
+     */
+    getActionFromKeyCode(keyCode) {
+        return this._codeToActionMap[keyCode] || null;
+    }
+
+    /**
+     * Récupère le nom de la touche à partir de son code numérique.
+     * @param {number} keyCode Le code numérique de la touche.
+     * @returns {string|null} Le nom de la touche ou null si non trouvé.
+     */
+    getKeyNameFromCode(keyCode) {
+        return Input.keyboardMapper[keyCode] || null;
+    }
+
+    /**
+     * Marque une touche comme réservée (non modifiable par le joueur).
+     * @param {string} actionName Le nom de l'action à réserver.
+     */
+    reserveAction(actionName) {
+        this._reservedActions.add(actionName);
+        this._editableActions.delete(actionName); // S'assurer qu'elle n'est pas aussi éditable
+    }
+
+    /**
+     * Marque une touche comme éditable (modifiable par le joueur).
+     * @param {string} actionName Le nom de l'action à rendre éditable.
+     */
+    makeActionEditable(actionName) {
+        this._editableActions.add(actionName);
+        this._reservedActions.delete(actionName); // S'assurer qu'elle n'est pas aussi réservée
+    }
+
+    /**
+     * Vérifie si un code d'entrée est réservé.
+     * @param {string} actionName Le nom de l'action à vérifier.
+     * @returns {boolean} True si la touche est réservée, false sinon.
+     */
+    isActionReserved(actionName) {
+        return this._reservedActions.has(actionName);
+    }
+
+    /**
+     * Vérifie si un code d'entrée est éditable.
+     * @param {string} actionName Le nom de l'action à vérifier.
+     * @returns {boolean} True si la touche est éditable, false sinon.
+     */
+    isActionEditable(actionName) {
+        return this._editableActions.has(actionName);
+    }
+}
+
+// Enregistrement du plugin auprès du SystemLoader
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_InputManager",
-    version: "0.1.1",
+    version: "1.0.0",
     icon: "🔠",
-    author: "0mnipr3z",
-    license: "CC BY-NC-SA 4.0",
-    dependencies: ["SC_SystemLoader"],
+    author: AUTHOR,
+    license: LICENCE,
+    dependencies: ["SC_SystemLoader", "SC_InputConfig"],
+    createObj: { 
+        autoCreate: true,
+        classProto: InputManager 
+    },
+    surchargeClass: "Input",
+    autoSave: false // La configuration des touches sera gérée par un système de config joueur plus tard
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);

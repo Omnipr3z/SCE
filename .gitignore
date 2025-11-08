@@ -1,0 +1,44 @@
+# Fichier .gitignore pour le SimCraft Engine (approche par liste noire)
+# Ce fichier liste explicitement les dossiers et fichiers à ignorer.
+# Tout ce qui n'est pas dans cette liste sera suivi par Git.
+
+# --- Fichiers et dossiers de projet RPG Maker à ignorer ---
+
+# Dossier de sauvegarde
+project/save/
+
+# Dossiers de ressources (assets)
+project/audio/
+project/effects/
+project/fonts/
+project/icon/
+project/img/
+project/movies/
+
+# Fichiers de données de base de RMMZ (on ne garde que nos scripts)
+project/data/
+# Garder nos fichiers de données custom
+!project/data/SC/
+!project/data/SC/**
+
+# Fichiers de base des plugins de RMMZ (on ne garde que nos scripts)
+project/js/libs/
+project/js/main.js
+project/js/plugins.js
+project/js/rmmz_*.js
+
+# --- Fichiers de développement et système ---
+
+# Dépendances Node.js
+node_modules/
+
+# Fichiers de log
+*.log
+
+# Fichiers de configuration d'IDE
+.vscode/
+.idea/
+
+# Fichiers système d'exploitation
+.DS_Store
+Thumbs.db

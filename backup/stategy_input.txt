@@ -1,0 +1,45 @@
+Étape 0 : Création du fichier de documentation DOC/conseils.md
+
+Je vais créer le fichier d:\PAH\SCE\DOC\conseils.md.
+J'y ajouterai une ébauche des processus et stratégies de développement que nous avons discutés, notamment la méthode de travail (discussion de la stratégie, anticipation des évolutions, API, etc.).
+Étape 1 : Création du fichier de configuration SC_InputConfig.js
+
+Je créerai le fichier d:\PAH\SCE\project\js\plugins\SC\configs\SC_InputConfig.js.
+Ce fichier contiendra l'en-tête du plugin avec les paramètres configurables par le développeur pour les touches par défaut (ex: ok, cancel, up, down, left, right, menu, pageup, pagedown).
+Ces paramètres seront ensuite utilisés pour définir des constantes JavaScript (ex: INPUT_KEY_OK, INPUT_KEY_CANCEL) qui seront accessibles par InputManager.
+Le fichier s'enregistrera auprès du $simcraftLoader comme un plugin de configuration.
+
+Étape 2 : Création du fichier InputManager.js
+
+Je créerai le fichier d:\PAH\SCE\project\js\plugins\SC\managers\InputManager.js.
+En-tête du Plugin : J'inclurai la description, l'auteur, la version (initiale à 1.0.0) et l'aide.
+Classe InputManager :
+Constructeur : Initialisera _keymap, _reverseKeymap, _editableActions, _reservedKeys. Il chargera les configurations par défaut depuis les constantes de SC_InputConfig.js. Il implémentera la vérification des doublons avec $debugTool.error() et fusionnera avec le Input.keyMapper de RMMZ.
+Méthodes API (placeholders pour l'instant) : setKeyForAction, getKeyForAction, getAvailableKeys, isKeyAssigned, getActionForKey, isActionEditable, isKeyReserved, saveKeybindings, loadKeybindings.
+KeyboardMapper : Je définirai un objet KeyboardMapper complet pour mapper les codes de touches aux noms de touches.
+Surcharge de la Classe Input de RMMZ : J'aliaserai les méthodes originales de Input (ex: _isPressed) et implémenterai de nouvelles versions qui délégueront à $inputManager.
+Enregistrement auprès du $simcraftLoader : Le plugin s'enregistrera auprès du $simcraftLoader.
+
+Étape 3 : Mise à jour de Debug_Tools.js
+
+Je mettrai à jour la version à 1.0.2 et ajouterai une entrée dans l'historique pour la suppression de la méthode logPlantation.
+Étape 4 : Vérification du SC_SystemLoader
+
+Je vérifierai si le SC_SystemLoader est déjà configuré pour charger les fichiers de configuration depuis plugins/SC_Configs. Si ce n'est pas le cas, j'adapterai le loader.
+Je commence par l'Étape 0 : Création du fichier DOC/conseils.md.
+
+check
+WriteFile...`InputManager`. ...\DOC\conseils.md
+stat_minus_1
+Thinking
+J'ai créé le fichier DOC/conseils.md.
+
+Maintenant, passons à l'Étape 1 : Création de SC_InputConfig.js. Je vais définir l'en-tête du plugin, les paramètres pour les actions clés, les constantes basées sur ces paramètres, et l'enregistrement auprès du SC_SystemLoader.Agent Error, unknown agent message: Unknown error from LLM streamJ'ai créé le fichier DOC/conseils.md.
+
+Maintenant, je passe à l'Étape 1 : Création de SC_InputConfig.js.
+
+Ce fichier définira les paramètres du plugin pour les raccourcis clavier par défaut, des constantes basées sur ces paramètres et s'enregistrera auprès de SC_SystemLoader.
+
+J'utiliserai les actions RMMZ courantes comme base : ok, cancel, shift, menu, pageup, pagedown, up, down, left, right.
+
+Je choisirai la touche principale pour chaque action RMMZ comme valeur par défaut dans les paramètres du plugin.
