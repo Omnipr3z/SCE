@@ -3,6 +3,8 @@
 # Tout ce qui n'est pas dans cette liste sera suivi par Git.
 
 # --- Fichiers et dossiers de projet RPG Maker à ignorer ---
+# Dossier de brouillon et backup
+backup/
 
 # Dossier de sauvegarde
 project/save/
@@ -14,6 +16,7 @@ project/fonts/
 project/icon/
 project/img/
 project/movies/
+project/css/
 
 # Fichiers de données de base de RMMZ (on ne garde que nos scripts)
 project/data/
@@ -24,10 +27,12 @@ project/data/
 # Fichiers de base des plugins de RMMZ (on ne garde que nos scripts)
 project/js/libs/
 project/js/main.js
-project/js/plugins.js
 project/js/rmmz_*.js
 
 # --- Fichiers de développement et système ---
+project/game.rmmzproject
+project/index.html
+project/package.json
 
 # Dépendances Node.js
 node_modules/
