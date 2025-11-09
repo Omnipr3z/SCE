@@ -80,9 +80,9 @@ class DebugTool{
      * Initializes the debug tool, prints the header, and sets up internal state.
      */
     constructor(){
-        this.scHeader();
         this._objCreated = {};
-        this._groupCreated = {};
+        this._groupStack = []; // Utiliser une pile pour gérer les groupes imbriqués
+        this.scHeader();
     }
     /**
      * Getter to check if debugging is enabled based on global configuration.
@@ -106,39 +106,48 @@ class DebugTool{
      * @param {string} key - The name of the group.
      */
     group(key){
-        if(!this._groupCreated)
-            this._groupCreated = {};
-        if(this.debugLog){
-            if(!this._groupCreated[key]){
-                console.groupCollapsed(key);
-                this._groupCreated[key] = true;
-            }else if(DEBUG_OPTIONS.deep){
-                console.groupCollapsed("RESTORE \u{2192}"+key);
-            }
+        if (this.debugLog) {
+            console.groupCollapsed(key);
+            this._groupStack.push(key);
         }
-            
     }
     /**
      * Ends the current console group.
      */
     groupEnd(){
-        if(this.debugLog)
+        if (this.debugLog && this._groupStack.length > 0) {
             console.groupEnd();
+            this._groupStack.pop();
+        }
+    }
+
+    /**
+     * Closes all open console groups.
+     */
+    closeAllGroups() {
+        if (this.debugLog) {
+            while (this._groupStack.length > 0) {
+                console.groupEnd();
+                this._groupStack.pop();
+            }
+        }
     }
     /**
      * Logs a standard message to the console.
      * @param {string} txt - The message to log.
+     * @param {boolean} [deep=false] - If true, logs only when DEBUG_OPTIONS.deep is true.
      */
-    log(txt){
-        if(this.debugLog)
+    log(txt, deep = false){
+        if(this.debugLog && (!deep || DEBUG_OPTIONS.deep))
             console.log(txt);
     }
     /**
      * Logs a warning message to the console.
      * @param {string} txt - The warning message.
+     * @param {boolean} [deep=false] - If true, logs only when DEBUG_OPTIONS.deep is true.
      */
-    warn(txt){
-        if(this.debugLog)
+    warn(txt, deep = false){
+        if(this.debugLog && (!deep || DEBUG_OPTIONS.deep))
             console.warn(txt);
     }
     /**

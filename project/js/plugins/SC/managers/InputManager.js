@@ -43,7 +43,7 @@ class InputManager {
      * Cette méthode est appelée par le SystemLoader.
      */
     setupSurcharge() {
-        $debugTool.log("▶️ Initializing SC_InputManager...");
+        $debugTool.log("▶️ Initializing SC_InputManager...", true);
 
         this._nameToCodeMap = {}; // Map pour optimiser la recherche nom -> code
         this._reservedActions = new Set(); // Pour les actions non modifiables par le joueur
@@ -53,7 +53,7 @@ class InputManager {
         this.loadDefaultKeyMappings();
 
         $debugTool.log("✅ SC_InputManager initialized. Final Input.keyMapper state:");
-        console.log(Input.keyMapper);
+        $debugTool.log(Input.keyMapper);
     }
 
     /**
@@ -64,7 +64,7 @@ class InputManager {
             const name = Input.keyboardMapper[code];
             this._nameToCodeMap[name] = parseInt(code);
         }
-        $debugTool.log("... 🗺️ _nameToCodeMap built.");
+        $debugTool.log("... 🗺️ _nameToCodeMap built.", true);
     }
 
     /**
@@ -72,30 +72,44 @@ class InputManager {
      */
     loadDefaultKeyMappings() {
         const mappings = SC.InputConfig.keyMappings;
-        $debugTool.log("... ⚙️ Loading default key mappings...");
+        $debugTool.log("... ⚙️ Loading default key mappings...", true);
+        const tempMap = {}; // Map temporaire pour vérifier les conflits internes à la config
+
+        // La structure est maintenant { action: [key1, key2, ...] }
         for (const actionName in mappings) {
-            const keyName = mappings[actionName];
-            this.assignKey(actionName, keyName);
+            const keyNames = mappings[actionName];
+            // On assigne chaque touche du tableau à l'action
+            keyNames.forEach(keyName => {
+                // On vérifie les conflits dans notre propre config, puis on assigne.
+                this.assignKey(actionName, keyName, tempMap);
+                // On met à jour la map temporaire pour les prochaines vérifications.
+                const keyCode = this._nameToCodeMap[keyName];
+                if (keyCode) {
+                    tempMap[keyCode] = actionName;
+                }
+            });
         }
     }
 
     /**
      * Assigne un code de touche à un code d'entrée.
      * Gère les conflits et les erreurs.
-     * @param {string} actionName Le nom de l'action (ex: 'ok', 'cancel').
-     * @param {string} keyName Le nom de la touche.
+     * @param {string} actionName - Le nom de l'action (ex: 'ok', 'cancel').
+     * @param {string} keyName - Le nom de la touche.
+     * @param {object} [mapToCheck=Input.keyMapper] - La map dans laquelle vérifier les conflits.
      */
-    assignKey(actionName, keyName) {
-        $debugTool.log(`... ... Assigning '${keyName}' to action '${actionName}'`);
-        const keyCode = this._nameToCodeMap[keyName];
+    assignKey(actionName, keyName, mapToCheck = Input.keyMapper) {
+        const normalizedKeyName = keyName.toLowerCase();
+        $debugTool.log(`... ... Assigning '${keyName}' (as '${normalizedKeyName}') to action '${actionName}'`, true);
+        const keyCode = this._nameToCodeMap[normalizedKeyName];
 
         if (keyCode === undefined) {
-            $debugTool.warnUnknowKey(keyName, actionName);
+            $debugTool.warnUnknowKey(normalizedKeyName, actionName);
             return;
         }
 
         // Vérifie si la touche est déjà assignée à une autre action
-        const existingAction = Input.keyMapper[keyCode];
+        const existingAction = mapToCheck[keyCode];
         if (existingAction && existingAction !== actionName) {
             $debugTool.errorKeyConflict(keyName, existingAction, actionName);
             return;
@@ -103,7 +117,7 @@ class InputManager {
 
         // Assigne la nouvelle touche dans le bon sens : [keyCode] = actionName
         Input.keyMapper[keyCode] = actionName;
-        $debugTool.log(`... ... ... ✨ Assigned action '${actionName}' to key code ${keyCode} ('${keyName}').`);
+        $debugTool.log(`... ... ... ✨ Assigned action '${actionName}' to key code ${keyCode} ('${normalizedKeyName}').`, true);
     }
 
     /**

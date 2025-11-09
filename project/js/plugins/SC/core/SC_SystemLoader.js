@@ -131,4 +131,5 @@ const _Scene_Boot_create = Scene_Boot.prototype.create;
 Scene_Boot.prototype.create = function() {
     $simcraftLoader.surchargeStaticClasses(); // On surcharge AVANT l'appel original
     _Scene_Boot_create.call(this, ...arguments);
+    $debugTool.closeAllGroups(); // On ferme tous les groupes ouverts à la fin du boot.
 };

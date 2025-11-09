@@ -15,8 +15,8 @@
  * @plugindesc !SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
- * @base SC_SystemLoader
- * @orderAfter SC_SystemLoader
+ * @base SC_TouchInputConfig
+ * @orderAfter SC_TouchInputConfig
  *
  * @help
  * TouchInputManager.js
@@ -39,6 +39,8 @@
 const _TouchInput_initialize = TouchInput.initialize;
 const _TouchInput_clear = TouchInput.clear;
 const _TouchInput_onRightButtonDown = TouchInput._onRightButtonDown;
+const _TouchInput_update = TouchInput.update; // Alias manquant pour la méthode update
+const _TouchInput_onMouseUp = TouchInput._onMouseUp; // Alias pour la gestion du relâchement
 const _TouchInput_isCancelled = TouchInput.isCancelled;
 
 class TouchInputManager {
@@ -47,18 +49,46 @@ class TouchInputManager {
      * Initialise le gestionnaire et surcharge les méthodes de TouchInput.
      * Cette méthode est appelée par le SystemLoader lors de la surcharge.
      */
-    initialize() {
-        _TouchInput_initialize.call(TouchInput, ...arguments);
-
-        // On ne peut pas surcharger _onRightButtonDown directement dans la classe
-        // car elle est définie dans le initialize original. On doit donc aliasser
-        // la méthode clear() qui est appelée juste après.
-        this.clear();
+    setupSurcharge() {
+        $debugTool.log("▶️ Initializing SC_TouchInputManager...", true);
+        // Ajoute les nouvelles propriétés directement à l'objet TouchInput
+        TouchInput._rightButtonPressed = false;
+        TouchInput._rightPressedTime = 0;
+        TouchInput._rightTriggered = false;
     }
 
+    /**
+     * [SURCHARGE] Met à jour l'état des entrées tactiles et souris.
+     * Gère le timing pour les boutons personnalisés.
+     */
+    update() {
+        _TouchInput_update.call(TouchInput, ...arguments); // Appel de la méthode update originale de TouchInput
+
+        // Gestion du timing pour le bouton droit
+        if (TouchInput.isRightPressed()) {
+            TouchInput._rightPressedTime++;
+        } else {
+            TouchInput._rightPressedTime = 0;
+        }
+    }
+
+    /**
+     * [SURCHARGE] Réinitialise l'état des entrées tactiles et souris.
+     */
     clear() {
-        _TouchInput_clear.call(TouchInput, ...arguments);
-        this._rightButtonPressed = false;
+        _TouchInput_clear.call(TouchInput, ...arguments); // Appel original
+        // Réinitialise nos propriétés personnalisées sur l'objet TouchInput
+        TouchInput._rightButtonPressed = false;
+        TouchInput._rightPressedTime = 0;
+        TouchInput._rightTriggered = false;
+    }
+
+    /**
+     * [NOUVEAU] Vérifie si le bouton droit de la souris vient d'être pressé.
+     * @returns {boolean}
+     */
+    isRightTriggered() {
+        return TouchInput._rightTriggered;
     }
 
     /**
@@ -66,7 +96,7 @@ class TouchInputManager {
      * @returns {boolean}
      */
     isRightPressed() {
-        return this._rightButtonPressed;
+        return TouchInput._rightButtonPressed;
     }
 
     /**
@@ -75,8 +105,8 @@ class TouchInputManager {
      */
     isRightRepeated() {
         return (
-            this.isRightPressed() &&
-            (this._pressedTime === 0 || (this._pressedTime >= this.keyRepeatWait && this._pressedTime % this.keyRepeatInterval === 0))
+            TouchInput.isRightPressed() && // Vérifie si le bouton est actuellement maintenu
+            (TouchInput._rightPressedTime === TouchInput.keyRepeatWait || (TouchInput._rightPressedTime > TouchInput.keyRepeatWait && TouchInput._rightPressedTime % TouchInput.keyRepeatInterval === 0))
         );
     }
 
@@ -86,21 +116,8 @@ class TouchInputManager {
      * @returns {boolean}
      */
     isHover(rect) {
-        const x = this._x;
-        const y = this._y;
-        return (
-            rect && x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height
-        );
-    }
-
-    /**
-     * [NOUVEAU] Vérifie si le curseur de la souris survole une zone rectangulaire.
-     * @param {Rectangle} rect Le rectangle à vérifier (doit avoir x, y, width, height).
-     * @returns {boolean}
-     */
-    isHover(rect) {
-        const x = this._x;
-        const y = this._y;
+        const x = TouchInput._x;
+        const y = TouchInput._y;
         return (
             rect && x >= rect.x && x < rect.x + rect.width && y >= rect.y && y < rect.y + rect.height
         );
@@ -113,7 +130,7 @@ class TouchInputManager {
      * @returns {boolean}
      */
     isCancelOnRightClick() {
-        return true; // Par défaut, le clic droit annule toujours.
+        return SC.TouchInputConfig.cancelOnRightClick;
     }
 
     /**
@@ -121,19 +138,36 @@ class TouchInputManager {
      * Le clic droit est maintenant une source d'annulation conditionnelle.
      */
     isCancelled() {
-        return _TouchInput_isCancelled.call(TouchInput, ...arguments);
+        const originalResult = _TouchInput_isCancelled.call(TouchInput, ...arguments);
+        // Si l'annulation originale est déjà vraie (ex: 2 doigts sur mobile), on la retourne.
+        if (originalResult) {
+            return true;
+        }
+        // Sinon, on vérifie si un clic droit a été déclenché et si notre condition le permet.
+        if (TouchInput.isRightTriggered() && TouchInput.isCancelOnRightClick()) {
+            return true;
+        }
+        return false;
     }
 }
 
 // --- Application des patchs après l'enregistrement ---
 
-// On ne peut pas surcharger _onRightButtonDown directement dans la classe
-// car elle est définie dans le initialize original. On le fait donc ici.
 TouchInput._onRightButtonDown = function(event) {
+    // On met toujours à jour nos propres états pour que isRightPressed/Triggered fonctionnent
+    this._rightButtonPressed = true;
+    this._rightTriggered = true; // Sera remis à false par TouchInput.update()
+    // On appelle la méthode originale (qui gère l'annulation) uniquement si notre condition est remplie.
     if (this.isCancelOnRightClick()) {
         _TouchInput_onRightButtonDown.call(this, event);
     }
-    this._rightButtonPressed = true;
+};
+
+TouchInput._onMouseUp = function(event) {
+    _TouchInput_onMouseUp.call(this, event);
+    if (event.button === 2) { // Bouton droit
+        this._rightButtonPressed = false;
+    }
 };
 
 // --- Enregistrement du plugin ---
@@ -145,7 +179,7 @@ SC._temp.pluginRegister = {
     icon: "🖱️",
     author: AUTHOR,
     license: LICENCE,
-    dependencies: ["SC_SystemLoader"],
+    dependencies: ["SC_SystemLoader", "SC_TouchInputConfig"],
     createObj: { autoCreate: false, classProto: TouchInputManager }, // Les classes de surcharge n'ont pas besoin d'être auto-créées globalement
     surchargeClass: "TouchInput",
     autoSave: false

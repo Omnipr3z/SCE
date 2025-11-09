@@ -26,27 +26,81 @@
  *
  * @param ok
  * @text Touche OK
- * @desc La touche principale pour l'action 'OK'.
- * @type text
- * @default enter
+ * @desc Liste des touches pour l'action 'OK'.
+ * @type string[]
+ * @default ["ok","enter","space","z"]
  *
  * @param cancel
  * @text Touche Annuler (Escape)
- * @desc La touche principale pour l'action 'escape'.
- * @type text
- * @default escape
+ * @desc Liste des touches pour l'action 'escape'.
+ * @type string[]
+ * @default ["escape","insert","numpad_0","x"]
  *
  * @param shift
  * @text Touche Courir
- * @desc La touche principale pour l'action 'Courir'.
- * @type text
- * @default shift
+ * @desc Liste des touches pour l'action 'Courir'.
+ * @type string[]
+ * @default ["shift"]
  *
  * @param menu
  * @text Touche Menu
- * @desc La touche principale pour l'action 'Menu'.
- * @type text
- * @default x
+ * @desc Liste des touches pour l'action 'Menu' (assignée à 'escape' par RMMZ).
+ * @type string[]
+ * @default ["x"]
+ *
+ * @param pageup
+ * @text Touche Page Haut
+ * @desc Liste des touches pour l'action 'Page Haut'.
+ * @type string[]
+ * @default ["pageup","q"]
+ *
+ * @param pagedown
+ * @text Touche Page Bas
+ * @desc Liste des touches pour l'action 'Page Bas'.
+ * @type string[]
+ * @default ["pagedown","w"]
+ *
+ * @param left
+ * @text Touche Gauche
+ * @desc Liste des touches pour l'action 'Gauche'.
+ * @type string[]
+ * @default ["left","numpad_4"]
+ *
+ * @param up
+ * @text Touche Haut
+ * @desc Liste des touches pour l'action 'Haut'.
+ * @type string[]
+ * @default ["up","numpad_8"]
+ *
+ * @param right
+ * @text Touche Droite
+ * @desc Liste des touches pour l'action 'Droite'.
+ * @type string[]
+ * @default ["right","numpad_6"]
+ *
+ * @param down
+ * @text Touche Bas
+ * @desc Liste des touches pour l'action 'Bas'.
+ * @type string[]
+ * @default ["down","numpad_2"]
+ *
+ * @param tab
+ * @text Touche Tab
+ * @desc Liste des touches pour l'action 'Tab'.
+ * @type string[]
+ * @default ["tab"]
+ *
+ * @param control
+ * @text Touche Control
+ * @desc Liste des touches pour l'action 'Control'.
+ * @type string[]
+ * @default ["control","alt"]
+ *
+ * @param debug
+ * @text Touche Debug
+ * @desc La touche principale pour l'action 'Debug' (ouvrir l'écran de debug).
+ * @type string[]
+ * @default ["f9"]
  *
  * @param defaultKeyMappings
  * @type struct<KeyMapping>[]
@@ -77,27 +131,38 @@ Imported.SC_InputConfig = true;
     const pluginName = "SC_InputConfig";
     const parameters = PluginManager.parameters(pluginName);
 
-    // 1. Charger les touches de base (vanilla)
-    const baseKeys = {
-        ok: parameters['ok'] || 'enter',
-        escape: parameters['cancel'] || 'escape', // L'action RMMZ est 'escape'
-        shift: parameters['shift'] || 'shift',
-        menu: parameters['menu'] || 'x',
-        pageup: 'pageup', // RMMZ default
-        pagedown: 'pagedown', // RMMZ default
-        up: 'up', // RMMZ default
-        down: 'down', // RMMZ default
-        left: 'left', // RMMZ default
-        right: 'right' // RMMZ default
+    // Fonction utilitaire pour parser les paramètres de type string[]
+    const parseStringArray = (param, defaultValue) => {
+        return param ? JSON.parse(param) : defaultValue;
+    };
+
+    // 1. Charger les touches de base en utilisant les paramètres du plugin.
+    // Chaque action est maintenant associée à un tableau de touches.
+    const keyMappings = {
+        ok: parseStringArray(parameters['ok'], ['enter', 'space', 'z']),
+        escape: parseStringArray(parameters['cancel'], ['escape', 'insert', 'numpad_0', 'x']),
+        shift: parseStringArray(parameters['shift'], ['shift']),
+        pageup: parseStringArray(parameters['pageup'], ['pageup', 'q']),
+        pagedown: parseStringArray(parameters['pagedown'], ['pagedown', 'w']),
+        up: parseStringArray(parameters['up'], ['up', 'numpad_8']),
+        down: parseStringArray(parameters['down'], ['down', 'numpad_2']),
+        left: parseStringArray(parameters['left'], ['left', 'numpad_4']),
+        right: parseStringArray(parameters['right'], ['right', 'numpad_6']),
+        tab: parseStringArray(parameters['tab'], ['tab']),
+        control: parseStringArray(parameters['control'], ['control', 'alt']),
+        debug: parseStringArray(parameters['debug'], ['f9'])
     };
 
     // 2. Charger les touches personnalisées
     const customKeys = JSON.parse(parameters.defaultKeyMappings || "[]").map(mapping => JSON.parse(mapping));
 
     // 3. Exposer la configuration combinée
-    $.keyMappings = { ...baseKeys };
+    $.keyMappings = keyMappings;
     customKeys.forEach(mapping => {
-        $.keyMappings[mapping.inputCode] = mapping.keyName;
+        if (!$.keyMappings[mapping.inputCode]) {
+            $.keyMappings[mapping.inputCode] = [];
+        }
+        $.keyMappings[mapping.inputCode].push(mapping.keyName);
     });
 
 })(SC.InputConfig = SC.InputConfig || {});
