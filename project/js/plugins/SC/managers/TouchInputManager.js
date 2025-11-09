@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.
+ * @plugindesc !SC [v1.0.2] Gestionnaire d'entrées tactiles et souris étendu.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_TouchInputConfig
@@ -30,6 +30,7 @@
  *   - Détection du survol de la souris sur une zone rectangulaire (`isHover`).
  *
  * ▸ Historique :
+ *   v1.0.2 - 2024-07-31 : Correction de la gestion du contexte 'this' pour une stabilité accrue.
  *   v1.0.1 - 2024-07-29 : Ajout de la détection de survol (isHover) et de l'annulation conditionnelle.
  *   v1.0.0 - 2024-07-29 : Création initiale et ajout de la gestion du clic droit.
  */
@@ -175,7 +176,7 @@ TouchInput._onMouseUp = function(event) {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_TouchInputManager",
-    version: "1.0.1",
+    version: "1.0.2",
     icon: "🖱️",
     author: AUTHOR,
     license: LICENCE,

@@ -1,6 +1,6 @@
 # SimCraft Engine - Gestionnaire d'Entrées Tactiles (TouchInput Manager)
 
-![Version](https://img.shields.io/badge/Version-1.0.1-blue)
+![Version](https://img.shields.io/badge/Version-1.0.2-blue)
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
 
 Le module **Gestionnaire d'Entrées Tactiles** étend les capacités de la classe `TouchInput` de RPG Maker MZ pour offrir un contrôle plus fin et des fonctionnalités modernes, notamment pour les jeux destinés à être joués à la souris.

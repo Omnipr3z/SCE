@@ -140,36 +140,44 @@ Voici une explication de chaque propriété de l'objet `pluginRegister` :
 
     **⚠️ Important : Gérer le contexte `this` lors de la surcharge**
 
-    Lorsque vous surchargez une classe statique, il y a **deux contextes `this`** à gérer, et il est crucial de ne pas les confondre.
+    Lorsque vous surchargez une classe statique (ex: `Input`, `TouchInput`), il est crucial de comprendre comment le `SystemLoader` gère le contexte `this`.
 
-    1.  **Le `this` de votre classe de surcharge** :
-        Grâce au `SystemLoader`, à l'intérieur de toutes les méthodes de votre classe (ex: `DataManager_SC`), `this` fait **toujours** référence à l'instance de votre classe. Cela vous permet d'utiliser ses propriétés (`this._nameToCodeMap`) et ses méthodes (`this.myHelperFunction()`) de manière fiable.
+    1.  **Le `this` dans vos méthodes fait référence à une instance de votre classe de surcharge.**
+        Grâce au `SystemLoader`, à l'intérieur de toutes les méthodes de votre classe (ex: `InputManager`), `this` fait **toujours** référence à l'instance de cette classe. Cela vous permet d'utiliser ses propriétés (`this._nameToCodeMap`) et ses méthodes (`this.myHelperFunction()`) de manière fiable, pour gérer la logique interne de votre manager.
 
-    2.  **Le `this` pour la méthode originale de RMMZ** :
-        Les méthodes originales du moteur (ex: `DataManager.loadDatabase`) s'attendent à ce que leur `this` soit la classe statique elle-même (`DataManager`).
+    2.  **Pour interagir avec la classe statique, appelez-la par son nom.**
+        Si vos méthodes de surcharge ont besoin de lire ou d'écrire des propriétés sur la classe statique de RMMZ elle-même (par exemple, pour interagir avec des patchs ou des méthodes originales), vous devez l'appeler explicitement par son nom.
 
-    **La Règle d'Or :**
-    Quand vous appelez la méthode originale que vous avez sauvegardée, vous devez **impérativement** lui fournir son contexte d'origine en utilisant `.call(NomDeLaClasseOriginale, ...)`.
+    **Exemple Pratique avec `TouchInputManager` :**
 
-    **Exemple Pratique :**
+    Le `TouchInputManager` ajoute des propriétés (`_rightButtonPressed`, etc.) à l'objet `TouchInput` global. Ses méthodes doivent donc lire et écrire sur `TouchInput`, et non sur `this`.
+
     ```javascript
-    // 1. Sauvegarde de la méthode originale
-    const _DataManager_loadDatabase = DataManager.loadDatabase;
-    
-    class DataManager_SC {
-        loadDatabase() {
-            // --- APPEL À LA MÉTHODE ORIGINALE ---
-            // On lui donne `DataManager` comme contexte. C'est OBLIGATOIRE.
-            _DataManager_loadDatabase.call(DataManager, ...arguments);
-    
-            // --- LOGIQUE PERSONNALISÉE ---
-            // Ici, `this` fait référence à l'instance de DataManager_SC.
-            // On peut donc appeler d'autres méthodes de notre classe.
-            this.loadScData();
+    class TouchInputManager {
+        // ...
+        isRightPressed() {
+            // INCORRECT : `this` est l'instance de TouchInputManager, pas TouchInput.
+            // return this._rightButtonPressed; 
+
+            // CORRECT : On lit la propriété directement sur la classe statique.
+            return TouchInput._rightButtonPressed;
         }
-    
-        loadScData() {
-            // ... votre logique ...
+        // ...
+    }
+    ```
+
+    3.  **Pour appeler une méthode originale, utilisez `.call(NomDeLaClasse, ...)`**
+        Les méthodes originales du moteur s'attendent à ce que leur `this` soit la classe statique elle-même. Quand vous appelez une méthode que vous avez sauvegardée, vous devez **impérativement** lui fournir ce contexte.
+
+    ```javascript
+    const _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
+
+    class DataManager_SC {
+        isDatabaseLoaded() {
+            // On appelle la méthode originale en lui passant `DataManager` comme contexte.
+            const baseLoaded = _DataManager_isDatabaseLoaded.call(DataManager, ...arguments);
+            // ... puis on ajoute notre logique.
+            return baseLoaded && this.areScFilesLoaded();
         }
     }
     ```
