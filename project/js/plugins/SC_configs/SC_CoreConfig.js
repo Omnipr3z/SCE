@@ -14,7 +14,7 @@
  * @target MZ
  * @plugindesc !SC [v0.3.0] Configuration du Cœur Moteur de SimCraft
  * @author SimCraft Engine
- * @url https://github.com/Omnipr3z/INRAL
+ * @url https://github.com/Omnipr3z/SCE
  * @help
  * Ce fichier configure les options de base du Cœur Moteur (Engine Core).
  * Il est requis par les autres modules du cœur (Debug_Tools, SystemLoader, DataManager).
@@ -64,7 +64,7 @@ const DEBUG_OPTIONS = {
 // --- Constantes pour le Logging ---
 const AUTHOR = "SimCraft Engine";
 const AUTHOR_NAME = "Community";
-const OFFICIAL_SITE = "https://github.com/Omnipr3z/INRAL";
+const OFFICIAL_SITE = "https://github.com/Omnipr3z/SCE";
 const LICENCE = "CC BY-NC-SA 4.0";
 const ENGINE_NAME = "SimCraft Engine Core";
 const ENGINE_VERSION = "0.3.0";

@@ -14,7 +14,7 @@
  * @target MZ
  * @plugindesc !SC [v0.4.1] Gestionnaire de données étendu de SimCraft Engine
  * @author By '0mnipr3z' ©2024-2025 licensed under CC BY-NC-SA 4.0
- * @url https://github.com/Omnipr3z/INRAL
+ * @url https://github.com/Omnipr3z/SCE
  * @help DataManager.js
  * 
  *    ██████╗    █████╗   ████████╗   █████╗  
@@ -244,6 +244,7 @@ class DataManager_SC {
 
 
 // --- Enregistrement du plugin ---
+// Doit être à la fin du fichier pour que la classe DataManager_SC soit définie.
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_DataManagerAddOns",
@@ -253,11 +254,11 @@ SC._temp.pluginRegister = {
     license: LICENCE,
     dependencies: ["SC_SystemLoader"],
     loadDataFiles: [],
-    createObj: { 
-        autoCreate: true,
-        classProto: DataManager_SC 
+    createObj: {
+        autoCreate: false, // Les classes de surcharge n'ont pas besoin d'être auto-créées globalement
+        classProto: DataManager_SC
     },
     surchargeClass: "DataManager",
     autoSave: false
-}
+};
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);

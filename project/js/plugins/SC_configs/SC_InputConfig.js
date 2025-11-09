@@ -31,8 +31,8 @@
  * @default enter
  *
  * @param cancel
- * @text Touche Annuler
- * @desc La touche principale pour l'action 'Annuler'.
+ * @text Touche Annuler (Escape)
+ * @desc La touche principale pour l'action 'escape'.
  * @type text
  * @default escape
  *
@@ -80,7 +80,7 @@ Imported.SC_InputConfig = true;
     // 1. Charger les touches de base (vanilla)
     const baseKeys = {
         ok: parameters['ok'] || 'enter',
-        cancel: parameters['cancel'] || 'escape',
+        escape: parameters['cancel'] || 'escape', // L'action RMMZ est 'escape'
         shift: parameters['shift'] || 'shift',
         menu: parameters['menu'] || 'x',
         pageup: 'pageup', // RMMZ default

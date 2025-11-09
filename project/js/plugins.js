@@ -10,9 +10,10 @@ var $plugins =
 {"name":"SC/core/SC_SystemLoader","status":true,"description":"!SC [v0.3.0] Chargeur de système, dépendances et instances.","parameters":{}},
 {"name":"SC/core/InputExtension","status":true,"description":"!SC [v1.0.0] Extension du mapping de clavier de RMMZ.","parameters":{}},
 {"name":"======== CONFIGS","status":false,"description":"","parameters":{}},
-{"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"enter","cancel":"escape","shift":"shift","menu":"x","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"\\\\\\\"hello\\\\\\\"\\\",\\\"keyName\\\":\\\"'p'\\\"}\"]"}},
-{"name":"======== CORE_MANAGERS","status":false,"description":"","parameters":{}},
+{"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"enter","cancel":"escape","shift":"shift","menu":"x","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"hello\\\",\\\"keyName\\\":\\\"P\\\"}\"]"}},
+{"name":"======== MANAGERS (SURCHARGED)","status":false,"description":"","parameters":{}},
 {"name":"SC/managers/DataManager","status":true,"description":"!SC [v0.4.0] Gestionnaire de données étendu de SimCraft Engine","parameters":{}},
 {"name":"SC/managers/InputManager","status":true,"description":"!SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.","parameters":{}},
-{"name":"SC/managers/TouchInputManager","status":true,"description":"!SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.","parameters":{}}
+{"name":"SC/managers/TouchInputManager","status":true,"description":"!SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.","parameters":{}},
+{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}}
 ];

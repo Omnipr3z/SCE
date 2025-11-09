@@ -336,6 +336,27 @@ class DebugTool{
             
         }
     }
+
+    /**
+     * Logs an error for a key assignment conflict.
+     * @param {string} keyName The name of the key causing the conflict.
+     * @param {string} existingAction The action already assigned to the key.
+     * @param {string} newAction The new action that failed to be assigned.
+     */
+    errorKeyConflict(keyName, existingAction, newAction) {
+        const txt = `\u{1F6AB} KEY CONFLICT: Cannot assign key '${keyName}' to action '${newAction}'. It is already assigned to action '${existingAction}'.`;
+        this.error(txt);
+    }
+
+    /**
+     * Logs a warning for an unknown key name.
+     * @param {string} keyName The unknown key name.
+     * @param {string} actionName The action it was supposed to be assigned to.
+     */
+    warnUnknowKey(keyName, actionName) {
+        const txt = `\u{26A0} UNKNOWN KEY: The key '${keyName}' for action '${actionName}' is not recognized. Please check SC/core/InputExtension.js for available key names.`;
+        this.warn(txt);
+    }
 }
 
 const $debugTool = new DebugTool();

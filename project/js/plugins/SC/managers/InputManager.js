@@ -14,7 +14,7 @@
  * @target MZ
  * @plugindesc !SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
- * @url https://github.com/Omnipr3z/INRAL
+ * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
  * @orderAfter SC_InputConfig
  *
@@ -42,17 +42,18 @@ class InputManager {
      * Initialise le gestionnaire d'entrées avec les mappages par défaut.
      * Cette méthode est appelée par le SystemLoader.
      */
-    initialize() { // Cette méthode sera appelée dans le contexte de l'objet Input
-        _Input_initialize.call(Input, ...arguments);
+    setupSurcharge() {
+        $debugTool.log("▶️ Initializing SC_InputManager...");
 
-        this.keyMapper = {}; // Remplace Input.keyMapper
         this._nameToCodeMap = {}; // Map pour optimiser la recherche nom -> code
-        this._codeToActionMap = {}; // Map pour optimiser la recherche code -> action
         this._reservedActions = new Set(); // Pour les actions non modifiables par le joueur
         this._editableActions = new Set(); // Pour les actions modifiables par le joueur
         
         this.buildNameToCodeMap();
         this.loadDefaultKeyMappings();
+
+        $debugTool.log("✅ SC_InputManager initialized. Final Input.keyMapper state:");
+        console.log(Input.keyMapper);
     }
 
     /**
@@ -63,6 +64,7 @@ class InputManager {
             const name = Input.keyboardMapper[code];
             this._nameToCodeMap[name] = parseInt(code);
         }
+        $debugTool.log("... 🗺️ _nameToCodeMap built.");
     }
 
     /**
@@ -70,8 +72,8 @@ class InputManager {
      */
     loadDefaultKeyMappings() {
         const mappings = SC.InputConfig.keyMappings;
+        $debugTool.log("... ⚙️ Loading default key mappings...");
         for (const actionName in mappings) {
-            $debugTool.logKeyMapping(actionName, mappings[actionName]);
             const keyName = mappings[actionName];
             this.assignKey(actionName, keyName);
         }
@@ -84,6 +86,7 @@ class InputManager {
      * @param {string} keyName Le nom de la touche.
      */
     assignKey(actionName, keyName) {
+        $debugTool.log(`... ... Assigning '${keyName}' to action '${actionName}'`);
         const keyCode = this._nameToCodeMap[keyName];
 
         if (keyCode === undefined) {
@@ -92,22 +95,15 @@ class InputManager {
         }
 
         // Vérifie si la touche est déjà assignée à une autre action
-        const existingAction = this._codeToActionMap[keyCode];
+        const existingAction = Input.keyMapper[keyCode];
         if (existingAction && existingAction !== actionName) {
             $debugTool.errorKeyConflict(keyName, existingAction, actionName);
             return;
         }
 
-        // Supprime l'ancienne assignation de l'action si elle existait
-        const oldKeyCode = this.keyMapper[actionName];
-        if (oldKeyCode) {
-            delete this._codeToActionMap[oldKeyCode];
-        }
-
-        // Assigne la nouvelle touche
-        this.keyMapper[actionName] = keyCode;
-        this._codeToActionMap[keyCode] = actionName;
-        $debugTool.logKeyAssigned(keyName, keyCode, actionName);
+        // Assigne la nouvelle touche dans le bon sens : [keyCode] = actionName
+        Input.keyMapper[keyCode] = actionName;
+        $debugTool.log(`... ... ... ✨ Assigned action '${actionName}' to key code ${keyCode} ('${keyName}').`);
     }
 
     /**
@@ -116,7 +112,7 @@ class InputManager {
      * @returns {string|null} Le nom de l'action ou null si non trouvé.
      */
     getActionFromKeyCode(keyCode) {
-        return this._codeToActionMap[keyCode] || null;
+        return Input.keyMapper[keyCode] || null;
     }
 
     /**
@@ -167,7 +163,8 @@ class InputManager {
 
 
 
-// Enregistrement du plugin auprès du SystemLoader
+// --- Enregistrement du plugin ---
+// Doit être à la fin du fichier pour que la classe InputManager soit définie.
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_InputManager",
@@ -176,9 +173,9 @@ SC._temp.pluginRegister = {
     author: AUTHOR,
     license: LICENCE,
     dependencies: ["SC_SystemLoader", "SC_InputConfig"],
-    createObj: { 
-        autoCreate: true,
-        classProto: InputManager 
+    createObj: {
+        autoCreate: false, // Les classes de surcharge n'ont pas besoin d'être auto-créées globalement
+        classProto: InputManager
     },
     surchargeClass: "Input",
     autoSave: false // La configuration des touches sera gérée par un système de config joueur plus tard

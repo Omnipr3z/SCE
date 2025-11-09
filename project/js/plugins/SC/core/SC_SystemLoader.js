@@ -73,9 +73,7 @@ class System_Loader {
         for (const pluginKey in this._pluginsList) {
             const plugin = this._pluginsList[pluginKey];
             if (plugin.surchargeClass && plugin.createObj && plugin.createObj.classProto) {
-                const methodsToSurcharge = new plugin.createObj.classProto();
-                this._extendStaticClass(methodsToSurcharge, plugin.surchargeClass);
-                $debugTool.log(`🔌 ${plugin.icon} ${plugin.name.toUpperCase()} → Surchargé sur ${plugin.surchargeClass}`);
+                this._extendStaticClass(plugin.createObj.classProto, plugin.surchargeClass, plugin);
             }
         }
         $debugTool.groupEnd();
@@ -93,24 +91,33 @@ class System_Loader {
         $debugTool.groupEnd();
     }
 
-    _extendStaticClass(surchargeObject, originalClassName) {
-        const originalStaticClass = window[originalClassName];
+    _extendStaticClass(surchargeClassProto, className, plugin) {
+        const originalStaticClass = window[className];
         if (!originalStaticClass) {
-            $debugTool.error(`Cannot surcharge: Original static class "${originalClassName}" not found.`);
+            $debugTool.error(`Cannot surcharge: Original static class "${className}" not found.`);
             return;
         }
 
-        // Parcourir les méthodes de notre classe de surcharge (DataManager_SC, etc.)
-        for (const methodName of Object.getOwnPropertyNames(surchargeObject.constructor.prototype)) {
-            if (methodName === 'constructor') continue;
+        const instance = new surchargeClassProto();
+        this._surchargedInstances = this._surchargedInstances || {};
+        this._surchargedInstances[className] = instance;
 
-            // Sauvegarder la méthode originale (alias)
-            const originalMethod = originalStaticClass[methodName];
-
-            // Remplacer la méthode sur la classe statique originale
-            originalStaticClass[methodName] = function() {
-                return surchargeObject[methodName].apply(surchargeObject, arguments);
+        // Greffer les méthodes de la classe de surcharge sur la classe statique originale.
+        // On utilise .bind(instance) pour s'assurer que le 'this' à l'intérieur
+        // des méthodes de surcharge fait toujours référence à l'instance qui contient
+        // les propriétés (_nameToCodeMap, etc.), et non à la classe statique (Input, DataManager...).
+        for (const methodName of Object.getOwnPropertyNames(surchargeClassProto.prototype)) {
+            if (methodName !== 'constructor') {
+                const method = surchargeClassProto.prototype[methodName];
+                originalStaticClass[methodName] = method.bind(instance);
             }
+        }
+        $debugTool.log(`🔌 ${plugin.icon} ${plugin.name.toUpperCase()} → Surchargé sur ${plugin.surchargeClass}`);
+
+        // Si la classe de surcharge a une méthode setupSurcharge, on l'appelle maintenant.
+        // C'est le point d'entrée pour la logique d'initialisation qui doit se faire après la surcharge.
+        if (typeof instance.setupSurcharge === "function") {
+            instance.setupSurcharge();
         }
     }
 }

@@ -14,7 +14,7 @@
  * @target MZ
  * @plugindesc !SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
- * @url https://github.com/Omnipr3z/INRAL
+ * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
  * @orderAfter SC_SystemLoader
  *
@@ -125,21 +125,6 @@ class TouchInputManager {
     }
 }
 
-// --- Enregistrement du plugin auprès du SystemLoader ---
-SC._temp = SC._temp || {};
-SC._temp.pluginRegister = {
-    name: "SC_TouchInputManager",
-    version: "1.0.1",
-    icon: "🖱️",
-    author: AUTHOR,
-    license: LICENCE,
-    dependencies: ["SC_SystemLoader"],
-    createObj: { autoCreate: true, classProto: TouchInputManager },
-    surchargeClass: "TouchInput",
-    autoSave: false
-};
-$simcraftLoader.checkPlugin(SC._temp.pluginRegister);
-
 // --- Application des patchs après l'enregistrement ---
 
 // On ne peut pas surcharger _onRightButtonDown directement dans la classe
@@ -150,3 +135,19 @@ TouchInput._onRightButtonDown = function(event) {
     }
     this._rightButtonPressed = true;
 };
+
+// --- Enregistrement du plugin ---
+// Doit être à la fin du fichier (avant les patchs) pour que la classe TouchInputManager soit définie.
+SC._temp = SC._temp || {};
+SC._temp.pluginRegister = {
+    name: "SC_TouchInputManager",
+    version: "1.0.1",
+    icon: "🖱️",
+    author: AUTHOR,
+    license: LICENCE,
+    dependencies: ["SC_SystemLoader"],
+    createObj: { autoCreate: false, classProto: TouchInputManager }, // Les classes de surcharge n'ont pas besoin d'être auto-créées globalement
+    surchargeClass: "TouchInput",
+    autoSave: false
+};
+$simcraftLoader.checkPlugin(SC._temp.pluginRegister);

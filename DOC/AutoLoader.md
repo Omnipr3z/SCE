@@ -140,43 +140,39 @@ Voici une explication de chaque propriété de l'objet `pluginRegister` :
 
     **⚠️ Important : Gérer le contexte `this` lors de la surcharge**
 
-    Lorsque vous surchargez une classe statique, il y a une subtilité cruciale à comprendre concernant le mot-clé `this`.
+    Lorsque vous surchargez une classe statique, il y a **deux contextes `this`** à gérer, et il est crucial de ne pas les confondre.
 
-    *   À l'intérieur des méthodes de votre classe de surcharge (ex: `DataManager_SC`), `this` fait référence à **l'instance de votre classe de surcharge**, et non à la classe statique de base (ex: `DataManager`).
-    *   Ceci est intentionnel et vous permet d'avoir des propriétés et des méthodes propres à votre module (ex: `this.myCustomData`, `this.myHelperFunction()`).
+    1.  **Le `this` de votre classe de surcharge** :
+        Grâce au `SystemLoader`, à l'intérieur de toutes les méthodes de votre classe (ex: `DataManager_SC`), `this` fait **toujours** référence à l'instance de votre classe. Cela vous permet d'utiliser ses propriétés (`this._nameToCodeMap`) et ses méthodes (`this.myHelperFunction()`) de manière fiable.
 
-    Cependant, lorsque vous devez appeler la méthode *originale* que vous avez surchargée, il est **impératif** de lui redonner son contexte d'origine.
+    2.  **Le `this` pour la méthode originale de RMMZ** :
+        Les méthodes originales du moteur (ex: `DataManager.loadDatabase`) s'attendent à ce que leur `this` soit la classe statique elle-même (`DataManager`).
 
-    **Comment faire :**
+    **La Règle d'Or :**
+    Quand vous appelez la méthode originale que vous avez sauvegardée, vous devez **impérativement** lui fournir son contexte d'origine en utilisant `.call(NomDeLaClasseOriginale, ...)`.
 
-    1.  **Sauvegardez la méthode originale** au début de votre fichier :
-        ```javascript
-        const _DataManager_loadDatabase = DataManager.loadDatabase;
-        ```
-
-    2.  **Définissez votre classe de surcharge** sans constructeur. Le `SystemLoader` s'en occupe.
-
-    3.  Dans votre méthode de surcharge, utilisez `.call(NomDeLaClasseOriginale, ...arguments)` pour appeler la fonction de base :
-
-        ```javascript
-        class DataManager_SC {
-            loadDatabase() {
-                // Mauvaise pratique : `this` est l'instance de DataManager_SC,
-                // ce qui causera une erreur dans la méthode originale.
-                // _DataManager_loadDatabase.call(this, ...arguments);
-
-                // Bonne pratique : On passe explicitement la classe originale comme contexte.
-                _DataManager_loadDatabase.call(DataManager, ...arguments);
-
-                // Ici, vous pouvez ajouter votre propre logique.
-                this.loadMyCustomData();
-            }
-
-            loadMyCustomData() {
-                // ... votre code ...
-            }
+    **Exemple Pratique :**
+    ```javascript
+    // 1. Sauvegarde de la méthode originale
+    const _DataManager_loadDatabase = DataManager.loadDatabase;
+    
+    class DataManager_SC {
+        loadDatabase() {
+            // --- APPEL À LA MÉTHODE ORIGINALE ---
+            // On lui donne `DataManager` comme contexte. C'est OBLIGATOIRE.
+            _DataManager_loadDatabase.call(DataManager, ...arguments);
+    
+            // --- LOGIQUE PERSONNALISÉE ---
+            // Ici, `this` fait référence à l'instance de DataManager_SC.
+            // On peut donc appeler d'autres méthodes de notre classe.
+            this.loadScData();
         }
-        ```
+    
+        loadScData() {
+            // ... votre logique ...
+        }
+    }
+    ```
 
     ```javascript
     // Dans le cas de notre DataManager.js
