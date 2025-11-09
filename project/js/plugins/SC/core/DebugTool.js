@@ -39,6 +39,10 @@
  *   - Le fichier Config.js pour DEBUG_OPTIONS
  *   - Utilisation recommandée en ENV: DEV
  * 
+ * ▸ TODO :
+ *   - Refactoriser les méthodes de log spécifiques à InputManager (errorKeyConflict, warnUnknowKey)
+ *     dans un fichier de patch dédié (ex: DebugTool_InputPatch.js) pour améliorer la modularité.
+ * 
  * ▸ Historique :
  *   v1.0.1 - Ajout des commentaires de méthodes
  *   v1.0.0 - Version initiale de l’outil debug
