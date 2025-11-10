@@ -1,7 +1,11 @@
 # SimCraft Engine (SCE)
+![Simcraft Engine](https://img.shields.io/badge/Engine-Simcraft-blue)  
+![Version](https://img.shields.io/badge/Version-0.2.1-orange)  
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+[![Licence CC BY-NC-SA  4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)]
 
-[![Licence CC BY-NC-SA  4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 Ce projet est sous licence **Creative Commons Attribution - Non Commercial - Share Alike 4.0 International (CC BY-NC-SA 4.0)**.
+
 Voir le texte complet ici : [https://creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ### **Restrictions Supplémentaires**
@@ -20,11 +24,7 @@ En plus des termes de la licence CC BY-NC-SA 4.0, l’utilisation de ce code est
      - Le nom **"Sim Craft Engine"** dans les crédits.
      - Un lien vers le dépôt officiel : [https://github.com/Omnipr3z/SCE](https://github.com/Omnipr3z/SCE).
 
-![Simcraft Engine](https://img.shields.io/badge/Engine-Simcraft-blue)  
-![Version](https://img.shields.io/badge/Version-0.2.1-orange)  
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
-
-Cependant, certains scripts mentionnés ci-dessous sont dérivés du **code source de RPG Maker MZ**.
+Aussi, certains scripts mentionnés ci-dessous sont dérivés du **code source de RPG Maker MZ**.
 Ces parties restent soumises à la **licence propriétaire de Gotcha Gotcha Games / Degica**.
 
 Par conséquent, **l'utilisation de ces scripts nécessite que vous possédiez une copie légale de RPG Maker MZ**.
