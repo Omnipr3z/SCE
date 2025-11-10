@@ -9,6 +9,8 @@ var $plugins =
 {"name":"SC/core/DebugTool","status":true,"description":"!SC [v1.0.1] Outil de debug console de SimCraft Engine","parameters":{}},
 {"name":"SC/core/SC_SystemLoader","status":true,"description":"!SC [v0.3.0] Chargeur de système, dépendances et instances.","parameters":{}},
 {"name":"SC/core/InputExtension","status":true,"description":"!SC [v1.0.0] Extension du mapping de clavier de RMMZ.","parameters":{}},
+{"name":"======== CORE","status":false,"description":"","parameters":{}},
+{"name":"SC/composants/Bitmap_Composite","status":true,"description":"!SC [v1.0.0] Composant pour la création de bitmaps composites (Paper-doll).","parameters":{}},
 {"name":"======== CONFIGS","status":false,"description":"","parameters":{}},
 {"name":"SC_configs/varConfig","status":true,"description":"!SC [v1.0.0] Configuration des variables et interrupteurs du jeu.","parameters":{}},
 {"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"[\"enter\",\"space\",\"z\"]","cancel":"[\"escape\",\"insert\",\"numpad_0\",\"x\"]","shift":"[\"shift\"]","menu":"[\"x\"]","pageup":"[\"pageup\",\"q\"]","pagedown":"[\"pagedown\",\"w\"]","left":"[\"left\",\"numpad_4\"]","up":"[\"up\",\"numpad_8\"]","right":"[\"right\",\"numpad_6\"]","down":"[\"down\",\"numpad_2\"]","tab":"[\"tab\"]","control":"[\"control\",\"alt\"]","debug":"[\"f9\"]","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"jump\\\",\\\"keyName\\\":\\\"P\\\"}\"]"}},
@@ -19,7 +21,13 @@ var $plugins =
 {"name":"SC/managers/InputManager","status":true,"description":"!SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.","parameters":{}},
 {"name":"SC/managers/TouchInputManager","status":true,"description":"!SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.","parameters":{}},
 {"name":"SC/managers/GraphicsManager","status":true,"description":"!SC [v1.0.0] Gestionnaire des options graphiques.","parameters":{}},
-{"name":"SC/composants/Game_DateFormatter","status":true,"description":"!SC [v1.0.0] Formatteur de date pour Game_Date.","parameters":{}},
-{"name":"SC/composants/Game_Date","status":true,"description":"!SC [v1.0.0] Gestion du temps, calendrier et datation (Game_Date)","parameters":{}},
-{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}}
+{"name":"SC/managers/CharacterVisualManager","status":true,"description":"!SC [v1.0.0] Gestionnaire visuel des personnages (Paper-doll).","parameters":{}},
+{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
+{"name":"SC/composants/Game_DateFormatter","status":false,"description":"!SC [v1.0.0] Formatteur de date pour Game_Date.","parameters":{}},
+{"name":"SC/composants/Game_Date","status":false,"description":"!SC [v1.0.0] Gestion du temps, calendrier et datation (Game_Date)","parameters":{}},
+{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
+{"name":"SC/sprites/Sprite_VisualCharacter","status":true,"description":"!SC [v1.0.0] Sprite pour les personnages visuels (paper-doll).","parameters":{}},
+{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
+{"name":"SC/patches/Spriteset_Map_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour Spriteset_Map pour instancier les sprites visuels.","parameters":{}},
+{"name":"SC/patches/Game_Actor_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour la gestion des sprites visuels sur Game_Actor.","parameters":{}}
 ];

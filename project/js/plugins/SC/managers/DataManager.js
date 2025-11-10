@@ -147,10 +147,22 @@ class DataManager_SC {
 
     // Surcharge de isDatabaseLoaded
     isDatabaseLoaded() {
+        // On appelle d'abord la méthode originale. Si elle retourne false, on s'arrête là.
         const baseLoaded = _DataManager_isDatabaseLoaded.call(DataManager, ...arguments); // Appel de la méthode originale
         if (!baseLoaded) return false;
 
-        // Vérification que nos propres fichiers sont chargés
+        
+        // Si la base est chargée, on vérifie nos fichiers SC.
+        // On utilise un drapeau pour ne pas refaire cette vérification à chaque frame.
+        if (!this._scDatabaseLoaded) {
+            this._checkScDatabase();
+        }
+
+        return this._scDatabaseLoaded;
+    }
+
+    // Nouvelle méthode pour vérifier le chargement de nos fichiers de données
+    _checkScDatabase() {
         let scFilesLoaded = true;
         for (const pluginKey in $simcraftLoader._pluginsList) {
             const plugin = $simcraftLoader._pluginsList[pluginKey];
@@ -162,12 +174,17 @@ class DataManager_SC {
                 });
             }
         };
-        
-        return baseLoaded && scFilesLoaded;
+        this._scDatabaseLoaded = scFilesLoaded;
     }
 
     // Surcharge de createGameObjects
     createGameObjects() {
+        // --- POINT CRUCIAL ---
+        // On s'assure que les métadonnées de toutes les données de base sont extraites
+        // AVANT de créer les objets de jeu ($gameActors, etc.) qui en dépendent.
+        // C'est la solution définitive au problème de "meta is undefined".
+        
+
         _DataManager_createGameObjects.call(DataManager, ...arguments); // Appel de la méthode originale
         $simcraftLoader.createScGameObjects(); // On délègue la création des objets SC
     }
