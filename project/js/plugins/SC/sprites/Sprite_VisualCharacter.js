@@ -1,8 +1,8 @@
 /**
  * ╔════════════════════════════════════════╗
  * ║                                        ║
- * ║        ███████╗ ██████╗ ███████╗        ║
- * ║        ██╔════╝██╔════╝ ██╔════╝        ║
+ * ║        ███████╗ ██████╗███████╗        ║
+ * ║        ██╔════╝██╔════╝██╔════╝        ║
  * ║        ███████╗██║     █████╗          ║
  * ║        ╚════██║██║     ██╔══╝          ║
  * ║        ███████║╚██████╗███████╗        ║
@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.1.1] Sprite pour les personnages visuels (paper-doll).
+ * @plugindesc !SC [v1.2.7] Sprite pour les personnages visuels (paper-doll).
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -35,6 +35,14 @@
  *   - SC_CharacterVisualManager.js
  *
  * ▸ Historique :
+ *   v1.2.7 - 2024-08-03 : Ajout de la gestion de l'échelle et de l'opacité de l'ombre pendant le saut.
+ *   v1.2.6 - 2024-08-03 : Ajout d'un paramètre de configuration pour le décalage Y de l'ombre.
+ *   v1.2.5 - 2024-08-03 : Ajout de la logique pour que l'ombre reste au sol pendant un saut.
+ *   v1.2.4 - 2024-08-03 : Correction de la dépendance de l'ombre (elle ne connaît plus son parent).
+ *   v1.2.3 - 2024-08-03 : Ajout de la gestion d'une ombre externe pour une superposition correcte.
+ *   v1.2.2 - 2024-08-03 : Découplage du système d'ombre dans un patch dédié pour une meilleure modularité.
+ *   v1.2.1 - 2024-08-03 : Ajout d'une condition de configuration pour activer/désactiver l'ombre dynamique.
+ *   v1.2.0 - 2024-08-03 : Ajout d'un sprite d'ombre découplé pour une gestion dynamique.
  *   v1.1.1 - 2024-08-03 : Utilisation de la configuration (VisualConfig) pour le calcul des blocs de personnages.
  *   v1.1.0 - 2024-08-03 : Stabilisation du module, validation du rafraîchissement et de la gestion de l'index.
  *   v1.0.1 - 2024-08-03 : Remplacement du notetag par la configuration centralisée via varConfig.js pour l'index visuel.
@@ -42,7 +50,17 @@
  */
 
 class Sprite_VisualCharacter extends Sprite_Character {
-    
+    initialize(character) {
+        super.initialize(character);
+        this._shadowSprite = null;
+    }
+
+    update() {
+        super.update();
+        if (this._shadowSprite) {
+            this.updateShadow();
+        }
+    }
     updateBitmap() {
         if (this.isImageChanged()) {
             this._characterName = this._character.characterName(); // Pour référence
@@ -143,6 +161,36 @@ class Sprite_VisualCharacter extends Sprite_Character {
         return false;
     }
 
+    /**
+     * [NOUVEAU] Assigne un sprite d'ombre à ce personnage.
+     * @param {Sprite_CharacterShadow} shadowSprite Le sprite de l'ombre.
+     */
+    setShadow(shadowSprite) {
+        this._shadowSprite = shadowSprite;
+    }
+
+    /**
+     * [NOUVEAU] Met à jour la position et l'apparence de l'ombre.
+     */
+    updateShadow() {
+        this._shadowSprite.x = this.x;
+        const jumpHeight = this._character.jumpHeight();
+        // On compense la hauteur du saut pour que l'ombre reste au sol.
+        this._shadowSprite.y = this.y + jumpHeight + SC.ShadowConfig.yOffset;
+        this._shadowSprite.visible = this.visible;
+
+        if (jumpHeight > 0) {
+            const scale = 1.0 - (jumpHeight * SC.ShadowConfig.jumpScaleRate);
+            this._shadowSprite.scale.x = Math.max(scale, 0.1); // Ne pas laisser l'ombre disparaître complètement
+            this._shadowSprite.scale.y = Math.max(scale, 0.1);
+            this._shadowSprite.opacity = 255 - (jumpHeight * SC.ShadowConfig.jumpOpacityRate);
+        } else {
+            this._shadowSprite.scale.x = 1.0;
+            this._shadowSprite.scale.y = 1.0;
+            this._shadowSprite.opacity = 255;
+        }
+    }
+
     characterBlockX() {
         const index = this.getCharacterIndex();
         return (index % SC.VisualConfig.numColumns) * 3;
@@ -190,7 +238,7 @@ SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_Sprite_VisualCharacter",
     icon: "🧍",
-    version: "1.1.1",
+    version: "1.2.7",
     author: AUTHOR,
     license: LICENCE,
     dependencies: ["SC_SystemLoader", "SC_CharacterVisualManager"],

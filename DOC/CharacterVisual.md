@@ -96,3 +96,11 @@ Le `CharacterVisualManager` assemble le sprite final dans cet ordre :
 3.  Enfin, il dessine toutes les couches `<visualLayer>` par-dessus, en respectant leur `z-index`.
 
 Cela crée un effet de "sandwich" qui permet de gérer correctement tous les types d'équipements.
+
+---
+
+## ➤ Modules Complémentaires
+
+Le système visuel peut être étendu avec des modules additionnels pour des effets plus avancés :
+
+*   **Système d'Ombres Dynamiques** : Ajoute une ombre découplée et réaliste qui reste au sol pendant les sauts.

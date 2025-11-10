@@ -61,6 +61,12 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
   - [Conseils de Développement](DOC/conseils.md)
   - [JsExtender](DOC/JsExtender.md)
   - [Engine Core & Autoloader](DOC/AutoLoader.md)
+- **Systèmes de Personnage**
+  - [Système Visuel (Paper-Doll)](DOC/CharacterVisual.md)
+  - [Animations Dynamiques](DOC/CharacterAnim.md)
+  - [Système de Poses](DOC/CharacterPose.md)
+- **Effets Visuels**
+  - [Système d'Ombres Dynamiques](DOC/CharacterShadow.md)
 - **Managers**
   - [Input Manager](DOC/InputEx.md)
   - [TouchInput Manager](DOC/TouchInputEx.md)

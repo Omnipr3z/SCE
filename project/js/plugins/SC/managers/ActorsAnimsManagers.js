@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.1] Gestionnaire global des animations de personnages.
+ * @plugindesc !SC [v1.1.0] Gestionnaire global des animations de personnages.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -75,7 +75,7 @@ class ActorsAnimsManagers {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_ActorsAnimsManagers",
-    version: "1.0.1",
+    version: "1.1.0",
     icon: "🎬",
     author: AUTHOR,
     license: LICENCE,

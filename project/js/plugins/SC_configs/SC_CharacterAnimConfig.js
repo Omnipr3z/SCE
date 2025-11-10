@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.3] Configuration pour le système d'animations dynamiques.
+ * @plugindesc !SC [v1.1.0] Configuration pour le système d'animations dynamiques.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -70,7 +70,7 @@ SC.CharacterAnimConfig = SC.CharacterAnimConfig || {};
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_CharacterAnimConfig",
-    version: "1.0.3",
+    version: "1.1.0",
     icon: "🏃",
     author: AUTHOR,
     license: LICENCE,

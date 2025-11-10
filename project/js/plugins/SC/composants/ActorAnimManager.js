@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.7] Composant de gestion d'animation pour un personnage.
+ * @plugindesc !SC [v1.1.0] Composant de gestion d'animation pour un personnage.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -159,7 +159,7 @@ class ActorAnimManager {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_ActorAnimManager",
-    version: "1.0.7",
+    version: "1.1.0",
     icon: "🏃‍♂️",
     author: AUTHOR,
     license: LICENCE,

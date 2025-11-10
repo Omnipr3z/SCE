@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Patch pour Spriteset_Map pour instancier les sprites visuels.
+ * @plugindesc !SC [v1.2.0] Patch pour Spriteset_Map pour instancier les sprites visuels.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -39,6 +39,8 @@
  *   - SC_Game_Actor_VisualPatch.js
  *
  * ▸ Historique :
+ *   v1.2.0 - 2024-08-03 : Externalisation de la logique de création pour permettre la surcharge par d'autres patchs.
+ *   v1.1.0 - 2024-08-03 : Modifié pour créer et lier les ombres dynamiques aux personnages visuels.
  *   v1.0.0 - 2024-08-02 : Création initiale du patch "factory".
  */
 
@@ -53,14 +55,38 @@ Spriteset_Map.prototype.createCharacters = function() {
     }
     for (const follower of $gamePlayer.followers().visibleFollowers().reverse()) {
         // --- Logique de l'usine ---
-        const SpriteClass = follower.actor() && follower.actor().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
-        this._characterSprites.push(new SpriteClass(follower));
+        this.createFollowerSprite(follower);
     }
-    // --- Logique de l'usine pour le joueur ---
-    const PlayerSpriteClass = $gameParty.leader() && $gameParty.leader().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
-    this._characterSprites.push(new PlayerSpriteClass($gamePlayer));
+    this.createPlayerSprite();
 
     for (const sprite of this._characterSprites) {
         this._tilemap.addChild(sprite);
     }
 };
+
+ /**
+ * --- Logique de l'usine pour le joueur ---
+ */   
+Spriteset_Map.prototype.createFollowerSprite = function(follower) {
+    const SpriteClass = follower.actor() && follower.actor().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
+    this._characterSprites.push(new SpriteClass(follower));
+}
+/**
+ * --- Logique de l'usine pour le joueur ---
+ */
+Spriteset_Map.prototype.createPlayerSprite = function() {
+    const PlayerSpriteClass = $gameParty.leader() && $gameParty.leader().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
+    this._characterSprites.push(new PlayerSpriteClass($gamePlayer));
+}
+// --- Enregistrement du plugin ---
+SC._temp = SC._temp || {};
+SC._temp.pluginRegister = {
+    name: "SC_Spriteset_Map_VisualPatch",
+    version: "1.2.0",
+    icon: "🏭",
+    author: AUTHOR,
+    license: LICENCE,
+    dependencies: ["SC_SystemLoader", "SC_Sprite_VisualCharacter", "SC_Game_Actor_VisualPatch"],
+    createObj: { autoCreate: false }
+};
+$simcraftLoader.checkPlugin(SC._temp.pluginRegister);
