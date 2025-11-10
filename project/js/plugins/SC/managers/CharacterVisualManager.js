@@ -112,9 +112,11 @@ class CharacterVisualManager {
 
         composer.loadLayers();
 
-        // On crée un bitmap de destination. La taille sera déterminée par la première couche.
-        // Pour l'instant, on utilise une taille standard.
-        const destinationBitmap = new Bitmap(144, 192); // 48*3, 48*4
+        // On crée un bitmap de destination. La taille est fixe pour l'instant.
+        // C'est moins flexible mais plus stable.
+        const bitmapWidth = SC.VisualConfig.bitmapSize.width;
+        const bitmapHeight = SC.VisualConfig.bitmapSize.height;
+        const destinationBitmap = new Bitmap(bitmapWidth, bitmapHeight);
 
         this._cache.set(cacheKey, {
             bitmap: destinationBitmap,

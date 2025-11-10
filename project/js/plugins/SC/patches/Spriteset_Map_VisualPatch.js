@@ -57,7 +57,7 @@ Spriteset_Map.prototype.createCharacters = function() {
         this._characterSprites.push(new SpriteClass(follower));
     }
     // --- Logique de l'usine pour le joueur ---
-    const PlayerSpriteClass = $gamePlayer.actor() && $gamePlayer.actor().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
+    const PlayerSpriteClass = $gameParty.leader() && $gameParty.leader().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
     this._characterSprites.push(new PlayerSpriteClass($gamePlayer));
 
     for (const sprite of this._characterSprites) {

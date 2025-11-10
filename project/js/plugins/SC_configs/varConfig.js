@@ -53,6 +53,12 @@ const TIME_TIMEZONE_VAR = 17;
 // --- TIME SYSTEM SWITCHES ---
 const TIME_NIGHT_SW = 1;
 
+const ACTOR_VISUAL_INDEX_VAR = {
+    1:18,
+    2:19,
+    3:20,
+    4:21
+};
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {

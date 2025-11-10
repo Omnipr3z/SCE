@@ -1,8 +1,8 @@
 /**
  * ╔════════════════════════════════════════╗
  * ║                                        ║
- * ║        ███████╗ ██████╗███████╗        ║
- * ║        ██╔════╝██╔════╝██╔════╝        ║
+ * ║        ███████╗ ██████╗ ███████╗        ║
+ * ║        ██╔════╝██╔════╝ ██╔════╝        ║
  * ║        ███████╗██║     █████╗          ║
  * ║        ╚════██║██║     ██╔══╝          ║
  * ║        ███████║╚██████╗███████╗        ║
@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Sprite pour les personnages visuels (paper-doll).
+ * @plugindesc !SC [v1.0.1] Sprite pour les personnages visuels (paper-doll).
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -35,6 +35,7 @@
  *   - SC_CharacterVisualManager.js
  *
  * ▸ Historique :
+ *   v1.0.1 - 2024-08-03 : Remplacement du notetag par la configuration centralisée via varConfig.js pour l'index visuel.
  *   v1.0.0 - 2024-08-02 : Création initiale et intégration avec CharacterVisualManager.
  */
 
@@ -43,8 +44,41 @@ class Sprite_VisualCharacter extends Sprite_Character {
     updateBitmap() {
         if (this.isImageChanged()) {
             this._characterName = this._character.characterName(); // Pour référence
-            this._characterIndex = this._character.characterIndex();
+            this._characterIndex = this.getCharacterIndex();
             this.setVisualBitmap();
+            // [CORRECTION] Force la réinitialisation de la frame.
+            // Sans cela, même si l'index change, le sprite continue d'afficher l'ancienne frame.
+            // Mettre _frame.width à 0 force updateFrame() à tout recalculer.
+            this._frame.width = 0;
+        }
+    }
+
+    /**
+     * [SURCHARGE] Vérifie si l'image du personnage a changé.
+     * Utilise notre méthode centralisée `getCharacterIndex` pour la comparaison.
+     * @returns {boolean}
+     */
+    isImageChanged() {
+        const newIndex = this.getCharacterIndex();
+        const nameChanged = this._characterName !== this._character.characterName();
+        const indexChanged = this._characterIndex !== newIndex;
+        return nameChanged || indexChanged;
+    }
+    /**
+     * [SURCHARGE] Empêche le remplacement du bitmap par une tuile (ex: buissons).
+     *
+     * Contrairement à la méthode de base, nous ne remplaçons PAS le bitmap par une tuile.
+     * Nous conservons notre bitmap composite pour afficher les équipements.
+     * Cependant, nous mettons à jour `_characterName` et `_characterIndex` pour que
+     * `isImageChanged()` détecte correctement le changement d'état (entrée/sortie de buisson)
+     * et rafraîchisse le sprite si nécessaire.
+     */
+    setTileBitmap() {
+        // Si le personnage est sur une tuile spéciale (comme un buisson)
+        if (this._character.tileId() > 0) {
+            // Nous ne remplaçons PAS le bitmap par une tuile.
+            this._characterName = "";    // Réinitialise le nom du personnage
+            this._characterIndex = -1;   // Réinitialise l'index du personnage
         }
     }
 
@@ -74,8 +108,6 @@ class Sprite_VisualCharacter extends Sprite_Character {
                 // Le chargement est terminé, on peut dessiner !
                 composer.bltComposite(this.bitmap);
                 cacheEntry.isReady = true; // On marque comme prêt pour ne pas le refaire.
-
-                $debugTool.log(`Sprite_VisualCharacter: Composite ready for actor ${actor.actorId()}.`); // Ce log est toujours utile.
             }
         }
         super.updateFrame();
@@ -87,7 +119,7 @@ class Sprite_VisualCharacter extends Sprite_Character {
      * @returns {number}
      */
     patternWidth() {
-        return this.bitmap ? this.bitmap.width / 3 : 0;
+        return SC.VisualConfig.frameSize.width;
     }
 
     /**
@@ -96,9 +128,46 @@ class Sprite_VisualCharacter extends Sprite_Character {
      * @returns {number}
      */
     patternHeight() {
-        return this.bitmap ? this.bitmap.height / 4 : 0;
+        return SC.VisualConfig.frameSize.height;
     }
 
+    /**
+     * [SURCHARGE] Force le sprite à ne pas être considéré comme un "big character".
+     * Cela garantit que `_characterIndex` est utilisé pour sélectionner le personnage
+     * sur le spritesheet, même si le nom du fichier de base contient "!$".
+     * @returns {boolean}
+     */
+    isBigCharacter() {
+        return false;
+    }
+
+    characterBlockX() {
+        const index = this.getCharacterIndex();
+        return (index % 4) * 3;
+    };
+
+    characterBlockY() {
+        const index = this.getCharacterIndex();
+        return Math.floor(index / 4) * 4;
+    };
+
+    /**
+     * [NOUVEAU] Récupère l'index du personnage de manière centralisée.
+     * @returns {number} L'index du personnage à utiliser.
+     */
+    getCharacterIndex() {
+        const actor = this.getActor();
+        if (actor) {
+            const visualIndexVarId = ACTOR_VISUAL_INDEX_VAR[actor.actorId()];
+            if (visualIndexVarId) {
+                const indexFromVar = $gameVariables.value(Number(visualIndexVarId));
+                if (typeof indexFromVar === 'number' && indexFromVar >= 0) {
+                    return indexFromVar;
+                }
+            }
+        }
+        return this._character.characterIndex(); 
+    }
     /**
      * Récupère l'objet Game_Actor associé à ce sprite, que le personnage
      * soit le joueur principal ou un follower.
@@ -119,7 +188,7 @@ SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_Sprite_VisualCharacter",
     icon: "🧍",
-    version: "1.0.0",
+    version: "1.0.1",
     author: AUTHOR,
     license: LICENCE,
     dependencies: ["SC_SystemLoader", "SC_CharacterVisualManager"],

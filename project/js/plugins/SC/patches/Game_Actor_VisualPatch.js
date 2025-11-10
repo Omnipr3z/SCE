@@ -32,17 +32,55 @@
  *   v1.0.0 - 2024-08-02 : Création initiale du patch.
  */
 
-Game_Actor.prototype.isVisual = function() {
+// Sauvegarde de la méthode originale
+const _Game_Actor_initMembers = Game_Actor.prototype.initMembers;
+Game_Actor.prototype.initMembers = function() {
+    _Game_Actor_initMembers.call(this);
+    this._visualIndex = null; // Notre nouvel index dynamique
+};
 
+Game_Actor.prototype.isVisual = function() {
     const actorData = this.actor();
-    
+    if(!actorData.meta)
         DataManager.extractMetadata(actorData);
     // Vérifie si les données de l'acteur existent et si le notetag est présent.
     return !!(actorData && actorData.meta.visual);
 };
-Game_Player.prototype.actor = function() {
-    return $gameParty.leader();
-}
+
+/**
+ * [NOUVEAU] Définit un index de sprite visuel dynamique pour cet acteur.
+ * @param {number | null} index Le nouvel index (de 0 à 7), ou null pour revenir à la valeur par défaut.
+ */
+Game_Actor.prototype.setVisualIndex = function(index) {
+    this._visualIndex = index;
+};
+
+// Sauvegarde de la méthode originale
+const _Game_Actor_characterIndex = Game_Actor.prototype.characterIndex;
+Game_Actor.prototype.characterIndex = function() {
+    // Si un index visuel dynamique est défini, on le retourne en priorité.
+    if (this._visualIndex !== null && this._visualIndex >= 0) {
+        return this._visualIndex;
+    }
+    return 1
+    // Sinon, on retourne le comportement par défaut.
+    //return _Game_Actor_characterIndex.call(this);
+};
+
+// Game_CharacterBase.prototype.setImage = function(
+//     characterName,
+//     characterIndex
+// ) {
+//         this._tileId = 0;
+//         this._characterName = characterName;
+//        this._visualIndex = this._visualIndex || 0; 
+//     if (this._visualIndex !== null && this._visualIndex >= 0) {
+//         this._characterIndex = this._visualIndex;
+//     }else{
+//         this._characterIndex = characterIndex;
+//     }
+//     this._isObjectCharacter = ImageManager.isObjectCharacter(characterName);
+// };
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {

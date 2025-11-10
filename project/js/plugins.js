@@ -16,6 +16,8 @@ var $plugins =
 {"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"[\"enter\",\"space\",\"z\"]","cancel":"[\"escape\",\"insert\",\"numpad_0\",\"x\"]","shift":"[\"shift\"]","menu":"[\"x\"]","pageup":"[\"pageup\",\"q\"]","pagedown":"[\"pagedown\",\"w\"]","left":"[\"left\",\"numpad_4\"]","up":"[\"up\",\"numpad_8\"]","right":"[\"right\",\"numpad_6\"]","down":"[\"down\",\"numpad_2\"]","tab":"[\"tab\"]","control":"[\"control\",\"alt\"]","debug":"[\"f9\"]","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"jump\\\",\\\"keyName\\\":\\\"P\\\"}\"]"}},
 {"name":"SC_configs/SC_TouchInputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées tactiles pour SimCraft Engine.","parameters":{"cancelOnRightClick":"false"}},
 {"name":"SC_configs/SC_GraphicsConfig","status":true,"description":"!SC [v1.0.0] Configuration des options graphiques pour SimCraft Engine.","parameters":{"defaultMode":"Windowed","defaultResolution":"1280x720","availableResolutions":"[\"816x624\",\"1280x720\",\"1920x1080\"]"}},
+{"name":"SC_configs/SC_VisualConfig","status":true,"description":"!SC [v1.0.0] Configuration pour le système visuel des personnages.","parameters":{"frameWidth":"48","frameHeight":"48","numColumns":"4","numLines":"2"}},
+{"name":"======== CORE_MANAGERS","status":false,"description":"","parameters":{}},
 {"name":"======== CORE_MANAGERS","status":false,"description":"","parameters":{}},
 {"name":"SC/managers/DataManager","status":true,"description":"!SC [v0.4.0] Gestionnaire de données étendu de SimCraft Engine","parameters":{}},
 {"name":"SC/managers/InputManager","status":true,"description":"!SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.","parameters":{}},
@@ -28,6 +30,6 @@ var $plugins =
 {"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
 {"name":"SC/sprites/Sprite_VisualCharacter","status":true,"description":"!SC [v1.0.0] Sprite pour les personnages visuels (paper-doll).","parameters":{}},
 {"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
-{"name":"SC/patches/Spriteset_Map_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour Spriteset_Map pour instancier les sprites visuels.","parameters":{}},
-{"name":"SC/patches/Game_Actor_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour la gestion des sprites visuels sur Game_Actor.","parameters":{}}
+{"name":"SC/patches/Game_Actor_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour la gestion des sprites visuels sur Game_Actor.","parameters":{}},
+{"name":"SC/patches/Spriteset_Map_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour Spriteset_Map pour instancier les sprites visuels.","parameters":{}}
 ];
