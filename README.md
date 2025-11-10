@@ -2,6 +2,9 @@
 ![Simcraft Engine](https://img.shields.io/badge/Engine-Simcraft-blue)  
 ![Version](https://img.shields.io/badge/Version-0.2.1-orange)  
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
+# Licence
+
 ![Licence CC BY-NC-SA  4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)
 
 Ce projet est sous licence **Creative Commons Attribution - Non Commercial - Share Alike 4.0 International (CC BY-NC-SA 4.0)**.
