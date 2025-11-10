@@ -1,0 +1,32 @@
+{
+    "start_timestamp": 0,
+    "minutes_per_hour": 60,
+    "hours_per_day": 24,
+    "days_per_month": 31,
+    "months_per_year": 12,
+    "tick_per_min": [0, 60, 30, 10, 1],
+    "days_of_decade": [
+        "Primus", "Secondus", "Tertius", "Quartus", "Quintus",
+        "Sextus", "Septimus", "Octavus", "Nonus", "Decimus"
+    ],
+    "months_of_year": [
+        "Januarius", "Februarius", "Martius", "Aprilis", "Maius", "Junius",
+        "Julius", "Augustus", "September", "October", "November", "December"
+    ],
+    "seasons_global": [
+        "Hiver", "Printemps", "Été", "Automne"
+    ],
+    "seasons_local": [
+        "Hiver", "Printemps", "Été", "Automne"
+    ],
+    "fr_FR": {
+        "dayParts": ["Nuit", "Aube", "Matin", "Midi", "Après-midi", "Soir", "Crépuscule", "Nuit"],
+        "wordingTemplate": "%1, le %2%4 jour de la %3%4 décade de %5, an %6 - %7h%8",
+        "wordingShortTemplate": "%1 %2%4 %3 %5"
+    },
+    "en_EN": {
+        "dayParts": ["Night", "Dawn", "Morning", "Noon", "Afternoon", "Evening", "Dusk", "Night"],
+        "wordingTemplate": "%1, the %2%4 day of the %3%4 decade of %5, year %6 - %7:%8",
+        "wordingShortTemplate": "%3 %2%4, %1, %5"
+    }
+}

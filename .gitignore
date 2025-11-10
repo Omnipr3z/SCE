@@ -30,7 +30,6 @@ project/js/plugins/========*.js
 # --- Fichiers de développement et système ---
 project/game.rmmzproject
 project/index.html
-project/package.json
 
 # Dépendances Node.js
 node_modules/

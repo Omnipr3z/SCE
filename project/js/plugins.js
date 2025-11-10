@@ -10,14 +10,16 @@ var $plugins =
 {"name":"SC/core/SC_SystemLoader","status":true,"description":"!SC [v0.3.0] Chargeur de système, dépendances et instances.","parameters":{}},
 {"name":"SC/core/InputExtension","status":true,"description":"!SC [v1.0.0] Extension du mapping de clavier de RMMZ.","parameters":{}},
 {"name":"======== CONFIGS","status":false,"description":"","parameters":{}},
+{"name":"SC_configs/varConfig","status":true,"description":"!SC [v1.0.0] Configuration des variables et interrupteurs du jeu.","parameters":{}},
 {"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"[\"enter\",\"space\",\"z\"]","cancel":"[\"escape\",\"insert\",\"numpad_0\",\"x\"]","shift":"[\"shift\"]","menu":"[\"x\"]","pageup":"[\"pageup\",\"q\"]","pagedown":"[\"pagedown\",\"w\"]","left":"[\"left\",\"numpad_4\"]","up":"[\"up\",\"numpad_8\"]","right":"[\"right\",\"numpad_6\"]","down":"[\"down\",\"numpad_2\"]","tab":"[\"tab\"]","control":"[\"control\",\"alt\"]","debug":"[\"f9\"]","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"jump\\\",\\\"keyName\\\":\\\"P\\\"}\"]"}},
 {"name":"SC_configs/SC_TouchInputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées tactiles pour SimCraft Engine.","parameters":{"cancelOnRightClick":"false"}},
-{"name":"SC_configs/SC_GraphicsConfig","status":true,"description":"!SC [v1.0.0] Configuration des options graphiques pour SimCraft Engine.","parameters":{"defaultMode":"Fullscreen","defaultResolution":"1280x720","availableResolutions":"[\"816x624\",\"1280x720\",\"1920x1080\"]"}},
+{"name":"SC_configs/SC_GraphicsConfig","status":true,"description":"!SC [v1.0.0] Configuration des options graphiques pour SimCraft Engine.","parameters":{"defaultMode":"Windowed","defaultResolution":"1280x720","availableResolutions":"[\"816x624\",\"1280x720\",\"1920x1080\"]"}},
 {"name":"======== CORE_MANAGERS","status":false,"description":"","parameters":{}},
 {"name":"SC/managers/DataManager","status":true,"description":"!SC [v0.4.0] Gestionnaire de données étendu de SimCraft Engine","parameters":{}},
 {"name":"SC/managers/InputManager","status":true,"description":"!SC [v1.0.0] Gestionnaire d'entrées dynamique pour SimCraft Engine.","parameters":{}},
 {"name":"SC/managers/TouchInputManager","status":true,"description":"!SC [v1.0.1] Gestionnaire d'entrées tactiles et souris étendu.","parameters":{}},
 {"name":"SC/managers/GraphicsManager","status":true,"description":"!SC [v1.0.0] Gestionnaire des options graphiques.","parameters":{}},
-{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
-{"name":"SC/patches/SceneManager_GraphicsPatch","status":false,"description":"!SC [v1.0.0] Patch pour initialiser les graphismes avec la config SC.","parameters":{}}
+{"name":"SC/composants/Game_DateFormatter","status":true,"description":"!SC [v1.0.0] Formatteur de date pour Game_Date.","parameters":{}},
+{"name":"SC/composants/Game_Date","status":true,"description":"!SC [v1.0.0] Gestion du temps, calendrier et datation (Game_Date)","parameters":{}},
+{"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}}
 ];

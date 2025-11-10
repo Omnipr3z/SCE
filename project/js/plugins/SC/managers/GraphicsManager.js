@@ -10,18 +10,6 @@
  * ║     S I M C R A F T   E N G I N E      ║
  * ║________________________________________║
  */
-/**
- * ╔════════════════════════════════════════╗
- * ║                                        ║
- * ║        ███████╗ ██████╗███████╗        ║
- * ║        ██╔════╝██╔════╝██╔════╝        ║
- * ║        ███████╗██║     █████╗          ║
- * ║        ╚════██║██║     ██╔══╝          ║
- * ║        ███████║╚██████╗███████╗        ║
- * ║        ╚══════╝ ╚═════╝╚══════╝        ║
- * ║     S I M C R A F T   E N G I N E      ║
- * ║________________________________________║
- */
 /*:fr
  * @target MZ
  * @plugindesc !SC [v1.0.1] Gestionnaire des options graphiques.
@@ -50,28 +38,34 @@ class Graphics_SC {
     
         const config = SC.GraphicsConfig;
         if (config.defaultMode === 'Fullscreen') {
-            $debugTool.log(`Mode: Fullscreen. Using screen dimensions: ${screen.width}x${screen.height}`);
+            $debugTool.log(`Mode: Fullscreen. Using screen dimensions: ${screen.width}x${screen.height}`, true);
             width = screen.width;
             height = screen.height;
             
         } else { // Windowed
-            $debugTool.log(`Mode: Windowed. Using configured resolution: ${config.defaultResolution.width}x${config.defaultResolution.height}`);
+            $debugTool.log(`Mode: Windowed. Using configured resolution: ${config.defaultResolution.width}x${config.defaultResolution.height}`, true);
             width = config.defaultResolution.width;
             height = config.defaultResolution.height;
         }
+        // On met à jour les valeurs de $dataSystem pour la cohérence
+        $dataSystem.advanced.screenWidth = width;
+        $dataSystem.advanced.screenHeight = height;
+        // On met à jour les propriétés de Graphics
         Graphics._width = width;
         Graphics._height = height;
         Graphics._app.renderer.resize(width, height);
         Graphics._updateAllElements();
         
-        
-        //dede
-        
     };
 };
 
-// Neutralise la tentative de RMMZ de réajuster la fenêtre au démarrage.
+const _Scene_Boot_adjustWindow = Scene_Boot.prototype.adjustWindow;
 Scene_Boot.prototype.adjustWindow = function() {
+    const config = SC.GraphicsConfig;
+    if (config.defaultMode !== 'Fullscreen') {
+        _Scene_Boot_adjustWindow.call(this, ...arguments);
+    }
+    // Si le mode par défaut est 'Fullscreen', on ne fait rien pour éviter d'annuler le plein écran.
 };
 
 // --- Enregistrement du plugin ---

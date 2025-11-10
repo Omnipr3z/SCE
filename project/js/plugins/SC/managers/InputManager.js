@@ -52,8 +52,8 @@ class InputManager {
         this.buildNameToCodeMap();
         this.loadDefaultKeyMappings();
 
-        $debugTool.log("✅ SC_InputManager initialized. Final Input.keyMapper state:");
-        $debugTool.log(Input.keyMapper);
+        $debugTool.log("✅ SC_InputManager initialized. Final Input.keyMapper state:", true);
+        $debugTool.log(Input.keyMapper, true);
     }
 
     /**

@@ -1,9 +1,24 @@
-# INRAL - Simcraft
-## Licence
-
-Ce projet est sous licence [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+# SimCraft Engine (SCE)
 
 [![Licence CC BY-NC-SA  4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+Ce projet est sous licence **Creative Commons Attribution - Non Commercial - Share Alike 4.0 International (CC BY-NC-SA 4.0)**.
+Voir le texte complet ici : [https://creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+### **Restrictions Supplémentaires**
+En plus des termes de la licence CC BY-NC-SA 4.0, l’utilisation de ce code est soumise aux conditions suivantes :
+
+1. **Conservation de l’En-Tête** :
+   - **Tous les fichiers** doivent conserver **intact** l’en-tête original (bannière ASCII, auteur, licence, etc.).
+   - **Interdiction formelle** de supprimer, modifier ou altérer l’en-tête, sous peine de violation de licence.
+
+2. **Obligation d’Afficher le Splash Screen** :
+   - Tout projet utilisant ce code **doit afficher le logo "Sim Craft Engine"** au démarrage du jeu.
+   - Le logo, disponible dans le dossier `/DOC/logo.png`, doit rester visible pendant **au moins 3 secondes**.
+
+3. **Attribution Claire** :
+   - Tout projet dérivé doit **mentionner explicitement** :
+     - Le nom **"Sim Craft Engine"** dans les crédits.
+     - Un lien vers le dépôt officiel : [https://github.com/Omnipr3z/SCE](https://github.com/Omnipr3z/SCE).
 
 ![Simcraft Engine](https://img.shields.io/badge/Engine-Simcraft-blue)  
 ![Version](https://img.shields.io/badge/Version-0.2.1-orange)  
@@ -37,7 +52,13 @@ Je suis en pleine refonte de SimCraft pour le rendre compatible avec MZ, donc pe
 
 Ce projet combine plusieurs standalone. Choisissez la documentation qui vous intéresse :
 
-# CORE ENGINE
-- [JsExtender](DOC/JsExtender.md)
-- [Engine Core & Autoloader](DOC/AutoLoader.md)
-- [Input Manager](DOC/InputEx.md)
+# Documentation
+
+- **Guides & Core**
+  - [Conseils de Développement](DOC/conseils.md)
+  - [JsExtender](DOC/JsExtender.md)
+  - [Engine Core & Autoloader](DOC/AutoLoader.md)
+- **Managers**
+  - [Input Manager](DOC/InputEx.md)
+  - [TouchInput Manager](DOC/TouchInputEx.md)
+  - [Graphics Manager](DOC/GraphicsEx.md)

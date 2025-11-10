@@ -12,6 +12,18 @@ Ce document regroupe les conseils et stratégies de développement pour le SimCr
 
 ## Conventions de Codage et Architecture
 
+-   **Hiérarchie des Dossiers :** Pour maintenir une organisation claire, les fichiers de plugins doivent être placés dans des sous-dossiers spécifiques au sein de `js/plugins/SC/` :
+    -   `core/` : Contient les modules fondamentaux du moteur (SystemLoader, DebugTool, etc.).
+    -   `managers/` : Contient les modules qui gèrent des systèmes de jeu majeurs (InputManager, GraphicsManager, etc.).
+    -   `composants/` : Contient des classes utilitaires ou des "briques de construction" réutilisables (Bitmap_Composite, Game_Date, etc.).
+    -   `patches/` : Contient les petits fichiers qui surchargent des méthodes spécifiques des classes de RMMZ pour corriger ou adapter leur comportement.
+    -   `SC_configs/` (dans `js/plugins/`) : Ce dossier, à la même hauteur que `SC/`, contient tous les fichiers de configuration qui exposent les paramètres de plugin.
+
+-   **Séparation de la Configuration et de la Logique :** Il est fortement recommandé de ne pas lire les paramètres de plugin (`PluginManager.parameters`) directement dans un fichier de logique (comme un `manager` ou un `composant`).
+    -   **La bonne pratique :** Créez un fichier de configuration dédié dans le dossier `js/plugins/SC_configs/`. Ce fichier lira les paramètres du plugin et les exposera dans un objet global (ex: `SC.InputConfig`).
+    -   Le module de logique (ex: `InputManager.js`) lira ensuite cet objet de configuration (`SC.InputConfig`) au lieu d'accéder directement aux paramètres du plugin.
+    -   **Pourquoi ?** Cette séparation rend le code plus propre, plus facile à tester, et permet de centraliser toute la configuration à un seul endroit.
+
 -   **Modularité:** Le SimCraft Engine utilise une architecture modulaire. Chaque module doit être autonome et bien défini.
 -   **Loader (`SC_SystemLoader`):** Le `$simcraftLoader` est le point central de gestion des plugins. Chaque module de plugin doit s'enregistrer via `$simcraftLoader.checkPlugin()` avec un objet de métadonnées.
 -   **Configuration Séparée:** Les configurations spécifiques à un module doivent être définies dans un fichier dédié dans le dossier `plugins/SC_Configs`. Ces fichiers chargeront les paramètres de plugin dans des constantes réutilisables par le module.
@@ -27,38 +39,46 @@ Ce document regroupe les conseils et stratégies de développement pour le SimCr
 -   **En-têtes de Plugin:** Chaque fichier de plugin doit avoir un en-tête standardisé incluant le nom, la version, l'auteur, la description et un historique des modifications. La version et l'historique doivent être mis à jour à chaque modification significative.
 -   **Métadonnées de Plugin:** L'objet de métadonnées passé à `$simcraftLoader.checkPlugin()` doit définir les dépendances, les fichiers de données à charger, les objets globaux à créer et le comportement de sauvegarde.
 
-## Stratégie pour l'InputManager
+### Modèle d'En-tête de Plugin
 
-### Objectifs
--   Rendre le `Input.keyMapper` dynamique et configurable par le développeur et le joueur.
--   Permettre l'attribution de fonctions choisies aux touches de contrôle.
--   Gérer les touches par défaut via un fichier de configuration.
--   Anticiper l'intégration d'une scène de configuration des touches pour le joueur.
--   Gérer les conflits d'assignation de touches.
+Voici un modèle à utiliser comme base pour tout nouveau fichier de plugin.
 
-### Architecture
-1.  **Classe `InputManager`:** Une nouvelle classe `InputManager` sera créée pour gérer la logique des entrées. Elle surchargera la classe `Input` de RMMZ via le `SystemLoader`.
-2.  **Fichier de Configuration (`SC_Configs/InputConfig.js`):** Un fichier de configuration dédié sera créé pour définir les mappings de touches par défaut. Ce fichier exposera des constantes (ex: `KEY_CANCEL`, `KEY_OK`, `KEY_LEFT`) qui seront utilisées par l'`InputManager`.
-3.  **`Input.keyboardMapper`:** Sera utilisé pour récupérer le nom des touches.
-
-### Fonctionnalités Clés
-
--   **Configuration par le Développeur:**
-    -   Les valeurs des touches par défaut seront définies dans les paramètres de plugin via des commentaires.
-    -   Le développeur pourra entrer des paires `inputCode -> keyname` pour configurer les touches.
-    -   L'`InputManager` lira ces configurations et mettra à jour son `keyMapper` interne.
--   **Gestion des Conflits:**
-    -   Lors du chargement des paramètres de plugin, si une touche est déjà assignée et qu'une nouvelle assignation est tentée, une erreur critique sera affichée (via le DebugTool pour l'instant).
-    -   À terme, le module de gestion des touches en jeu devra gérer des logiques de remplacement plus complexes, incluant des touches éditables et réservées.
--   **Méthodes "API" pour l'avenir:**
-    -   Prévoir des méthodes pour permettre la modification des mappings de touches en cours de jeu (pour la future scène de configuration).
-    -   Des méthodes pour vérifier si une touche est "éditable" ou "réservée".
-
-### Étapes d'Implémentation
-
-1.  Création du fichier `InputManager.js` dans `plugins/SC/`.
-2.  Création du fichier `InputConfig.js` dans `plugins/SC_Configs/`.
-3.  Implémentation de la logique de chargement des configurations de touches par défaut depuis les paramètres de plugin.
-4.  Implémentation de la logique de détection et de gestion des conflits d'assignation de touches.
-5.  Intégration avec le `SystemLoader` pour surcharger la classe `Input`.
-6.  Mise à jour de l'en-tête du plugin `InputManager.js` avec la version et l'historique.
+```javascript
+/**
+ * ╔════════════════════════════════════════╗
+ * ║                                        ║
+ * ║        (Votre ASCII Art ici)           ║
+ * ║     S I M C R A F T   E N G I N E      ║
+ * ║________________________________________║
+ */
+/*:fr
+ * @target MZ
+ * @plugindesc !SC [vX.X.X] Nom de votre module.
+ * @author By 'VotreNom' ©2024 licensed under CC BY-NC-SA 4.0
+ * @url https://github.com/Omnipr3z/SCE
+ * @base SC_NomDuPluginDeBase // Optionnel : Le plugin dont celui-ci dépend directement.
+ * @orderAfter SC_NomDuPluginDeBase // Optionnel : Assure que ce plugin est chargé après sa base.
+ *
+ * @help
+ * NomDuFichier.js
+ * 
+ * Description claire et concise de ce que fait le module.
+ * 
+ * ▸ Fonctions principales :
+ *   - Liste des fonctionnalités clés.
+ *   - ...
+ * 
+ * ▸ Nécessite :
+ *   - SC_SystemLoader.js
+ *   - AutreDependance.js
+ *
+ * ▸ Historique :
+ *   v1.0.0 - AAAA-MM-JJ : Description de la version.
+ *
+ * @param nomDuParametre // Section pour les paramètres du plugin.
+ * @text Nom du Paramètre dans l'éditeur
+ * @desc Description du paramètre.
+ * @type string // ou boolean, number, file, etc.
+ * @default valeurParDefaut
+ */
+```
