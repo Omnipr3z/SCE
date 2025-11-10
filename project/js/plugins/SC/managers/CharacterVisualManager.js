@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Gestionnaire visuel des personnages (Paper-doll).
+ * @plugindesc !SC [v1.1.0] Gestionnaire visuel des personnages (Paper-doll).
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -40,6 +40,7 @@
  *   - SC_Bitmap_Composite.js
  *
  * ▸ Historique :
+ *   v1.1.0 - 2024-08-03 : Ajout de la gestion des couches arrière (visualBackLayer) pour un "paper-doll" complet.
  *   v1.0.0 - 2024-08-02 : Création initiale du manager et de sa structure de cache.
  */
 
@@ -93,19 +94,36 @@ class CharacterVisualManager {
 
         const composer = new Bitmap_Composite();
         
-        // 1. Ajoute la couche de base de l'acteur
-        const baseSprite = actor.characterName();
-        if (baseSprite) {
-            composer.addLayer(baseSprite, 0);
-        }
+        // Regex pour les couches visuelles
+        const frontLayerRegex = /<visualLayer:\s*(\S+)\s+(\d+)>/;
+        const backLayerRegex = /<visualBackLayer:\s*(\S+)\s+(\d+)>/;
 
-        // 2. Ajoute les couches des équipements
-        const visualLayerRegex = /<visualLayer:\s*(\S+)\s+(\d+)>/;
+        // --- Phase 1: Couches Arrière ---
+        let backLayerCount = 0;
         for (const item of actor.equips()) {
             if (item && item.note) {
-                const match = item.note.match(visualLayerRegex);
+                const match = item.note.match(backLayerRegex);
                 if (match) {
                     composer.addLayer(match[1], parseInt(match[2]));
+                    backLayerCount++;
+                }
+            }
+        }
+
+        // --- Phase 2: Couche de Base ---
+        const baseSprite = actor.characterName();
+        if (baseSprite) {
+            // Le z-index de la base est le nombre de couches arrière, la plaçant juste au-dessus.
+            composer.addLayer(baseSprite, backLayerCount);
+        }
+
+        // --- Phase 3: Couches Avant ---
+        for (const item of actor.equips()) {
+            if (item && item.note) {
+                const match = item.note.match(frontLayerRegex);
+                if (match) {
+                    // On ajuste le z-index pour qu'il soit au-dessus de la base et des couches arrière.
+                    composer.addLayer(match[1], parseInt(match[2]) + backLayerCount + 1);
                 }
             }
         }
@@ -147,7 +165,7 @@ class CharacterVisualManager {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_CharacterVisualManager",
-    version: "1.0.0",
+    version: "1.1.0",
     icon: "🧑‍🎨",
     author: AUTHOR,
     license: LICENCE,

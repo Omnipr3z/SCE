@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.1] Sprite pour les personnages visuels (paper-doll).
+ * @plugindesc !SC [v1.1.0] Sprite pour les personnages visuels (paper-doll).
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -35,6 +35,7 @@
  *   - SC_CharacterVisualManager.js
  *
  * ▸ Historique :
+ *   v1.1.0 - 2024-08-03 : Stabilisation du module, validation du rafraîchissement et de la gestion de l'index.
  *   v1.0.1 - 2024-08-03 : Remplacement du notetag par la configuration centralisée via varConfig.js pour l'index visuel.
  *   v1.0.0 - 2024-08-02 : Création initiale et intégration avec CharacterVisualManager.
  */
@@ -188,7 +189,7 @@ SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_Sprite_VisualCharacter",
     icon: "🧍",
-    version: "1.0.1",
+    version: "1.1.0",
     author: AUTHOR,
     license: LICENCE,
     dependencies: ["SC_SystemLoader", "SC_CharacterVisualManager"],
