@@ -29,12 +29,44 @@
  * @desc Si 'true', lance une cinématique avant l'écran-titre au démarrage du jeu.
  * @type boolean
  * @default true
+ * 
+ * 
+ * @param Debug - Force Skip Splash
+ * @text Forcer l'activation de skip sur le splash et les cinematics (Si vous utili)
+ * @type boolean
+ * @default false
+ * @desc Si 'true', le splash screen sera toujours sauté, même si 'Passer l'écran-titre' est désactivé.
+ * Utile pour tester uniquement l'écran-titre.
  *
  * @param splashCinematicName
  * @text Nom de la Cinématique Splash
  * @desc Le nom du fichier de la cinématique à utiliser comme splash screen.
  * @type string
  * @default cinematic
+ *
+ * @param skipDefaultEnabled
+ * @text Activer le "Skip" par défaut
+ * @parent skipDefaultMode
+ * @type boolean
+ * @default true
+ *
+ * @param skipDefaultMode
+ * @text Mode de "Skip" par défaut
+ * @desc Le comportement par défaut pour passer les cinématiques.
+ * @type select
+ * @option Toujours possible
+ * @value always
+ * @option Jamais possible
+ * @value never
+ * @option Si une sauvegarde existe
+ * @value saveExisting
+ * @default saveExisting
+ *
+ * @param skipDefaultBitmap
+ * @text Image du bouton "Skip"
+ * @parent skipDefaultMode
+ * @type file
+ * @dir img/cinematics/Hud/
  *
  * @param cinematicFiles
  *
@@ -53,7 +85,16 @@ SC.CinematicConfig = SC.CinematicConfig || {};
 
     SC.CinematicConfig.useSplash = params.useSplash === 'true';
     SC.CinematicConfig.splashCinematicName = params.splashCinematicName.trim() || 'cinematic';
+    DEBUG_OPTIONS.forceSkipSplash =  params["Debug - Force Skip Splash"] === "true";
 
+    SC.CinematicConfig.skipDefaultMode = {
+        enabled: params.skipDefaultEnabled === 'true',
+        mode: params.skipDefaultMode || "saveExisting",
+        buttonBitmap: params.skipDefaultBitmap || "Skip",
+        buttonX: 750, // Valeurs par défaut codées en dur pour l'instant
+        buttonY: 550
+    };
+    
     const files = JSON.parse(params.cinematicFiles || "[]");
 
     // C'est la responsabilité de la config de préparer la structure pour le loader.

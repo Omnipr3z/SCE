@@ -64,6 +64,7 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
 - **Systèmes de Personnage**
   - [Système Visuel (Paper-Doll)](DOC/CharacterVisual.md)
   - [Animations Dynamiques](DOC/CharacterAnim.md)
+  - [Système d'Actions](DOC/CharacterAction.md)
   - [Système de Poses](DOC/CharacterPose.md)
 - **Effets Visuels**
   - [Système d'Ombres Dynamiques](DOC/CharacterShadow.md)
@@ -71,3 +72,5 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
   - [Input Manager](DOC/InputEx.md)
   - [TouchInput Manager](DOC/TouchInputEx.md)
   - [Graphics Manager](DOC/GraphicsEx.md)
+- **Scènes**
+  - [Scène de Cinématiques](DOC/Scene_Cinematic.md)

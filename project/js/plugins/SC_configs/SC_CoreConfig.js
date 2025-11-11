@@ -42,6 +42,14 @@
  * @default false
  * @desc Active un mode debug plus verbeux ou intrusif (mémoire, traçages, etc).
  *
+ * @param Debug - Skip Title
+ * @text Passer l'écran-titre
+ * @type boolean
+ * @default false
+ * @desc Si 'true', le jeu démarre directement sur la carte, en sautant le splash screen et l'écran-titre.
+ * Utile pour accélérer les tests.
+ *
+ *
  */
 
 // Initialisation de l'objet global SimCraft
@@ -58,7 +66,8 @@ const scCoreConfigRawParams = PluginManager.parameters(scCoreConfigPluginName);
 const DEBUG_OPTIONS = {
     env: scCoreConfigRawParams["Debug - Environment Mode"] || "DEV",
     debug: scCoreConfigRawParams["Debug - Enable Debug"] === "true",
-    deep: scCoreConfigRawParams["Debug - Deep Debug"] === "true"
+    deep: scCoreConfigRawParams["Debug - Deep Debug"] === "true",
+    skipTitle: scCoreConfigRawParams["Debug - Skip Title"] === "true"
 };
 
 // --- Constantes pour le Logging ---
@@ -79,4 +88,6 @@ const LOG_HEADER =
  ║  ███████║  ╚██████╗  ███████╗  ║          ENV:        ⚙️ "${DEBUG_OPTIONS.env}"  
  ║  ╚══════╝   ╚═════╝  ╚══════╝  ║          Debug:      ${DEBUG_OPTIONS.debug ? "✔️ On " : "❌ Off"}    
  ║ S I M C R A F T   E N G I N E  ║          Deep Log:   ${DEBUG_OPTIONS.deep ? "✔️ On " : "❌ Off"}    
+ ║                                ║          Skip Title: ${DEBUG_OPTIONS.skipTitle ? "✔️ On " : "❌ Off"}    
+ ║                                ║          Skip Splash: ${DEBUG_OPTIONS.forceSkipSplash ? "✔️ On " : "❌ Off"}    
  ║________________________________║`;

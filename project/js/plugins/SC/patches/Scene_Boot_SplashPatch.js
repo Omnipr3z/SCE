@@ -33,13 +33,17 @@ Scene_Boot.prototype.startNormalGame = function() {
         this.checkPlayerLocation();
         DataManager.setupNewGame();
         $debugTool.log("========= EXECTUTION ========");
-        if (SC.CinematicConfig.useSplash){
+        if (SC.CinematicConfig.useSplash && !DEBUG_OPTIONS.skipTitle && !DEBUG_OPTIONS.forceSkipSplash){
             SC._temp.requestedCinematic = SC.CinematicConfig.splashCinematicName;
             SceneManager.goto(Scene_Cinematic);
-        }else{
+        }else if(!DEBUG_OPTIONS.skipTitle){
             SceneManager.goto(Scene_Title);
+        }else{
+            this._commandWindow = {};
+            this._commandWindow.close = ()=>{};
+            Scene_Title.prototype.commandNewGame.call(this)
         }
-}
+    }
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {

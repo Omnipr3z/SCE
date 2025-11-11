@@ -76,8 +76,6 @@ class Scene_Cinematic extends Scene_Base {
         this._tickBgOpacity = 0;
         this.needToPressOk = false;
         this._cinematicName = "global";
-
-        this.isSkipEnable = DataManager.isAnySavefileExists();
     }
 
     /**
@@ -85,14 +83,24 @@ class Scene_Cinematic extends Scene_Base {
      * @param {object} sourceData L'objet de données de la cinématique (ex: $dataPrologue40k).
      */
     _setupCinematic(sourceData) {
+        const config = SC.CinematicConfig;
         this._cinematicData = sourceData.sequencies;
         this._cinematicName = sourceData.name;
         this._backgrounds = sourceData.backgrounds || [];
         this._endBackgrounds = sourceData.endBackgrounds || [];
         this._endNextScene = sourceData.endNext;
         this._endSequency = this._cinematicData.length - 1;
+        this._gameInfosNeeded = sourceData.gameInfos || false;
+        if(sourceData.skipMode){
+            this._setupSkipMode(sourceData.skipMode);
+        }else{
+            this._setupSkipMode(config.skipDefaultMode);
+        }
+    
     }
-
+    _setupSkipMode(skipData) {
+        this._skipMode = skipData || {};
+    }
     create() {
         super.create();
 
@@ -215,7 +223,8 @@ class Scene_Cinematic extends Scene_Base {
         }
     }
     createTitleGameInfosWindows() {
-        this._gameInfosWindow = new Window_TitleGameInfos();
+        const rect = new Rectangle(0, this.graphicsHeight - 64, this.graphicsWidth, 100);
+        this._gameInfosWindow = new Window_TitleGameInfos(rect, this._gameInfosNeeded);
         this.addChild(this._gameInfosWindow);
     }
     createStoryWindow(){
@@ -424,12 +433,12 @@ class Scene_Cinematic extends Scene_Base {
             }else{
                 this._layers[11].opacity = 20;
             };
-            if(this.isSkipEnable && this._currentSequency >= 1){
+            if(this.isSkipEnable()){
                 this._layers[12].opacity = this._layers[11].opacity;
             };
         }else{
             this._layers[11].opacity=0;
-            if(this.isSkipEnable && this._currentSequency >=1){
+            if(this.isSkipEnable()){
                 if(this._layers[12].opacity <= 100){
                     this._layers[12].opacity += this._layers[12].fadeSpeed;
                 }else{
@@ -529,8 +538,26 @@ class Scene_Cinematic extends Scene_Base {
         this._storyWindow.update();
         this.updateBg();
     }
+    isSkipEnable(){
+        if(DEBUG_OPTIONS.forceSkipSplash && this._cinematicName == SC.CinematicConfig.splashCinematicName)
+            return true;
+        if(this._skipMode.enabled === false){
+            return false;
+        }else{
+            switch(this._skipMode.mode){
+                case "always":
+                    return true;
+                case "never":
+                    return false;
+                case "saveExisting":
+                    return DataManager.isAnySavefileExists();
+                default:
+                    return false;
+            }
+        }
+    }
     updateSkipInput(){
-        if(this.isSkipEnable && (Input.isTriggered("cancel") || TouchInput.isCancelled())) {
+        if(this.isSkipEnable()) {
             this._currentSequency = this._endSequency;
             SoundManager.playCancel();
             this.needToPressOk = false;
