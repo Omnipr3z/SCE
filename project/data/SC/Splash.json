@@ -1,0 +1,42 @@
+{
+    "name":"splash",
+    "backgrounds": ["l_0", "l_1", "l_2"],
+    "endBackgrounds": ["l_0", "l_1", "l_2"],
+    "sequencies":[
+        {
+            "audio": { "se": "Fog1" },
+            "layers": {
+                "0": { "bitmap": "sphere", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10, "zoomGoal": 1 }
+            }
+        },
+        {
+            "audio": { "se": "Omniprez", "bgm": { "name": "Omni_intro", "volume": 100, "pitch": 60, "pan": 0 } },
+            "needPressOk": true,
+            "layers": {
+                "0": { "opacityGoal": 0 },
+                "1": { "bitmap": "omnipr3z_logo", "opacity": 0, "opacityGoal": 255 }
+            }
+        },
+        {
+            "needPressOk": true,
+            "layers": {
+                "0": { "opacityGoal": 0, "fadeSpeed": 15 },
+                "1": { "bitmap": "end_splash", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 6, "zoomGoal": 1, "rotationGoal": 10 },
+                "2": { "bitmap": "simcraft_logo", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10, "scale": { "x": 0.1 }, "zoomGoal": 1 },
+                "3": { "_duration": 30 }
+            }
+        },
+        {
+            "layers": {
+                "0": { "bitmap": "credits", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10 },
+                "1": { "opacityGoal": 0, "zoomGoal": 0 },
+                "2": { "opacityGoal": 0, "zoomGoal": 0 },
+                "3": { "_duration": 20 }
+            }
+        }
+    ],
+    "endNext":{
+        "type":"Title",
+        "cinematicName":"Prologue_40k"
+    }
+}

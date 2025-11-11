@@ -223,10 +223,10 @@ class DebugTool{
         let txt;
         if(instName == "$dataMap"){
             txt =
-`         \u{2794}\u{1F4C4}🌐 ${instName} \u{2192} '${path}' "${$gameMap.displayName() || "Location not named"}" loaded\n`;
+`         \u{2794}\u{1F4C4}🌐 *${instName}* \u{2192} '${path}' "${$gameMap.displayName() || "Location not named"}" loaded\n`;
         }else{
             txt =
-`\u{1F4C4} ${instName} \u{2192} '${path}' loaded\n`;
+`\u{1F4C4} *${instName}* \u{2192} '${path}' loaded\n`;
         }
         
         

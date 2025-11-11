@@ -1,0 +1,358 @@
+{
+    "name":"prologue",
+    "backgrounds": ["l_0", "l_1", "l_2"],
+    "endBackgrounds": ["sky", "layer1", "layer2"],
+    "sequencies":[
+        {
+            "audio": {"bgm": { "name": "Imperial_Choir", "volume": 80, "pitch": 100, "pan": 0 } },
+            "layers": {
+                "2": { "bitmap": "GoldAquila_1", "opacity": 0 },
+                "3": { "bitmap": "GoldAquila_0", "opacity": 0, "opacityGoal": 0},
+                "9": { "bitmap": "blackBG", "opacity": 255, "opacityGoal": 0, "fadeSpeed":0.5}
+            },
+            "storyWindow": { "txt": [""], "style":"Title"}
+        },
+        {
+            "audio": { "se": "Speech_0"},
+            "layers": {
+                "3": {"opacityGoal": 180, "fadeSpeed": 0.7 }
+            },
+            "storyWindow": { "txt": ["Il est le 41ème Millénaire."], "style":"Title"}
+        },
+        {
+            "audio": { "se": "Speech_1" },
+            "layers": {
+                "1": { "bitmap": "Galaxy", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 1.6, "zoomGoal":2.4, "zoomSpeed":0.006},
+                
+                "3": { "opacityGoal": 50, "fadeSpeed": 1.6 }
+            },
+            "storyWindow": { "txt": ["L'Humanité Reigne sur 1 Million de Mondes..."], "style":"Title"}
+        },
+        {
+            "audio": { "se": "Crackment" },
+            "layers": {
+                "1": { "opacityGoal": 0, "fadeSpeed": 1.6, "zoomGoal":1},
+                "2": { "opacityGoal": 180, "fadeSpeed": 1.6},
+                "3": { "opacityGoal": 0, "fadeSpeed": 1.6 }
+            }
+        },
+        {
+            "audio": { "se": "Speech_1a" },
+            "layers": {
+                "1": {"bitmap": "Worker",
+                    "opacityGoal": 255,
+                    "fadeSpeed": 1,
+                    "xGoal":"Graphics.boxWidth / 2",
+                    "x": "Graphics.boxWidth / 2",
+                    "moveSpeed": 1
+                },
+                "2": { "opacityGoal": 0 },
+                "3": { "bitmap": "GoldAquila_2", "opacityGoal": 180, "fadeSpeed": 1 }
+            },
+            "storyWindow": { "txt": ["L'Humanité Reigne sur 1 Million de Mondes...","...mais son Empire..."], "style":"Title"}
+        },
+        {
+            "audio": { "se": "Break" },
+            "layers": {
+                "2": { "bitmap": "GoldAquila_3", "opacityGoal": 255, "fadeSpeed": 5},
+                "3": { "opacityGoal": 0, "fadeSpeed": 5 }
+            },
+            "storyWindow": { "txt": ["L'Humanité Reigne sur 1 Million de Mondes...","...mais son Empire...","...est en ruine."], "style":"Title"}
+        },
+        {
+            "audio": { "se": "Speech_1b" },
+            "layers": {
+                "2": { "opacityGoal": 0, "fadeSpeed":0.5 },
+                "3": {"bitmap": "Hive_0",
+                    "opacityGoal": 255,
+                    "fadeSpeed": 1,
+                    "x":616,
+                    "xGoal": "Graphics.boxWidth / 2 + 229",
+                    "moveSpeed": 1
+                }
+            },
+            "storyWindow": { "clear": true }
+        },
+        {
+            "audio": { "se": "Speech_2" },
+            "layers": {
+                "1": { "opacityGoal": 0, "fadeSpeed": 1}
+                
+            },
+            "storyWindow": { "clear": true,"txt": ["Les mondes de l'IMPERIUM vivent dans la peur..."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Speech_3" },
+            "layers": {
+                "2": {
+                    "bitmap": "Heresy",
+                    "opacity": 255,
+                    "opacityGoal": 255,
+                    "x": "Graphics.boxWidth /2",
+                    "xGoal": "Graphics.boxWidth / 2",
+                    "yGoal": "Graphics.boxWidth / 2 - 100",
+                    "moveSpeed": 2,
+                    "fadeSpeed":1,
+                    "zoomGoal":1.4,
+                    "zoomSpeed":0.001
+                },
+                "3": { "opacityGoal": 0, "fadeSpeed": 1.2 }
+            },
+            "storyWindow": { "txt": ["Les mondes de l'IMPERIUM vivent dans la peur...", "...de l'Hérésie..."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Speech_4" },
+            "layers": {
+                "2": { "opacityGoal": 0, "fadeSpeed": 8,
+            
+                    "zoomGoal":2.6,
+                    "zoomSpeed":0.001
+                },
+                "3": {
+                    "bitmap": "Xenos",
+                    "opacity": 0,
+                    "opacityGoal": 255,
+                    "fadeSpeed": 3, 
+                    "y": "Graphics.boxHeight /2",
+                    "yGoal": "Graphics.boxHeight / 2 - 350",
+                    "x": "Graphics.boxWidth /2",
+                    "xGoal": "Graphics.boxWidth / 2",
+                    "zoomGoal":2,
+                    "moveSpeed": 1.5
+                }
+            },
+            "storyWindow": { "txt": ["Les mondes de l'IMPERIUM vivent dans la peur...",  "...de l'Hérésie...", "...des Xénos..."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Speech_5" },
+            "layers": {
+                "2": {
+                    "zoomGoal":1,
+                    "zoomSpeed":10
+                },
+                "3": { "opacityGoal": 0, "fadeSpeed": 10,
+                    "zoomGoal":1 },
+                "4": {
+                    "bitmap": "Chaos_0",
+                    "opacity": 0,
+                    "opacityGoal": 255,
+                    "fadeSpeed": 10, 
+                    "y": "Graphics.boxHeight /2 - 350",
+                    "yGoal": "Graphics.boxHeight / 2",
+                    "x": "Graphics.boxWidth /2",
+                    "moveSpeed": 1
+                }
+            },
+            "storyWindow": { "txt": ["Les mondes de l'IMPERIUM vivent dans la peur...", "...de l'Hérésie...", "...des Xénos...", "...et du Chaos..."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Devil2" },
+            "layers": {
+                "4": { "opacityGoal": 0, "fadeSpeed": 4 },
+                "3": { "bitmap": "Chaos_1",
+                        "opacity": 255,
+                        "opacityGoal":255, 
+                        "y": "Graphics.boxHeight /2",
+                        "yGoal": "Graphics.boxHeight / 2",
+                        "x": "Graphics.boxWidth /2",
+                        "moveSpeed": 1,
+                        "fadeSpeed": 5
+                }
+            },
+            "storyWindow": { "clear": true }
+        },
+        {   
+            "audio": { "se": "Speech_7", "fadeOutBgm": 4 },
+            "layers": {
+                "3": { "opacityGoal": 0, "fadeSpeed": 4 },
+                "4": {
+                    "bitmap": "Cruiser",
+                    "opacity": 255, "opacityGoal": 255, "fadeSpeed": 5,
+
+                    "y": "Graphics.boxHeight /2",
+                    "x": "Graphics.boxWidth  + 800",
+
+                    "yGoal": "Graphics.boxHeight / 2 + 100",
+                    "xGoal": "Graphics.boxWidth / 2",
+
+                    "moveSpeed": 3
+                },
+                "5": {
+                    "bitmap": "escorter",
+                    "opacity": 255, "opacityGoal": 255, "fadeSpeed": 5,
+
+                    "y": "Graphics.boxHeight /2",
+                    "x": "Graphics.boxWidth  + 1000",
+
+                    "yGoal": "Graphics.boxHeight / 2 + 200",
+                    "xGoal": "Graphics.boxWidth / 2 + 150",
+
+                    "zoomGoal": 0.2,
+
+                    "zoomSpeed":10,
+                    "moveSpeed": 3.2
+                }
+            },
+            "storyWindow": { "txt": ["Pour relier ces mondes,","les vaisseau doivent traverser le WARP."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Speech_8" },
+            "layers": {
+                "0": { "opacityGoal": 0, "fadeSpeed": 15 },
+                "1": { "bitmap": "blackBG", "opacity": 0},
+                "4": {
+
+                    "yGoal": "Graphics.boxHeight /2 - 48",
+                    "xGoal": "Graphics.boxWidth / 2  + 50",
+
+                    "moveSpeed": 0.6
+                },
+                "5": {
+
+                    "yGoal": "Graphics.boxHeight /2 + 20",
+                    "xGoal": "Graphics.boxWidth /2  - 24",
+
+                    "zoomGoal": 0.16,
+
+                    "zoomSpeed":0.001,
+                    "moveSpeed": 0.6
+                }
+            },
+            "storyWindow": { "txt": ["Un océan d'énergie vivante,","où le temps et la réalité se brisent."], "style":"Title" }
+        },
+        {   
+            "audio": { "se": "Speech_9", "fadeOutBgm": 4 },
+            "layers": {
+                "4": {
+
+                    "yGoal": "Graphics.boxHeight / 2 + 100",
+                    "xGoal": "Graphics.boxWidth / 2",
+                    "moveSpeed": 1
+                },
+                "5": {
+
+                    "yGoal": "Graphics.boxHeight / 2 -100",
+                    "xGoal": "Graphics.boxWidth / 2 + 150",
+
+                    "zoomGoal": 0.22,
+
+                    "zoomSpeed":0.0004,
+                    "moveSpeed": 1.1
+                }
+            },
+            "storyWindow": { "txt": ["Les Navigators guident ces voyages."], "style":"Title" }
+        },
+        {
+            "audio": { "se": "Speech_10" },
+            "layers": {
+                "4": {
+                    "opacityGoal":0,
+                    "fadeSpeed": 0.5,
+                    
+                    "yGoal": -900,
+                    "xGoal": -1200,
+
+                    "moveSpeed": 4,
+
+                    "zoomGoal": 5,
+                    "zoomSpeed": 0.01
+                },
+                "5": {
+
+                    "yGoal": "Graphics.boxHeight / 2",
+                    "xGoal": "Graphics.boxWidth / 2",
+
+                    "zoomGoal": 1,
+
+                    "zoomSpeed":0.002,
+                    "moveSpeed": 0.8
+                }
+            },
+            "storyWindow": { "txt": ["Mais aucun ne ressort...indemne..."], "style":"Title" }
+        },
+        {
+            "layers": {
+                "1": { "opacityGoal": 0 }
+            },
+            "storyWindow": { "clear": true }
+        },
+        {
+            "audio": { "se": "Speech_11" },
+            "layers": {
+                "5": {
+
+                    "yGoal": "Graphics.boxHeight / 2 + 200",
+                    "xGoal": "Graphics.boxWidth / 2 + 150",
+
+                    "moveSpeed": 1.1
+                },
+                "8":{
+                    
+                    "bitmap": "soldat",
+                    "opacityGoal":255,
+                    "fadeSpeed": 2
+                }
+            },
+            "storyWindow": { "txt": ["Vous êtes un soldat Imperial à bord de la Fregate SANCTIS VERITAS."], "style":"Title" }
+        },
+        {
+            "layers": {
+                "5": {
+                    "zoomGoal": 1.1,
+                    "yGoal": "Graphics.boxHeight / 2 - 200",
+                    "xGoal": "Graphics.boxWidth / 2 - 150",
+
+                    "moveSpeed": 1.1
+                },
+                "8":{
+                    "zoomGoal": 1.3,
+
+                    "zoomSpeed":0.002
+                }
+            }
+        },
+        {
+            "needPressOk": true,
+            "audio": { "se": "Speech_12" },
+            "layers": {
+                "4": {
+                    "opacityGoal":255,
+                    "fadeSpeed": 0.5,
+
+                    "yGoal": "Graphics.boxHeight / 2 + 100",
+                    "xGoal": "Graphics.boxWidth / 2",
+
+                    "moveSpeed": 4,
+
+                    "zoomGoal": 5,
+                    "zoomSpeed": 0.01
+                },
+                "5": {
+
+                    "yGoal": "Graphics.boxHeight / 2",
+                    "xGoal": "Graphics.boxWidth / 2",
+
+                    "zoomSpeed":0.002,
+                    "moveSpeed": 0.8
+                },
+                "8":{
+                    "zoomGoal": 1.8,
+
+                    "zoomSpeed":0.001
+                }
+            },
+            "storyWindow": { "txt": ["Rattaché au Croiseur VIGILANT OF FAITH."], "style":"Title" }
+        },
+        {
+            "layers": {
+                "all": { "opacityGoal": 0, "fadeSpeed": 1}
+            },
+            "storyWindow": { "clear": true }
+        }
+    ],
+    "endNext":{
+        "type":"Map",
+        "mapId":1,
+        "mapPos":{"x":10, "y":10, "d":2}
+    }
+}

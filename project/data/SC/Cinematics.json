@@ -1,0 +1,271 @@
+[
+    [
+        {
+            "audio": { "se": "Fog1" },
+            "layers": {
+                "0": { "bitmap": "sphere", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10, "scale": { "x": 0.1 }, "zoomGoal": 1 }
+            }
+        },
+        {
+            "audio": { "se": "Omniprez", "bgm": { "name": "Omni_intro", "volume": 100, "pitch": 60, "pan": 0 } },
+            "needPressOk": true,
+            "layers": {
+                "0": { "opacityGoal": 0 },
+                "1": { "bitmap": "omnipr3z_logo", "opacity": 0, "opacityGoal": 255 }
+            }
+        },
+        {
+            "needPressOk": true,
+            "layers": {
+                "0": { "bitmap": "credits", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10 },
+                "1": { "opacityGoal": 0, "zoomGoal": 0 },
+                "3": { "_duration": 20 }
+            }
+        },
+        {
+            "needPressOk": true,
+            "layers": {
+                "0": { "opacityGoal": 0, "fadeSpeed": 15 },
+                "1": { "bitmap": "end_splash", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 6, "zoomGoal": 1, "rotationGoal": 1 },
+                "2": { "bitmap": "simcraft_logo", "opacity": 0, "opacityGoal": 255, "fadeSpeed": 10, "scale": { "x": 0.1 }, "zoomGoal": 1 },
+                "3": { "_duration": 30 }
+            }
+        },
+        {
+            "audio": { "se": "MagicEvasion", "fadeOutBgm": 3 },
+            "needPressOk": true,
+            "layers": {
+                "1": { "opacityGoal": 0, "rotationGoal": 0 },
+                "2": { "opacityGoal": 0, "zoomGoal": 0.1 },
+                "3": { "bitmap": "cover_0", "opacity": 0, "opacityGoal": 255, "moveSpeed": 15, "fadeSpeed": 50, "x": "Graphics.boxWidth / 2", "y": "Graphics.boxHeight * 2", "yGoal": "BOOK_Y" }
+            }
+        },
+        {
+            "audio": { "se": "book", "bgm": { "name": "Omni_intro", "volume": 100, "pitch": 100, "pan": 0 } },
+            "layers": {
+                "1": { "bitmap": "cover_0", "opacity": 255, "opacityGoal": 255, "y": "BOOK_Y", "yGoal": "BOOK_Y" },
+                "2": { "opacity": 0, "opacityGoal": 0 },
+                "3": { "_duration": 0, "opacityGoal": 0 }
+            }
+        },
+        { "events": [{ "name": "animPage", "args": ["cover", 4, 8] }] },
+        { "events": [{ "name": "animPage", "args": [] }] },
+        { "events": [{ "name": "drawPage", "args": [] }] },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, 0, "story"] }],
+            "storyWindow": { "txt": ["", "", "A l'aube des temps,", "tout l'Univers n'était", "alors qu'une masse", "inerte, opaque", "et sans vie.", "", "Il y eu une déflagration,", "et le monde devint", "une masse difforme,", "en perpetuel mouvement.", "", "La matière était énérgie,", "et cela fut la force", "magique primordiale.", "", "", "Le DIVINA."] },
+            "layers": {
+                "2": { "x": 1034, "xGoal": 1034, "scale": { "x": 0.1, "y": 0.1 }, "zoomGoal": 1, "zoomSpeed": 0.003, "rotation": 0.5, "rotationGoal": 60, "rotationSpeed": 0.01, "y": 280, "yGoal": 280 }
+            }
+        },
+        {
+            "events": [{ "name": "prepareNextPage", "args": [2] }],
+            "storyWindow": { "clear": true }
+        },
+        {
+            "events": [{ "name": "animPage", "args": [] }],
+            "layers": { "2": { "rotation": 0, "rotationGoal": 0 } }
+        },
+        { "events": [{ "name": "drawPage", "args": [] }] },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 2, 1] }],
+            "storyWindow": { "txt": ["", "", "", "Le DIVINA fracassait,", "l'univers au hasard", "de sa course folle.", "", "", "Et dans cette confusion", "naquit KAOS", "", "Il fut la Première", "conscience du Cosmos.", "", "Et il se muait au coeur", "du DIVINA cherchant", "un but à son existance."] }
+        },
+        {
+            "events": [{ "name": "prepareNextPage", "args": [3] }],
+            "storyWindow": { "clear": true }
+        },
+        { "events": [{ "name": "animPage", "args": [] }] },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, 2, "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux."] },
+            "layers": { "2": { "y": 280, "yGoal": 280, "rotationGoal": 60 } }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "2_1", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "FURIA,", "le brasier ardent"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [4, 3, "2_2", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "FURIA,", "le brasier ardent", "", "OUGARA,", "le flux de l'air"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "2_3", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "FURIA,", "le brasier ardent", "", "OUGARA,", "le flux de l'air", "", "TRITON,", "les flots marins"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [4, 3, "2_4", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "FURIA,", "le brasier ardent", "", "OUGARA,", "le flux de l'air", "", "TRITON,", "les flots marins", "", "ATLAS,","la cohésion minérale"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "2_5", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "FURIA,", "le brasier ardent", "", "OUGARA,", "le flux de l'air", "", "TRITON,","les flots marins", "", "ATLAS,","la cohésion minérale", "", "Ainsi fut créer le", "1er QUADRAN DIVIN"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, "2_6", "story"] }],
+            "storyWindow": { "txt": ["", "A leur tour, animés par", "la même curiosité", "que leur créateur,", "les dieux se mirent", "à remodeler le DIVINA"] },
+            "layers": { "2": { "rotation": 0, "rotationGoal": 0, "x": "Graphics.boxWidth / 2", "xGoal": "Graphics.boxWidth / 2", "y": "BOOK_Y", "yGoal": "BOOK_Y" } }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 2, "2_6", "story"] }],
+            "storyWindow": { "txt": ["", "A leur tour, animés par", "la même curiosité", "que leur créateur,", "les dieux se mirent", "à remodeler le DIVINA", "", "Pour KAOS, cela", "représentait un affront", "insupportable.", "", "Comprenant qu'il devait", "dorenavant patager", "son pouvoir, KAOS", "se mis a regretter", "sa création."] },
+            "layers": { "2": { "rotation": 0, "rotationGoal": 0, "x": "Graphics.boxWidth / 2", "xGoal": "Graphics.boxWidth / 2", "y": "BOOK_Y", "yGoal": "BOOK_Y" } }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, "2_6", "story"] }],
+            "storyWindow": { "txt": ["", "A leur tour, animés par", "la même curiosité", "que leur créateur,", "les dieux se mirent", "à remodeler le DIVINA", "", "Pour KAOS, cela", "représentait un affront", "insupportable.", "", "Comprenant qu'il devait", "dorenavant patager", "son pouvoir, KAOS", "se mis a regretter", "sa création.", "", "KAOS envisagea donc", "d'annihiler ses enfants."] },
+            "layers": { "2": { "rotation": 0, "rotationGoal": 0, "x": "Graphics.boxWidth / 2", "xGoal": "Graphics.boxWidth / 2", "y": "BOOK_Y", "yGoal": "BOOK_Y" } }
+        },
+        {
+            "events": [{ "name": "prepareNextPage", "args": [2] }],
+            "storyWindow": { "clear": true },
+            "layers": { "2": { "rotation": 0, "opacityGoal": 0 } }
+        },
+        { "events": [{ "name": "animPage", "args": [] }] },
+        { "events": [{ "name": "drawPage", "args": [] }] },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 2, 3, "story"] }],
+            "storyWindow": { "txt": ["", "KAOS chercha à tuer", "les divinités du", "1ER QUADRAN."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, 3, "story"] }],
+            "storyWindow": { "txt": ["", "KAOS chercha à tuer", "les divinités du", "1ER QUADRAN.", "", "Hélas, ils étaient", "devenus trop puissant", "pour qu'il puisse", "les détruire par sa", "seule volonté."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, 3, "story"] }],
+            "storyWindow": { "txt": ["", "KAOS chercha à tuer", "les divinités du", "1ER QUADRAN.", "", "Hélas, ils étaient", "devenus trop puissant", "pour qu'il puisse", "les détruire par sa", "seule volonté.", "", "Il décida de leur", "créer des opposants.", "", "Afin de se preserver,", "afin qu'ils restent", "dévoués et servils,", "KAOS scella un sort", "à ses nouveaux Dieux,"] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [4, 3, "3_1", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux."] },
+            "layers": { "2": { "opacityGoal": 0 } }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "3_2", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "SHYONE,", "la reine des Glaces."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [4, 3, "3_3", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "SHYONE,", "la reine des Glaces.", "", "ATURA,", "la déesse de la Nature."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "3_4", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "SHYONE,", "la reine des Glaces.", "", "ATURA,", "la déesse de la Nature.", "", "FALGOR,", "le dieux de la Foudre."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [3, 4, "3_5", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "SHYONE,", "la reine des Glaces.", "", "ATURA,", "la déesse de la Nature.", "", "FALGOR,", "le dieux de la Foudre.", "", "Et, enfin ANGELUS,", "le Dieu de la Lumière."] }
+        },
+        {
+            "events": [{ "name": "drawStory", "args": [4, 3, "3_6", "story"] }],
+            "storyWindow": { "txt": ["", "KAOS manipula le DIVINA", "et par sa volonté,", "se materialisèrent des", "nouveaux dieux.", "", "SHYONE,", "la reine des Glaces.", "", "ATURA,", "la déesse de la Nature.", "", "FALGOR,", "le dieux de la Foudre.", "", "Et, enfin ANGELUS,", "le Dieu de la Lumière.", "", "Ainsi fut créer le", "2ème QUADRAN DIVIN"] },
+            "layers": { "2": { "opacityGoal": 0 } }
+        },
+        {
+            "events": [{ "name": "prepareNextPage", "args": [3] }],
+            "audio": { "fadeOutBgm": 1 },
+            "storyWindow": { "clear": true },
+            "layers": { "4": { "opacityGoal": 0 } }
+        },
+        { "events": [{ "name": "animPage", "args": [] }] },
+        { "events": [{ "name": "drawPage", "args": [] }] },
+        {
+            "events": [{ "name": "drawStory", "args": [2, 3, 4] }],
+            "audio": { "bgm": { "name": "Ship3", "volume": 60, "pitch": 100, "pan": 0 } },
+            "storyWindow": { "txt": ["", "Mais les dieux du", "1er QUADRAN se batîrent", "pour libérer ceux du", "2ème QUADRAN.", "", "Ensemble,", "ils formèrent l'INRAL,", "l'union des 2 QUADRANS.", "", "L'INRAL s'uni contre KAOS,", "l'emprisonna et et le priva", "de DIVINA"] }
+        },
+        {
+            "events": [{ "name": "prepareNextPage", "args": [2] }],
+            "storyWindow": { "clear": true },
+            "layers": {
+                "1": { "opacity": 0, "opacityGoal": 0 },
+                "2": { "opacity": 0 },
+                "4": { "bitmap": "page_0", "opacity": 255, "opacityGoal": 255, "x": "Graphics.boxWidth / 2", "xGoal": "Graphics.boxWidth / 2", "y": "BOOK_Y", "yGoal": "BOOK_Y" }
+            }
+        },
+        {
+            "audio": { "se": "book" },
+            "needPressOk": false,
+            "layers": {
+                "0": { "bitmap": "formation_0", "opacityGoal": 255 },
+                "1": { "opacityGoal": 0 },
+                "2": { "opacityGoal": 0, "imgName": "page", "currentFrame": 0, "lastFrame": 4, "frameTick": 4, "frameDuration": 5 },
+                "3": { "_duration": 30 },
+                "4": { "yGoal": "Graphics.boxHeight + 50" }
+            }
+        },
+        {
+            "storyWindow": { "y": "this._storyLastWindow.y", "txt": ["Libérés de KAOS, l'INRAL", "s'agglomera en une sphere", "de lave en fusion."] },
+            "layers": {
+                "0": { "fadeSpeed": 3 },
+                "1": { "bitmap": "formation_1", "opacityGoal": 255, "fadeSpeed": 3, "y": "Graphics.boxHeight / 2", "yGoal": "Graphics.boxHeight / 2" }
+            }
+        },
+        {
+            "layers": {
+                "0": { "bitmap": "formation_2" },
+                "1": { "opacityGoal": 0 }
+            }
+        },
+        {
+            "storyWindow": { "txt": ["Libérés de KAOS, l'INRAL", "s'agglomera en une sphere", "de lave en fusion.", "", "Puis, elle refroidie"] },
+            "layers": { "1": { "bitmap": "formation_3", "opacityGoal": 255 } }
+        },
+        {
+            "storyWindow": { "txt": ["Libérés de KAOS, l'INRAL", "s'agglomera en une sphere", "de lave en fusion.", "", "Puis, elle refroidie", "", "Et l'essence des Dieux", "se repartie à la surface"] },
+            "layers": {
+                "0": { "bitmap": "formation_4" },
+                "1": { "opacityGoal": 0 }
+            }
+        },
+        { "layers": { "1": { "bitmap": "formation_5", "opacityGoal": 255 } } },
+        { "layers": { "0": { "bitmap": "formation_6" }, "1": { "opacityGoal": 0 } } },
+        { "layers": { "1": { "bitmap": "formation_7", "opacityGoal": 255 } } },
+        {
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie."] },
+            "layers": { "0": { "bitmap": "formation_8" }, "1": { "opacityGoal": 0 } }
+        },
+        {
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie.", "La vegetation se développa."] },
+            "layers": { "1": { "bitmap": "formation_9", "opacityGoal": 255 } }
+        },
+        {
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie.", "La vegetation se développa.", "", "Puis des villages,"] },
+            "layers": { "0": { "bitmap": "formation_10" }, "1": { "opacityGoal": 0 } }
+        },
+        {
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie.", "La vegetation se développa.", "", "Puis des villages,", "des civilisations,"] },
+            "layers": {
+                "1": { "bitmap": "formation_11", "opacityGoal": 255 },
+                "2": { "_duration": 30 }
+            }
+        },
+        {
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie.", "La vegetation se développa.", "", "Puis des villages,", "des civilisations,", "des Royaumes,"] },
+            "layers": {
+                "0": { "bitmap": "formation_12" },
+                "1": { "opacityGoal": 0 },
+                "2": { "_duration": 30 }
+            }
+        },
+        {
+            "needPressOk": true,
+            "storyLastWindow": { "txt": ["Les premières créatures", "apparurent semant la vie.", "La vegetation se développa.", "", "Puis des villages,", "des civilisations,", "des Royaumes,", "des Empires..."] },
+            "layers": {
+                "1": { "bitmap": "formation_13", "opacityGoal": 255 },
+                "2": { "_duration": 90 },
+                "5": { "opacity": 0 }
+            }
+        },
+        {
+            "events": [{ "name": "fadeOutAll", "args": [] }],
+            "needPressOk": false,
+            "storyWindow": { "clear": true },
+            "storyLastWindow": { "clear": true },
+            "layers": {
+                "0": { "opacity": 0, "opacityGoal": 0 },
+                "all": { "opacityGoal": 0 }
+            }
+        }
+    ]
+]

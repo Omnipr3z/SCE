@@ -70,6 +70,7 @@ class DataManager_SC {
                     if (!window[datafile.instName]) {
                         let src = `${datafile.filename}`;
                         this.loadScDataFile(datafile.instName, src);
+                        $debugTool.drawDatafileLoaded(datafile.filename, src)
                     }
                 }, this);
             }
@@ -149,15 +150,17 @@ class DataManager_SC {
 
     // Surcharge de isDatabaseLoaded
     isDatabaseLoaded() {
-        // On appelle d'abord la méthode originale. Si elle retourne false, on s'arrête là.
-        const baseLoaded = _DataManager_isDatabaseLoaded.call(DataManager, ...arguments); // Appel de la méthode originale
-        if (!baseLoaded) return false;
+        const baseLoaded = _DataManager_isDatabaseLoaded.call(DataManager, ...arguments);
+        if (!baseLoaded) {
+            $debugTool.log("DataManager: RMMZ database not fully loaded yet.", true);
+            return false;
+        }
 
-        
-        // Si la base est chargée, on vérifie nos fichiers SC.
-        // On utilise un drapeau pour ne pas refaire cette vérification à chaque frame.
         if (!this._scDatabaseLoaded) {
+            $debugTool.log("DataManager: RMMZ database loaded. Checking SC data files...", true);
             this._checkScDatabase();
+        } else {
+            $debugTool.log("DataManager: SC data files loaded.", true);
         }
 
         return this._scDatabaseLoaded;
@@ -181,20 +184,18 @@ class DataManager_SC {
 
     // Surcharge de createGameObjects
     createGameObjects() {
-        // --- POINT CRUCIAL ---
-        // On s'assure que les métadonnées de toutes les données de base sont extraites
-        // AVANT de créer les objets de jeu ($gameActors, etc.) qui en dépendent.
-        // C'est la solution définitive au problème de "meta is undefined".
-        
         $debugTool.log("DataManager: Create RMMZ native objects...");
-        _DataManager_createGameObjects.call(DataManager, ...arguments); // Appel de la méthode originale
+        _DataManager_createGameObjects.call(DataManager, ...arguments);
         $debugTool.log("DataManager: Create SimCraft Engine additional objects...");
-        $simcraftLoader.createScGameObjects(); // On délègue la création des objets SC
+        $simcraftLoader.createScGameObjects();
     }
 
     // Surcharge de makeSaveContents
     makeSaveContents() {
+        $debugTool.log("DataManager: Creating save contents...");
         const contents = _DataManager_makeSaveContents.call(DataManager, ...arguments); // Appel de la méthode originale
+        $debugTool.log("... RMMZ native contents created.", true);
+        $debugTool.log("... Adding SimCraft Engine contents...", true);
         for (const elementKey in $simcraftLoader._pluginsList) {
             let element = $simcraftLoader._pluginsList[elementKey];
             if (element.autoSave) {
@@ -209,12 +210,16 @@ class DataManager_SC {
                 }
             }
         };
+        $debugTool.log("DataManager: Save contents creation finished.", true);
         return contents;
     }
 
     // Surcharge de extractSaveContents
     extractSaveContents(contents) {
+        $debugTool.log("DataManager: Extracting save contents...");
         _DataManager_extractSaveContents.call(DataManager, ...arguments); // Appel de la méthode originale
+        $debugTool.log("... RMMZ native contents extracted.", true);
+        $debugTool.log("... Extracting SimCraft Engine contents...", true);
         for (const elementKey in $simcraftLoader._pluginsList) {
             let element = $simcraftLoader._pluginsList[elementKey];
             if (element.autoSave) {
@@ -233,11 +238,13 @@ class DataManager_SC {
                 }
             }
         };
+        $debugTool.log("DataManager: Save contents extraction finished.", true);
     }
 
     // Surcharge de loadMapData
     loadMapData(mapId) {
-        _DataManager_loadMapData.call(DataManager, ...arguments); // Appel de la méthode originale
+        $debugTool.log(`DataManager: Loading map data for Map ID: ${mapId}`);
+        _DataManager_loadMapData.call(DataManager, ...arguments);
         if (mapId > 0) {
             this.loadMapScData(mapId);
         }
@@ -255,9 +262,10 @@ class DataManager_SC {
 
     // Surcharge de isMapLoaded
     isMapLoaded() {
-        // La carte n'est considérée comme chargée que si $dataMap ET $dataScMap
-        // sont tous les deux chargés avec succès (ou si $dataScMap n'est pas nécessaire).
-        return _DataManager_isMapLoaded.call(DataManager, ...arguments) && !!$dataScMap;
+        const baseMapLoaded = _DataManager_isMapLoaded.call(DataManager, ...arguments);
+        const scMapLoaded = !!window.$dataScMap;
+        $debugTool.log(`DataManager.isMapLoaded: RMMZ map loaded: ${baseMapLoaded}, SC map loaded: ${scMapLoaded}`, true);
+        return baseMapLoaded && scMapLoaded;
     }
 }
 

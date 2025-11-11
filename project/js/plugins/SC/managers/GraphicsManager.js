@@ -56,7 +56,7 @@ class Graphics_SC {
         Graphics._app.renderer.resize(width, height);
         Graphics._updateAllElements();
         
-    };
+    }; 
 };
 
 const _Scene_Boot_adjustWindow = Scene_Boot.prototype.adjustWindow;
