@@ -141,7 +141,9 @@ class DataManager_SC {
 
     // Surcharge de loadDatabase
     loadDatabase() {
+        $debugTool.log("DataManager: Loading database base RMMZ contents...");
         _DataManager_loadDatabase.call(DataManager, ...arguments); // Appel de la méthode originale
+        $debugTool.log("DataManager: Loading SimCraft Engine additional data contents...");
         this.loadScData(); // Ajout de notre logique
     }
 
@@ -184,8 +186,9 @@ class DataManager_SC {
         // AVANT de créer les objets de jeu ($gameActors, etc.) qui en dépendent.
         // C'est la solution définitive au problème de "meta is undefined".
         
-
+        $debugTool.log("DataManager: Create RMMZ native objects...");
         _DataManager_createGameObjects.call(DataManager, ...arguments); // Appel de la méthode originale
+        $debugTool.log("DataManager: Create SimCraft Engine additional objects...");
         $simcraftLoader.createScGameObjects(); // On délègue la création des objets SC
     }
 

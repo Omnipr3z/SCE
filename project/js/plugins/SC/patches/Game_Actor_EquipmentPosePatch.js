@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Patch pour la gestion des Poses via l'équipement.
+ * @plugindesc !SC [v1.0.1] Patch pour la gestion des Poses via l'équipement.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -33,6 +33,7 @@
  *   Exemple: <forcePose: rifle>
  *
  * ▸ Historique :
+ *   v1.0.1 - 2024-08-03 : Ajout du trim() pour nettoyer les noms de poses des notetags.
  *   v1.0.0 - 2024-08-03 : Création initiale du patch.
  */
 
@@ -47,10 +48,18 @@
 Game_Actor.prototype.getEquipmentPose = function() {
     for (const item of this.equips()) {
         if (item) {
-            if(!item.meta)
-                DataManager.extractMetadata(item);
-            if(item.meta.forcePose)
-                return item.meta.forcePose;
+            if (!item.meta) DataManager.extractMetadata(item);
+            const poseName = item.meta.forcePose ? item.meta.forcePose.trim() : null;
+            if (poseName) {
+                // On vérifie si la pose forcée existe bien dans la configuration.
+                if (SC.posesConfig[poseName]) {
+                    $debugTool.log(`Pose forcée par l'équipement détectée: "${poseName}"`, true);
+                    return poseName; // La pose est valide, on la retourne.
+                } else {
+                    // La pose n'existe pas, on affiche une erreur et on continue de chercher.
+                    $debugTool.error(`La pose forcée "${poseName}" par l'équipement "${item.name}" (ID: ${item.id}) n'a pas été configurée dans SC_CharacterPoseConfig.js.`);
+                }
+            }
         }
     }
     return null;
@@ -73,7 +82,7 @@ Game_Actor.prototype.getPose = function() {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_Game_Actor_EquipmentPosePatch",
-    version: "1.0.0",
+    version: "1.0.1",
     icon: "🥋",
     author: AUTHOR,
     license: LICENCE,

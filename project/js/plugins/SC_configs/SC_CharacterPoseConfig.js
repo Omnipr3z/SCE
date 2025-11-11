@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.1.1] Configuration pour les Poses de personnages.
+ * @plugindesc !SC [v1.1.2] Configuration pour les Poses de personnages.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -69,7 +69,7 @@ SC.posesConfig = SC.posesConfig || {};
 
     for (const poseString of posesList) {
         const poseParams = JSON.parse(poseString);
-        const poseName = poseParams.poseName;
+        const poseName = poseParams.poseName ? poseParams.poseName.trim() : "";
 
         if (poseName === 'default') {
             $debugTool.error("Le nom de pose 'default' est réservé et ne doit pas être configuré dans SC_CharacterPoseConfig.js. Utilisez SC_CharacterAnimConfig.js pour les animations par défaut.");
@@ -92,7 +92,7 @@ SC.posesConfig = SC.posesConfig || {};
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_CharacterPoseConfig",
-    version: "1.1.1",
+    version: "1.1.2",
     icon: "🧘",
     author: AUTHOR,
     license: LICENCE,
