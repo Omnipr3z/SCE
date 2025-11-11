@@ -10,16 +10,29 @@ backup/
 project/save/
 
 # Dossiers de ressources (assets)
-project/audio/
 project/effects/
 project/fonts/
 project/icon/
-project/img/
+project/img/tilesets/
+project/img/parallaxes/
+project/img/faces/
+project/img/battlers/
+project/img/sv_actors/
+project/img/sv_enemies/
+project/img/enemies/
+project/img/animations/
+project/img/pictures/
+project/img/titles1/
+project/img/titles2/
+project/img/battlebacks1/
+project/img/battlebacks2/
+
+
 project/movies/
 project/css/
 
 # Fichiers de données de base de RMMZ (on ne garde que nos scripts)
-project/data/*.json
+#project/data/*.json
 
 # Fichiers de base des plugins de RMMZ (on ne garde que nos scripts)
 project/js/libs/
