@@ -49,6 +49,40 @@ Le `GraphicsManager` lira cette configuration au démarrage et l'appliquera de m
 
 ---
 
+## ➤ Adapter l'Interface : Le `GraphicsAdjust_MultiPatch`
+
+Le `GraphicsManager` garantit une résolution nette, mais il crée un nouveau défi : comment s'assurer que les fenêtres et les éléments d'interface se positionnent correctement, quelle que soit la résolution choisie ?
+
+C'est le rôle du `GraphicsAdjust_MultiPatch`. Il introduit un **système de mise à l'échelle dynamique** pour l'interface utilisateur.
+
+### Philosophie
+
+1.  **Développer pour une Résolution de Référence** : Vous concevez vos interfaces (fenêtres, HUD) comme si le jeu tournait toujours sur une résolution de référence fixe.
+    Cette résolution est définie par le paramètre `uiReferenceResolution` dans `SC_GraphicsConfig.js` (par défaut `1280x720`).
+    **Important :** cette résolution de référence est indépendante de la résolution de démarrage du jeu (`defaultResolution`).
+    Cela vous permet de changer la résolution par défaut de votre jeu sans casser le positionnement de toute votre interface.
+
+2.  **Mise à l'échelle Automatique** : Le patch intercepte automatiquement tous les appels de positionnement de fenêtres (`Window.prototype.move`). Il convertit les coordonnées de votre résolution de référence en coordonnées adaptées à la résolution actuelle du jeu.
+
+### Fonctionnement
+
+Grâce à ce patch, vous n'avez plus à vous soucier de la résolution. Vous pouvez continuer à créer vos fenêtres avec des coordonnées fixes :
+
+```javascript
+// Vous écrivez ce code en pensant à une résolution de 1280x720
+const myGoldWindow = new Window_Gold(new Rectangle(900, 50, 300, 120));
+```
+
+Le patch se charge de calculer la position et la taille réelles pour que la fenêtre apparaisse proportionnellement au bon endroit sur un écran 1920x1080 ou 816x624.
+
+### Mise à l'échelle des Arrière-plans
+
+Le patch fournit également une fonction utilitaire `scene.scaleSprite(sprite)` pour les images de fond. Son comportement est contrôlé par le paramètre `fullSpriteScaling` dans `SC_GraphicsConfig.js` :
+*   `true` (défaut) : L'image est étirée pour remplir tout l'écran, ce qui peut la déformer.
+*   `false` : L'image est agrandie en conservant son ratio d'aspect jusqu'à ce qu'elle couvre l'écran (pas de déformation, mais des parties peuvent être coupées).
+
+---
+
 ## ➤ Mode Fenêtre sans Bordures (Après Déploiement)
 
 Pour une immersion maximale, il est possible de supprimer la barre de titre de la fenêtre du jeu.

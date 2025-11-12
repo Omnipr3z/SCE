@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Configuration des options graphiques pour SimCraft Engine.
+ * @plugindesc !SC [v1.0.2] Configuration des options graphiques pour SimCraft Engine.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -45,6 +45,20 @@
  * @type string[]
  * @default ["816x624", "1280x720", "1920x1080"]
  * @desc Liste des résolutions qui seront proposées au joueur.
+ *
+ * @param uiReferenceResolution
+ * @text Résolution de Référence UI
+ * @type string
+ * @default 1280x720
+ * @desc La résolution pour laquelle l'interface a été conçue. Toutes les positions et tailles seront calculées par rapport à celle-ci.
+ *
+ * @param fullSpriteScaling
+ * @text Mise à l'échelle complète des sprites
+ * @desc'true', les fonds sont étirés pour remplir l'écran (peut déformer). Si 'false', leur ratio est préservé.
+ * @type boolean
+ * @default true
+ * 
+ * 
  */
 
 var Imported = Imported || {};
@@ -64,13 +78,15 @@ Imported.SC_GraphicsConfig = true;
     $.defaultMode = parameters['defaultMode'] || 'Windowed';
     $.defaultResolution = parseResolution(parameters['defaultResolution'] || '1280x720');
     $.availableResolutions = JSON.parse(parameters['availableResolutions'] || '[]').map(parseResolution);
+    $.uiReferenceResolution = parseResolution(parameters['uiReferenceResolution'] || '1280x720');
+    $.fullSpriteScaling = parameters['fullSpriteScaling'] === 'true';
 
 })(SC.GraphicsConfig = SC.GraphicsConfig || {});
 // Enregistrement du plugin auprès du SystemLoader
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_GraphicsConfig",
-    version: "1.0.0",
+    version: "1.0.2",
     icon: "🔠",
     author: AUTHOR,
     license: LICENCE,

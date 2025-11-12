@@ -74,14 +74,16 @@ ActorAnimManager.prototype.playAction = function(actionName) {
     this._isActionPlaying = true;
     this._currentState = 'action'; // Met à jour l'état principal
 
-    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`);
-    // Applique immédiatement la première frame
-    this.updateActionFrame();
+   
     
 
     // Assure que l'animation de pas est active pour voir le changement
     this._character.setWalkAnime(true);
     this._character.setStepAnime(false);
+
+     $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`);
+    // Applique immédiatement la première frame
+    this.updateActionFrame();
 };
 
 /**

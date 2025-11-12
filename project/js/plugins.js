@@ -15,7 +15,7 @@ var $plugins =
 {"name":"SC_configs/varConfig","status":true,"description":"!SC [v1.0.0] Configuration des variables et interrupteurs du jeu.","parameters":{}},
 {"name":"SC_configs/SC_InputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées pour SimCraft Engine","parameters":{"ok":"[\"enter\",\"space\",\"z\"]","cancel":"[\"escape\",\"insert\",\"numpad_0\",\"x\"]","shift":"[\"shift\"]","menu":"[\"x\"]","pageup":"[\"pageup\",\"q\"]","pagedown":"[\"pagedown\",\"w\"]","left":"[\"left\",\"numpad_4\"]","up":"[\"up\",\"numpad_8\"]","right":"[\"right\",\"numpad_6\"]","down":"[\"down\",\"numpad_2\"]","tab":"[\"tab\"]","control":"[\"control\",\"alt\"]","debug":"[\"f9\"]","defaultKeyMappings":"[\"{\\\"inputCode\\\":\\\"jump\\\",\\\"keyName\\\":\\\"P\\\"}\"]"}},
 {"name":"SC_configs/SC_TouchInputConfig","status":true,"description":"!SC [v1.0.0] Configuration des entrées tactiles pour SimCraft Engine.","parameters":{"cancelOnRightClick":"false"}},
-{"name":"SC_configs/SC_GraphicsConfig","status":true,"description":"!SC [v1.0.0] Configuration des options graphiques pour SimCraft Engine.","parameters":{"defaultMode":"Windowed","defaultResolution":"1280x720","availableResolutions":"[\"816x624\",\"1280x720\",\"1920x1080\"]"}},
+{"name":"SC_configs/SC_GraphicsConfig","status":true,"description":"!SC [v1.0.1] Configuration des options graphiques pour SimCraft Engine.","parameters":{"defaultMode":"Fullscreen","defaultResolution":"1600x900","availableResolutions":"[\"816x624\",\"1280x720\",\"1920x1080\"]","fullSpriteScaling":"true"}},
 {"name":"SC_configs/SC_VisualConfig","status":true,"description":"!SC [v1.0.0] Configuration pour le système visuel des personnages.","parameters":{"frameWidth":"96","frameHeight":"96","numColumns":"4","numLines":"3"}},
 {"name":"SC_configs/SC_CharacterAnimConfig","status":true,"description":"!SC [v1.0.1] Configuration pour le système d'animations dynamiques.","parameters":{"idleThreshold":"300","idleIndex":"1","dashIndex":"2"}},
 {"name":"SC_configs/SC_ShadowConfig","status":true,"description":"!SC [v1.0.1] Configuration pour les ombres dynamiques des personnages.","parameters":{"useShadow":"true","shadowYOffset":"8"}},
@@ -44,6 +44,7 @@ var $plugins =
 {"name":"======== SCENES","status":false,"description":"","parameters":{}},
 {"name":"SC/scenes/Scene_Cinematics","status":true,"description":"!SC [v1.0.3] Scène pour la gestion des cinématiques.","parameters":{}},
 {"name":"======== PATCHES","status":false,"description":"","parameters":{}},
+{"name":"SC/patches/GraphicsAdjust_MultiPatch","status":true,"description":"","parameters":{}},
 {"name":"SC/patches/Game_Actor_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour la gestion des sprites visuels sur Game_Actor.","parameters":{}},
 {"name":"SC/patches/Spriteset_Map_VisualPatch","status":true,"description":"!SC [v1.0.0] Patch pour Spriteset_Map pour instancier les sprites visuels.","parameters":{}},
 {"name":"SC/patches/Scene_Map_AnimPatch","status":true,"description":"!SC [v1.0.1] Patch pour intégrer le gestionnaire d'animations à Scene_Map.","parameters":{}},
@@ -54,5 +55,7 @@ var $plugins =
 {"name":"SC/patches/ActorAnimManager_ActionPatch","status":true,"description":"!SC [v1.0.0] Patch pour ajouter la gestion des actions à ActorAnimManager.","parameters":{}},
 {"name":"SC/patches/Game_Character_ActionPatch","status":true,"description":"!SC [v1.0.0] Patch pour ajouter l'API des actions à Game_Character.","parameters":{}},
 {"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
-{"name":"SC_WIP/Scene_TitlesWip","status":true,"description":"","parameters":{}}
+{"name":"SC_WIP/TextManager_AnkarosPatch","status":false,"description":"","parameters":{}},
+{"name":"SC_WIP/Window_TitleCommand_AnkarosPatch","status":false,"description":"","parameters":{}},
+{"name":"SC_WIP/Scene_Titles_AnkarosPatch","status":true,"description":"","parameters":{}}
 ];
