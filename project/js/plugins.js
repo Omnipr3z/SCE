@@ -20,7 +20,7 @@ var $plugins =
 {"name":"SC_configs/SC_CharacterAnimConfig","status":true,"description":"!SC [v1.0.1] Configuration pour le système d'animations dynamiques.","parameters":{"idleThreshold":"300","idleIndex":"1","dashIndex":"2"}},
 {"name":"SC_configs/SC_ShadowConfig","status":true,"description":"!SC [v1.0.1] Configuration pour les ombres dynamiques des personnages.","parameters":{"useShadow":"true","shadowYOffset":"8"}},
 {"name":"SC_configs/SC_CharacterPoseConfig","status":true,"description":"!SC [v1.1.1] Configuration pour les Poses de personnages.","parameters":{"poses":"[\"{\\\"poseName\\\":\\\"rifle\\\",\\\"animations\\\":\\\"[\\\\\\\"{\\\\\\\\\\\\\\\"animName\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"walk\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"animIndex\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"4\\\\\\\\\\\\\\\"}\\\\\\\",\\\\\\\"{\\\\\\\\\\\\\\\"animName\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"idle\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"animIndex\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"4\\\\\\\\\\\\\\\"}\\\\\\\",\\\\\\\"{\\\\\\\\\\\\\\\"animName\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"dash\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"animIndex\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"2\\\\\\\\\\\\\\\"}\\\\\\\",\\\\\\\"{\\\\\\\\\\\\\\\"animName\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"jump\\\\\\\\\\\\\\\",\\\\\\\\\\\\\\\"animIndex\\\\\\\\\\\\\\\":\\\\\\\\\\\\\\\"3\\\\\\\\\\\\\\\"}\\\\\\\"]\\\"}\"]"}},
-{"name":"SC_configs/SC_CinematicConfig","status":true,"description":"!SC [v1.0.3] Configuration pour le chargement des données de cinématiques.","parameters":{"useSplash":"true","Debug - Force Skip Splash":"false","splashCinematicName":"Splash","skipDefaultMode":"saveExisting","skipDefaultEnabled":"true","skipDefaultBitmap":"","skipButtonX":"750","skipButtonY":"550","cinematicFiles":"[\"Cinematics\",\"Prologue_40k\",\"Splash\"]"}},
+{"name":"SC_configs/SC_CinematicConfig","status":true,"description":"!SC [v1.1.0] Configuration pour le système de cinématiques.","parameters":{"skipRightClick":"false","nextSequenceKeys":"[\"jump\"]","useSplash":"true","Debug - Force Skip Splash":"true","splashCinematicName":"Splash","skipDefaultMode":"saveExisting","skipDefaultEnabled":"true","skipDefaultBitmap":"","skipButtonX":"750","skipButtonY":"550","cinematicFiles":"[\"Cinematics\",\"Prologue_40k\",\"Splash\"]"}},
 {"name":"SC_configs/SC_CharacterActionConfig","status":true,"description":"!SC [v1.0.0] Configuration pour les Actions de personnages.","parameters":{"actions":"[\"{\\\"actionName\\\":\\\"slash\\\",\\\"sheetIndex\\\":\\\"6\\\",\\\"frames\\\":\\\"[\\\\\\\"0\\\\\\\",\\\\\\\"1\\\\\\\",\\\\\\\"2\\\\\\\"]\\\",\\\"speed\\\":\\\"15\\\",\\\"loop\\\":\\\"false\\\",\\\"blockMovement\\\":\\\"true\\\",\\\"returnToIdle\\\":\\\"false\\\"}\"]"}},
 {"name":"======== CORE_MANAGERS","status":false,"description":"","parameters":{}},
 {"name":"SC/managers/DataManager","status":true,"description":"!SC [v0.4.0] Gestionnaire de données étendu de SimCraft Engine","parameters":{}},
@@ -31,6 +31,7 @@ var $plugins =
 {"name":"SC/composants/Game_DateFormatter","status":true,"description":"!SC [v1.0.0] Formatteur de date pour Game_Date.","parameters":{}},
 {"name":"SC/composants/Game_Date","status":true,"description":"!SC [v1.0.0] Gestion du temps, calendrier et datation (Game_Date)","parameters":{}},
 {"name":"SC/composants/ActorAnimManager","status":true,"description":"!SC [v1.0.1] Composant de gestion d'animation pour un personnage.","parameters":{}},
+{"name":"SC/composants/Game_ActorEvent","status":true,"description":"!SC [v1.0.0] Classe spécialisée pour les événements représentant des acteurs.","parameters":{}},
 {"name":"======== GAME_MANAGERS","status":false,"description":"","parameters":{}},
 {"name":"SC/managers/CharacterVisualManager","status":true,"description":"!SC [v1.0.0] Gestionnaire visuel des personnages (Paper-doll).","parameters":{}},
 {"name":"SC/managers/ActorsAnimsManagers","status":true,"description":"!SC [v1.0.1] Gestionnaire global des animations de personnages.","parameters":{}},
@@ -56,8 +57,10 @@ var $plugins =
 {"name":"SC/patches/Scene_Boot_SplashPatch","status":true,"description":"!SC [v1.0.0] Patch pour lancer un splash screen au démarrage.","parameters":{}},
 {"name":"SC/patches/ActorAnimManager_ActionPatch","status":true,"description":"!SC [v1.0.0] Patch pour ajouter la gestion des actions à ActorAnimManager.","parameters":{}},
 {"name":"SC/patches/Game_Character_ActionPatch","status":true,"description":"!SC [v1.0.0] Patch pour ajouter l'API des actions à Game_Character.","parameters":{}},
+{"name":"SC/patches/GameActorEvent_GameMapPatch","status":true,"description":"!SC [v1.0.0] Patch pour que Game_Map instancie les Game_ActorEvent.","parameters":{}},
+{"name":"SC/patches/SpritesetMap_GameActorEventPatch","status":true,"description":"!SC [v1.0.0] Patch pour que Spriteset_Map instancie les sprites des Game_ActorEvent.","parameters":{}},
 {"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
-{"name":"SC_WIP/TextManager_AnkarosPatch","status":false,"description":"","parameters":{}},
+{"name":"SC_WIP/TextManager_AnkarosPatch","status":true,"description":"","parameters":{}},
 {"name":"SC_WIP/Window_TitleCommand_AnkarosPatch","status":true,"description":"","parameters":{}},
 {"name":"SC_WIP/Scene_Titles_AnkarosPatch","status":true,"description":"","parameters":{}}
 ];

@@ -48,10 +48,10 @@ const _Spriteset_Map_createCharacters = Spriteset_Map.prototype.createCharacters
 Spriteset_Map.prototype.createCharacters = function() {
     this._characterSprites = [];
     for (const event of $gameMap.events()) {
-        this._characterSprites.push(new Sprite_Character(event));
+        this.createActorEventSprite(event);
     }
     for (const vehicle of $gameMap.vehicles()) {
-        this._characterSprites.push(new Sprite_Character(vehicle));
+        this.createVehiculeSprite(vehicle);
     }
     for (const follower of $gamePlayer.followers().visibleFollowers().reverse()) {
         // --- Logique de l'usine ---
@@ -63,7 +63,13 @@ Spriteset_Map.prototype.createCharacters = function() {
         this._tilemap.addChild(sprite);
     }
 };
+Spriteset_Map.prototype.createVehiculeSprite = function(event) {
+    this._characterSprites.push(new Sprite_Character(event));
+}
 
+Spriteset_Map.prototype.createActorEventSprite = function(event) {
+    this._characterSprites.push(new Sprite_Character(event));
+}
  /**
  * --- Logique de l'usine pour le joueur ---
  */   

@@ -46,6 +46,7 @@ class ActorsAnimsManagers {
      */
     update() {
         const characters = [$gamePlayer, ...$gamePlayer.followers().visibleFollowers()];
+
         for (const character of characters) {
             const manager = this.getManagerFor(character);
             if (manager) {
@@ -63,11 +64,18 @@ class ActorsAnimsManagers {
         if (!character) return null;
         // Utilise l'ID de l'acteur s'il existe, sinon une clé unique pour les autres personnages.
         const characterId = character.actor ? character.actor().actorId() : $gameParty.leader().actorId();
-
+        
         if (!this._actorManagers.has(characterId)) {
             this._actorManagers.set(characterId, new ActorAnimManager(character));
         }
         return this._actorManagers.get(characterId);
+    }
+    getManagerById(actorId) {
+        if (!actorId) return null;
+        if (!this._actorManagers.has(actorId)) {
+            this._actorManagers.set(actorId, new ActorAnimManager(actorId));
+        }
+        return this._actorManagers.get(actorId);
     }
 }
 

@@ -145,10 +145,12 @@ class ActorAnimManager {
         const actorId = this._getActorId();
         return actorId !== null ? ACTOR_VISUAL_INDEX_VAR[actorId] : null;
     }
-
     _getActorId() {
+        
         if (this._character === $gamePlayer) return $gameParty.leader().actorId();
         if (this._character.actor) return this._character.actor().actorId(); // Pour Game_Follower
+        if(this.actor)return this.actor().actorId();
+        
         return null;
     }
 }

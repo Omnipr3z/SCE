@@ -30,12 +30,15 @@
  */
 
 (() => {
+    Game_CharacterBase.prototype.getAnimManager = function(){
+        return $gameActorsAnims.getManagerFor(this);
+    }
     /**
      * [NOUVEAU] Démarre une animation d'action sur ce personnage.
      * @param {string} actionName Le nom de l'action à jouer.
      */
     Game_CharacterBase.prototype.playAction = function(actionName) {
-        const manager = $gameActorsAnims.getManagerFor(this);
+        const manager = this.getAnimManager();
         if (manager) {
             manager.playAction(actionName);
         }
@@ -45,7 +48,7 @@
      * [NOUVEAU] Arrête l'animation d'action en cours sur ce personnage.
      */
     Game_CharacterBase.prototype.stopAction = function() {
-        const manager = $gameActorsAnims.getManagerFor(this);
+        const manager = this.getAnimManager();
         if (manager) {
             manager.stopAction();
         }
@@ -56,14 +59,14 @@
      * @returns {boolean}
      */
     Game_CharacterBase.prototype.isActionPlaying = function() {
-        const manager = $gameActorsAnims.getManagerFor(this);
+        const manager = this.getAnimManager();
         return manager ? manager._isActionPlaying : false;
     };
 
     // --- Surcharge de canMove pour bloquer le mouvement ---
     const _Game_CharacterBase_canMove = Game_CharacterBase.prototype.canMove;
     Game_CharacterBase.prototype.canMove = function() {
-        const manager = $gameActorsAnims.getManagerFor(this);
+        const manager = this.getAnimManager();
         if (manager && manager._isActionPlaying && manager._currentAction.blockMovement) {
             return false; // Ne peut pas bouger si une action bloquante est en cours.
         }
@@ -71,7 +74,7 @@
     };
     const _Game_Player_canMove = Game_Player.prototype.canMove;
     Game_Player.prototype.canMove = function() {
-        const manager = $gameActorsAnims.getManagerFor(this);
+        const manager = this.getAnimManager();
         if (manager && manager._isActionPlaying && manager._currentAction.blockMovement) {
             return false; // Ne peut pas bouger si une action bloquante est en cours.
         }
