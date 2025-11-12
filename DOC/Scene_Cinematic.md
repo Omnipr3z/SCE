@@ -1,6 +1,6 @@
 # SimCraft Engine - Système de Cinématiques
 
-![Version](https://img.shields.io/badge/Version-1.0.3-blue)
+![Version](https://img.shields.io/badge/Version-1.1.0-blue)
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
 
 Le système de Cinématiques est un module puissant conçu pour créer des scènes narratives complexes, animées et multi-couches, entièrement pilotées par des fichiers de données JSON. Il permet de réaliser des introductions, des cutscenes ou des dialogues de style "visual novel" sans écrire de code d'événement complexe.
@@ -81,10 +81,12 @@ La création de scènes complexes avec le système d'événements de RPG Maker p
 
 **Propriétés d'une séquence :**
 *   `needPressOk`: `true` pour pauser la scène et attendre une action du joueur.
+    *   L'action du joueur peut être la touche "OK" standard, un clic, ou toute autre touche définie dans le paramètre `nextSequenceKeys` de `SC_CinematicConfig.js`.
 *   `audio`: Pour jouer un son (`se`), une musique (`bgm`) ou faire un fondu (`fadeOutBgm`).
 *   `layers`: Un objet pour manipuler les sprites. La clé est l'ID du layer (0-12). Vous pouvez y définir `bitmap`, `opacityGoal`, `xGoal`, `yGoal`, `zoomGoal`, etc.
 *   `storyWindow`: Pour afficher du texte dans la fenêtre principale.
 
+> **Note :** L'action de passer la cinématique (`skip`) peut aussi être déclenchée par un clic droit si l'option `skipRightClick` est activée dans `SC_CinematicConfig.js`.
 ### Étape 2 : Déclarer la Cinématique au Moteur
 
 1.  Ouvrez le gestionnaire de plugins et sélectionnez `SC_CinematicConfig`.

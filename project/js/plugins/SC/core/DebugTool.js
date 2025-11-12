@@ -158,10 +158,13 @@ class DebugTool{
      * Logs an error message and throws an exception.
      * @param {string} txt - The error message.
      */
-    error(txt){
-        if(this.debugLog)
+    error(txt, error){
+        if(this.debugLog){
             console.error(txt);
-        throw new Error(txt);
+            if(error && DEBUG_OPTIONS.env === "DEV"){
+                this.warn(error.stack);
+            }
+        }      
     }
     //console contents
     /**

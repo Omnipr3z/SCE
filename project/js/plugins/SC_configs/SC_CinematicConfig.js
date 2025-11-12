@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.2] Configuration pour le chargement des données de cinématiques.
+ * @plugindesc !SC [v1.1.0] Configuration pour le système de cinématiques.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -23,6 +23,18 @@
  * 
  * Ce plugin permet de définir la liste de tous les fichiers de données
  * de cinématiques (.json) à charger depuis le dossier `data/SC/`.
+ *
+ * @param skipRightClick
+ * @text Passer avec Clic Droit
+ * @desc Si 'true', un clic droit passera la cinématique. Ajoute une dépendance implicite à SC_TouchInputManager.
+ * @type boolean
+ * @default false
+ *
+ * @param nextSequenceKeys
+ * @text Touches Séquence Suivante
+ * @desc Noms des actions (ex: 'jump', 'dash') qui peuvent aussi faire avancer la séquence. Nécessite SC_InputManager.
+ * @type string[]
+ * @default ["jump"]
  *
  * @param useSplash
  * @text Utiliser un Splash Screen
@@ -68,6 +80,20 @@
  * @type file
  * @dir img/cinematics/Hud/
  *
+ * @param skipButtonX
+ * @text Position X du bouton "Skip"
+ * @parent skipDefaultMode
+ * @type number
+ * @default 750
+ *
+ * @param skipButtonY
+ * @text Position Y du bouton "Skip"
+ * @parent skipDefaultMode
+ * @type number
+ * @default 550
+ *
+ * @param cinematicFiles
+ *
  * @param cinematicFiles
  *
  * @param cinematicFiles
@@ -87,12 +113,15 @@ SC.CinematicConfig = SC.CinematicConfig || {};
     SC.CinematicConfig.splashCinematicName = params.splashCinematicName.trim() || 'cinematic';
     DEBUG_OPTIONS.forceSkipSplash =  params["Debug - Force Skip Splash"] === "true";
 
+    SC.CinematicConfig.skipRightClick = params.skipRightClick === 'true';
+    SC.CinematicConfig.nextSequenceKeys = JSON.parse(params.nextSequenceKeys || '["jump"]');
+
     SC.CinematicConfig.skipDefaultMode = {
         enabled: params.skipDefaultEnabled === 'true',
         mode: params.skipDefaultMode || "saveExisting",
         buttonBitmap: params.skipDefaultBitmap || "Skip",
-        buttonX: 750, // Valeurs par défaut codées en dur pour l'instant
-        buttonY: 550
+        buttonX: parseInt(params.skipButtonX) || 750,
+        buttonY: parseInt(params.skipButtonY) || 550
     };
     
     const files = JSON.parse(params.cinematicFiles || "[]");
@@ -110,7 +139,7 @@ SC.CinematicConfig = SC.CinematicConfig || {};
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_CinematicConfig",
-    version: "1.0.2",
+    version: "1.1.0",
     icon: "🎞️",
     author: AUTHOR,
     license: LICENCE,

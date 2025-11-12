@@ -14,18 +14,29 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.3] Scène pour la gestion des cinématiques.
+ * @plugindesc !SC [v1.1.5] Scène pour la gestion des cinématiques.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
  * @base SC_CinematicConfig
  * @orderAfter SC_CinematicConfig
+ * @base SC_Sprite_CinematicLayer
  *
  * @help
  * Scene_Cinematics.js
  * 
  * Ce plugin fournit une scène dédiée à l'affichage de cinématiques complexes
  * définies dans des fichiers de données JSON.
+ *
+ * ▸ Historique :
+ *   v1.1.5 - 2025-11-13 : Ajout de la configuration pour le clic droit (skip) et les touches personnalisées (next).
+ *   v1.1.4 - 2025-11-12 : Correction d'un bug où les séquences avançaient sans attendre la fin des animations.
+ *   v1.1.3 - 2025-11-12 : Ajout de logs de débogage dans la méthode update.
+ *   v1.0.9 - 2024-08-04 : Nettoyage final du code et suppression des méthodes de rafraîchissement obsolètes.
+ *   v1.0.8 - 2024-08-04 : Refactorisation des boutons "OK" et "Skip" en composants autonomes.
+ *   v1.0.7 - 2024-08-04 : Refactorisation pour utiliser le composant autonome Sprite_CinematicLayer.
+ *   v1.0.6 - 2024-08-04 : Refactorisation de la gestion du bouton "Skip" pour une meilleure cohérence.
+ *   v1.0.5 - 2024-08-04 : Intégration du système de mise à l'échelle pour les éléments de l'interface.
  */
 class Scene_Cinematic extends Scene_Base {
     constructor(){
@@ -33,51 +44,64 @@ class Scene_Cinematic extends Scene_Base {
         this.initMembers();
     }
     get graphicsWidth(){
-        const config = SC.GraphicsConfig;
-        if(config.defaultMode === 'Fullscreen'){
-            return screen.width;
-        }
-        return config.defaultResolution.width;
+        return Graphics.width;
     }
     get graphicsHeight(){
-        const config = SC.GraphicsConfig;
-        if(config.defaultMode === 'Fullscreen'){
-            return screen.height;
+        return Graphics.height;
+    }
+    currentSequencyData(index){
+        return this._cinematicData[index];
+    }
+    /**
+     * [INTERNE] Évalue une valeur qui peut être une expression JavaScript.
+     * Si la valeur est une chaîne commençant par "eval:", elle est exécutée.
+     * @param {*} value La valeur à évaluer.
+     * @returns {*} La valeur évaluée ou la valeur originale.
+     */
+    evalValue(value) {
+        if (typeof value === 'string' && value.startsWith('eval:')) {
+            try {
+                // 'this' dans eval fera référence à l'instance de Scene_Cinematic
+                return eval(value.substring(5));
+            } catch (e) {
+                $debugTool.error(`Erreur lors de l'évaluation de la propriété de cinématique: "${value}"`, e);
+                return 0; // Retourne une valeur par défaut en cas d'erreur
+            }
         }
-        return config.defaultResolution.height;
+        return value;
     }
-    loadPicture(filename){
-        return ImageManager.loadBitmap(`img/cinematics/${this._cinematicName}/`, filename);
+    isSkipEnable(){
+        if(DEBUG_OPTIONS.forceSkipSplash && this._cinematicName == SC.CinematicConfig.splashCinematicName)
+            return true;
+        if(this._skipMode.enabled === false){
+            return false;
+        }else{
+            switch(this._skipMode.mode){
+                case "always":
+                    return true;
+                case "never":
+                    return false;
+                case "saveExisting":
+                    return DataManager.isAnySavefileExists();
+                default:
+                    return false;
+            }
+        }
     }
-    loadBgPicture(filename){
-        return ImageManager.loadBitmap(`img/cinematics/Bg/`, filename);
+    isSkipCalled(){
+        return Input.isTriggered("cancel")
+            || TouchInput.isCancelled()
+            || (TouchInput.isRightPressed() && SC.CinematicConfig.skipRightClick);
     }
-    loadHudPicture(filename){
-        return ImageManager.loadBitmap(`img/cinematics/Hud/`, filename);
-    }   
-    playScSE(seNm){
-        AudioManager.playSe({
-            name:seNm,
-            pitch:100,
-            pan:0,
-            volume:100,
-            pos:0
+    isOkCalled(){
+        let called = false;
+        SC.CinematicConfig.nextSequenceKeys.forEach(keyActionName => {
+            if(Input.isTriggered(keyActionName))
+                called = true;
         })
-    };
-    initMembers(){
-        this._cinematicData = null;
-        this._endSequency = 0;
-        this._currentSequency = 0;
-        this._layers = [];
-        this._backgrounds = [];
-        this._cinematicSourceData = null;
-        this._endBackgrounds = [];
-        this._tick = 0;
-        this._tickBgOpacity = 0;
-        this.needToPressOk = false;
-        this._cinematicName = "global";
+        return Input.isTriggered("ok")
+            || called;
     }
-
     /**
      * [INTERNE] Initialise les données de la scène à partir de l'objet de données de la cinématique.
      * @param {object} sourceData L'objet de données de la cinématique (ex: $dataPrologue40k).
@@ -101,6 +125,68 @@ class Scene_Cinematic extends Scene_Base {
     _setupSkipMode(skipData) {
         this._skipMode = skipData || {};
     }
+    setupBtnPosition(){
+        // Positionnement du bouton "Press OK" (layer 11)
+        // On assume que 188px est un offset fixe depuis le bord droit dans la résolution de référence (1280x720).
+        const pressOkRefX = SC.GraphicsConfig.uiReferenceResolution.width - 188;
+        const pressOkRefY = 10; // 10px depuis le bord haut dans la résolution de référence.
+        const pressOkRefW = this._pressOkButton.bitmap ? this._pressOkButton.bitmap.width : 0;
+        const pressOkRefH = this._pressOkButton.bitmap ? this._pressOkButton.bitmap.height : 0;
+        const scaledPressOkRect = SC.calculateScaledRect(pressOkRefX, pressOkRefY, pressOkRefW, pressOkRefH);
+
+        this._pressOkButton.x = scaledPressOkRect.x;
+        this._pressOkButton.y = scaledPressOkRect.y;
+
+        // Positionnement du bouton "Skip" dédié
+        if (this._skipButton) {
+            // Utilise les paramètres configurés dans SC_CinematicConfig.js
+            const skipRefX = SC.CinematicConfig.skipDefaultMode.buttonX;
+            const skipRefY = SC.CinematicConfig.skipDefaultMode.buttonY;
+            const skipRefW = this._skipButton.bitmap ? this._skipButton.bitmap.width : 0;
+            const skipRefH = this._skipButton.bitmap ? this._skipButton.bitmap.height : 0;
+            const scaledSkipRect = SC.calculateScaledRect(skipRefX, skipRefY, skipRefW, skipRefH);
+
+            this._skipButton.x = scaledSkipRect.x;
+            this._skipButton.y = scaledSkipRect.y;
+        }
+
+    }
+    loadPicture(filename){
+        return ImageManager.loadBitmap(`img/cinematics/${this._cinematicName}/`, filename);
+    }
+    loadBgPicture(filename){
+        return ImageManager.loadBitmap(`img/cinematics/Bg/`, filename);
+    }
+    loadHudPicture(filename){
+        return ImageManager.loadBitmap(`img/cinematics/Hud/`, filename);
+    }   
+    playScSE(seNm){
+        AudioManager.playSe({
+            name:seNm,
+            pitch:100,
+            pan:0,
+            volume:100,
+            pos:0
+        })
+    };
+
+    initMembers(){
+        this._cinematicData = null;
+        this._endSequency = 0;
+        this._currentSequency = 0;
+        this._layers = [];
+        this._backgrounds = [];
+        this._cinematicSourceData = null;
+        this._endBackgrounds = [];
+        this._tick = 0;
+        this._tickBgOpacity = 0;
+        this.needToPressOk = false;
+        this._waitFrame = 0; // Délai pour la gestion des entrées
+        this._isSequencePassing = false; // Verrou pour l'enchaînement automatique
+        this._cinematicName = "global";
+    }
+
+    // ===== CREATE PARTS ======
     create() {
         super.create();
 
@@ -135,15 +221,15 @@ class Scene_Cinematic extends Scene_Base {
         for(let i=0; i<13; i++ ) {
             this.createLayer(i);
         };
-        this.preloadImg();
         this.createWindowLayer();
 
         
 
         this.createStoryWindow();
         this.createTitleGameInfosWindows();
+        this.createButtons(); // Crée les sprites de boutons dédiés
         this.setupBtnPosition();
-        this.updateCinematic();
+        this.updateNextSequency();
     }
     createBackground() {
         this._bgSprites = [];
@@ -158,6 +244,152 @@ class Scene_Cinematic extends Scene_Base {
             }
         }
     }
+    createTitleGameInfosWindows() {
+        const rect = new Rectangle(0, this.graphicsHeight - 64, this.graphicsWidth, 100);
+        this._gameInfosWindow = new Window_TitleGameInfos(rect, this._gameInfosNeeded);
+        this.addChild(this._gameInfosWindow);
+    }
+    createStoryWindow(){
+        const rect = {
+            x:0,
+            y:50,
+            width:this.graphicsWidth,
+            height:this.graphicsHeight / 2
+        }
+        this._storyWindow = new Window_Story(rect);
+
+        const rectB = {
+            x:rect.x + 310,
+            y:rect.y + 724,
+            width:260,
+            height:440
+        }
+        this._storyLastWindow = new Window_Story(rectB);
+
+        
+        this.addChild(this._storyWindow)
+        this.addChild(this._storyLastWindow)
+    }
+    createButtons() {
+        // Crée le bouton "Press OK"
+        this._pressOkButton = new Sprite_CinematicBtn();
+        this._pressOkButton.bitmap = this.loadHudPicture("PressOk");
+        this.addChild(this._pressOkButton);
+
+        // Crée le bouton "Skip" si activé
+        if (this.isSkipEnable()) {
+            this._skipButton = new Sprite_CinematicBtn();
+            this._skipButton.bitmap = this.loadHudPicture(this._skipMode.buttonBitmap || "Skip");
+            this.addChild(this._skipButton);
+        }
+    }
+    createLayer(i){
+        // On instancie notre nouveau sprite autonome.
+        // Il gère lui-même son initialisation.
+        this._layers[i] = new Sprite_CinematicLayer();
+        this.addChild(this._layers[i]);
+    }
+
+    // ===== START PARTS ======   
+    start() {
+        super.start();
+        this.startFadeIn(2, false);
+    }
+    isSpriteBusy(){
+        const contentLayers = this._layers.slice(0, 11);
+        return contentLayers.some(layer => layer && layer.isBusy());
+    }
+
+    // ===== UPDATE PARTS ======
+    update() {
+        super.update();
+        
+        // On met à jour les éléments visuels en continu
+        this.updateSkipInput();
+        this.refreshBtns();
+        this._storyWindow.update();
+        this.updateBg();
+
+        // Si une animation est en cours, on ne fait rien d'autre. On attend.
+        if (this.isSpriteBusy()) {
+            return;
+        }
+        // Si les animations sont terminées, on vérifie comment passer à la suite.
+        if (this._currentSequency > this._endSequency) {
+            this.endScene();
+            return;
+        }else if (this.needToPressOk) {
+            this._isSequencePassing = false; // On peut passer à la suite, on retire le verrou
+            // On attend une action du joueur pour continuer.
+            if (Input.isTriggered("ok") || Input.isTriggered("jump") || Input.isTriggered("enter") || TouchInput.isTriggered()) {
+                this.passSequency(true); // On passe à la séquence suivante avec un son
+            }
+        } else if (!this._isSequencePassing) {
+            this._isSequencePassing = true; // On verrouille pour n'appeler qu'une fois
+            this.passSequency(false);
+        }
+    }
+    updateNextSequency() {
+        const sequence = this.currentSequencyData(this._currentSequency);
+        if (!sequence) return;
+
+        this.updateNeedPressOk(sequence)
+
+        // Si c'est la dernière séquence, on ne fait rien de plus, on la laisse se terminer.
+        
+
+        $debugTool.log(`--> Séquence ${this._currentSequency} chargée. needToPressOk est maintenant: ${this.needToPressOk}`);
+        this.updateCinematicAudio(sequence)
+        this.updateCinematicLayers(sequence);
+        this.updateStoryWindow(sequence, "storyWindow");
+        this.updateStoryWindow(sequence, "storyLastWindow");
+
+        if (sequence.events) {
+            sequence.events.forEach(event => {
+                if (typeof this[event.name] === 'function') {
+                    this[event.name].apply(this, event.args || []);
+                }
+            });
+        }
+    }
+    updateNeedPressOk(sequence){
+        // this.needToPressOk est déjà réinitialisé dans passSequency.
+        // On l'applique seulement si la séquence le définit.
+        if (sequence.needPressOk !== undefined) {
+            this.needToPressOk = sequence.needPressOk;
+        }
+    }
+    updateCinematicLayers(sequence){
+        if (sequence.layers) {
+            for (const layerId in sequence.layers) {
+                if (layerId === "all") {
+                    this._layers.forEach(layer => this.applyLayerProperties(layer, sequence.layers.all));
+                } else {
+                    const layer = this._layers[parseInt(layerId, 12)];
+                    if (layer) {
+                        this.applyLayerProperties(layer, sequence.layers[layerId]);
+                    }
+                }
+            }
+        }
+    }
+    updateCinematicAudio(sequence){
+        if (sequence.audio) {
+            if (sequence.audio.se) this.playScSE(sequence.audio.se);
+            if (sequence.audio.bgm) AudioManager.playBgm(sequence.audio.bgm);
+            if (sequence.audio.fadeOutBgm) AudioManager.fadeOutBgm(sequence.audio.fadeOutBgm);
+        }
+    }
+    updateStoryWindow(sequence, key){
+         if (sequence[key]) {
+            const win = this[`_${key}`];
+            if (sequence[key].clear) win.clearTxt();
+            if (sequence[key].style) win.setStyle(sequence[key].style);
+            if (sequence[key].txt) win.setTxt(sequence[key].txt);
+            if (sequence[key].y) win.y = this.evalValue(sequence[key].y);
+        }
+    }
+
     updateBg(){
         if(this._bgSprite_1 && this._bgSprite_2 && this._bgSprite_3){
             this.updateBgPosition();
@@ -222,94 +454,66 @@ class Scene_Cinematic extends Scene_Base {
                 this._bgSprite_3.opacity  = this._bgSprite_3.opacity.approach(255, 9);
         }
     }
-    createTitleGameInfosWindows() {
-        const rect = new Rectangle(0, this.graphicsHeight - 64, this.graphicsWidth, 100);
-        this._gameInfosWindow = new Window_TitleGameInfos(rect, this._gameInfosNeeded);
-        this.addChild(this._gameInfosWindow);
-    }
-    createStoryWindow(){
-        const rect = {
-            x:0,
-            y:50,
-            width:this.graphicsWidth,
-            height:this.graphicsHeight / 2
+    updateSkipInput(){
+        if(this.isSkipEnable() && this.isSkipCalled()) {
+            this._currentSequency = this._endSequency;
+            SoundManager.playCancel();
+            this.needToPressOk = false;
+            this.updateNextSequency();
+        }else if (this.isSkipCalled()) {
+            SoundManager.playBuzzer();
         }
-        this._storyWindow = new Window_Story(rect);
-
-        const rectB = {
-            x:rect.x + 310,
-            y:rect.y + 724,
-            width:260,
-            height:440
+    }
+    updateInputOk(){
+        if(!this.needToPressOk && !this.isSpriteBusy()){
+            this.passSequency();
+        } else if (this.isOkCalled()) {
+            this.passSequency(true);
+            this.needToPressOk = false;
+        }else if(this._tick > 1500){
+            this.passSequency(true);
+            this.needToPressOk = false;
         }
-        this._storyLastWindow = new Window_Story(rectB);
-
-        
-        this.addChild(this._storyWindow)
-        this.addChild(this._storyLastWindow)
+        this._tick++;
     }
-    setupBtnPosition(){
-        const y = 10
-        this._layers[11].anchor.x        = 0;
-        this._layers[11].anchor.y        = 0;
-        this._layers[11].x = this.graphicsWidth - 188;
-        this._layers[11].y = y;
-        this._layers[11].xGoal = this.graphicsWidth - 188;
-        this._layers[11].yGoal = y;
-        this._layers[11].fadeSpeed = 3;
 
-        this._layers[12].anchor.x        = 0;
-        this._layers[12].anchor.y        = 0;
-        this._layers[12].x = 0;
-        this._layers[12].y = y;
-        this._layers[12].xGoal = 0;
-        this._layers[12].yGoal = y;
-        
-
+    passSequency(se){
+        this._currentSequency++;
+      this._tick = 0;
+      if(se)
+        SoundManager.playCursor();
+      this._isSequencePassing = false; // On réinitialise le verrou pour la prochaine séquence
+      this.needToPressOk = false; // On réinitialise ici, juste avant de charger la nouvelle séquence
+      this.updateNextSequency();
     }
-    createLayer(i){
-        this._layers[i] = new Sprite();
-        
-        this._layers[i].imgName         ='';
-
-        this._layers[i].anchor.x        = 0.5;
-        this._layers[i].anchor.y        = 0.5;
-        this._layers[i].x               = Math.floor(this.graphicsWidth / 2);
-        this._layers[i].y               = Math.floor(this.graphicsHeight / 2) - 20;
-        this._layers[i].scale._x        = 1;
-        this._layers[i].scale._y        = 1;
-        this._layers[i].opacity         = 0;
-        this._layers[i].rotation        = 0;
-        
-        this._layers[i].currentFrame    = 0;
-        this._layers[i].lastFrame       = 0;
-        this._layers[i].frameTick       = 0;
-
-        this._layers[i].xGoal           = Math.floor(this.graphicsWidth / 2);
-        this._layers[i].yGoal           = Math.floor(this.graphicsHeight / 2);
-        this._layers[i].opacityGoal     = 0;
-        this._layers[i].zoomGoal        = 1;
-
-        this._layers[i].fadeSpeed       = 3;
-        this._layers[i].moveSpeed       = 8;
-        this._layers[i].rotationSpeed   = 0;
-        this._layers[i].zoomSpeed       = 0.05;
-        this._layers[i].frameDuration   = 4;
-        
-        this._layers[i].rotation        = 0;
-        this._layers[i].rotationGoal    = 0;
-        this._layers[i].rotationSpeed   = 0.01;
-        this._layers[i].rotatMandatory  = false;
-
-        this._layers[i].zoomGoal        = 1;
-        this._layers[i].zoomSpeed       = 0.004;
-
-        this.addChild(this._layers[i]);
+    refreshBtns() {
+        // Si on doit presser OK et que les animations sont finies, on fait clignoter les boutons.
+        if (this.needToPressOk && !this.isSpriteBusy()) {
+            this._pressOkButton.setBlinking(true);
+            // Le bouton Skip clignote en même temps que le bouton OK.
+            if (this._skipButton) this._skipButton.setBlinking(true);
+        } else {
+            // Sinon, on s'assure qu'ils ne clignotent pas et redeviennent transparents.
+            this._pressOkButton.setBlinking(false);
+            if (this._skipButton) this._skipButton.setBlinking(false);
+        }
     }
-    preloadImg(){
-        this._layers[11].bitmap = this.loadHudPicture("PressOk");
-        this._layers[12].bitmap = this.loadHudPicture("Skip");
+    applyLayerProperties(layer, props) {
+        for (const key in props) {
+            let value = props[key];
+            if (key === 'bitmap') {
+                layer.bitmap = this.loadPicture(value);
+            } else if (key.endsWith('Goal') || key === 'duration') {
+                // Les propriétés cibles sont passées à la méthode applyProperties du sprite.
+                layer.applyProperties({ [key]: this.evalValue(value) });
+            } else {
+                // Les autres propriétés (comme les vitesses) sont appliquées directement.
+                layer[key] = this.evalValue(value);
+            }
+        }
     }
+
+    // ===== ENDING =====
     endScene(){
         AudioManager.stopMe();
         this._layers.forEach((layer)=>layer.opacity = 0);
@@ -334,265 +538,20 @@ class Scene_Cinematic extends Scene_Base {
                 break;
         }
     }
-    evalValue(value) {
-        if (typeof value !== 'string') {
-            return value;
-        }
-        try {
-            // Context for evaluation
-            const context = {
-                BOOK_Y: BOOK_Y,
-                Graphics: Graphics
-            };
-            return new Function(...Object.keys(context), `return ${value}`)(...Object.values(context));
-        } catch (e) {
-            console.error(`Error evaluating value: ${value}`, e);
-            return value;
-        }
-    }
-    applyLayerProperties(layer, props) {
-        for (const key in props) {
-            const value = props[key];
-            if (key === 'bitmap') {
-                layer.bitmap = this.loadPicture(value);
-            } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                // Handle nested properties like scale.x
-                let target = layer;
-                const parts = key.split('.');
-                for (let i = 0; i < parts.length - 1; i++) {
-                    target = target[parts[i]];
-                }
-                target[parts[parts.length - 1]] = this.evalValue(value);
-            } else {
-                layer[key] = this.evalValue(value);
-            }
-        }
-    }
-    updateCinematic() {
-        if (this._currentSequency > this._endSequency) {
-            this.endScene();
-            return;
-        };
-        const sequence = this._cinematicData[this._currentSequency];
-        if (!sequence) return;
-
-        if (sequence.needPressOk !== undefined) {
-            this.needToPressOk = sequence.needPressOk;
-        }
-
-        if (sequence.audio) {
-            if (sequence.audio.se) this.playScSE(sequence.audio.se);
-            if (sequence.audio.bgm) AudioManager.playBgm(sequence.audio.bgm);
-            if (sequence.audio.fadeOutBgm) AudioManager.fadeOutBgm(sequence.audio.fadeOutBgm);
-        }
-
-        if (sequence.layers) {
-            for (const layerId in sequence.layers) {
-                if (layerId === "all") {
-                    this._layers.forEach(layer => this.applyLayerProperties(layer, sequence.layers.all));
-                } else {
-                    const layer = this._layers[parseInt(layerId, 12)];
-                    if (layer) {
-                        this.applyLayerProperties(layer, sequence.layers[layerId]);
-                    }
-                }
-            }
-        }
-
-        if (sequence.storyWindow) {
-            const win = this._storyWindow;
-            if (sequence.storyWindow.clear) win.clearTxt();
-            if (sequence.storyWindow.style) win.setStyle(sequence.storyWindow.style);
-            if (sequence.storyWindow.txt) win.setTxt(sequence.storyWindow.txt);
-            if (sequence.storyWindow.y) win.y = this.evalValue(sequence.storyWindow.y);
-        }
-
-        if (sequence.storyLastWindow) {
-            const win = this._storyLastWindow;
-            if (sequence.storyLastWindow.clear) win.clearTxt();
-            if (sequence.storyLastWindow.txt) win.setTxt(sequence.storyLastWindow.txt);
-            if (sequence.storyLastWindow.y) win.y = this.evalValue(sequence.storyLastWindow.y);
-        }
-
-        if (sequence.events) {
-            sequence.events.forEach(event => {
-                if (typeof this[event.name] === 'function') {
-                    this[event.name].apply(this, event.args || []);
-                }
-            });
-        }
-    }
-    start() {
-        super.start();
-        this.startFadeIn(2, false);
-    }
-    refreshBtns(isBusy){
-        if(this.needToPressOk && !isBusy){
-            if(this._layers[11].opacity <= 150){
-                this._layers[11].opacity += this._layers[11].fadeSpeed;
-            }else{
-                this._layers[11].opacity = 20;
-            };
-            if(this.isSkipEnable()){
-                this._layers[12].opacity = this._layers[11].opacity;
-            };
-        }else{
-            this._layers[11].opacity=0;
-            if(this.isSkipEnable()){
-                if(this._layers[12].opacity <= 100){
-                    this._layers[12].opacity += this._layers[12].fadeSpeed;
-                }else{
-                    this._layers[12].opacity = 20;
-                };
-            }else{
-                this._layers[11].opacity = 0;
-            };
-        };
-    }
-    refreshOpacity(i){
-        if ( this._layers[i].opacity !=  this._layers[i].opacityGoal){
-            this._layers[i].opacity = this._layers[i].opacity.approach(this._layers[i].opacityGoal, this._layers[i].fadeSpeed);
-            return false;
-        }
-        return true;
-    }
-    refreshPosition(i){
-        let res = true;
-        if( this._layers[i].x !=  this._layers[i].xGoal){
-            this._layers[i].x = this._layers[i].x.approach(this._layers[i].xGoal, this._layers[i].moveSpeed);
-            res = false;
-        }
-        if( this._layers[i].y !=  this._layers[i].yGoal){
-            this._layers[i].y = this._layers[i].y.approach(this._layers[i].yGoal, this._layers[i].moveSpeed);
-            res = false;
-        }
-        return res;
-    }
-    refreshZoom(i){
-        if( this._layers[i].scale.x !=  this._layers[i].zoomGoal){
-
-            this._layers[i].scale.x = this._layers[i].scale.x.approach(this._layers[i].zoomGoal, this._layers[i].zoomSpeed);
-            this._layers[i].scale.y = this._layers[i].scale.x;
-            return false;
-        }
-        return true;
-    }
-    updateDuration(i){
-        if(this._layers[i]._duration > 0){
-            this._layers[i]._duration--;
-            return false;
-        }
-        return true;
-
-    }
-    refreshFrame(i){
-        if ( this._layers[i].currentFrame >  this._layers[i].lastFrame){
-            this._layers[i].frameTick = 0;
-            return true;
-        }else if(this._layers[i].frameTick < this._layers[i].frameDuration){
-            this._layers[i].frameTick++;
-            return false;
-        } else if (this._layers[i].currentFrame <  this._layers[i].lastFrame){
-            this._layers[i].currentFrame++;
-            this._layers[i].frameTick = 0;
-            const frameName = `${this._layers[i].imgName}_${this._layers[i].currentFrame}`;
-            this._layers[i].bitmap = this.loadPicture(frameName);
-            return false;
-        }
-    }
-    refreshRotation(i){
-        let res = true;
-        if( this._layers[i].rotation !=  this._layers[i].rotationGoal){
-
-            this._layers[i].rotation = this._layers[i].rotation.approach(this._layers[i].rotationGoal, this._layers[i].rotationSpeed);
-            if(this._layers[i].rotatMandatory)
-                res = false;
-        }
-        return res;
-    }
-    refreshLayer(i){
-        let needRefresh = true;
-        if(!this.refreshOpacity(i)) needRefresh = false;
-        if(!this.refreshPosition(i)) needRefresh = false;
-        if(!this.refreshZoom(i)) needRefresh = false;
-        if(!this.updateDuration(i))needRefresh = false;
-        if(!this.refreshRotation(i))needRefresh = false;
-
-        if(needRefresh)
-            needRefresh = !this.refreshFrame(i)
-        return needRefresh;
-    }
-    update() {
-        super.update();
-        let needRefresh = [];
-        
-        for(let i=0; i<11; i++){
-            needRefresh[i] = this.refreshLayer(i);
-        }
-        if(!needRefresh.includes(false)){
-            this.updateInputOk();
-
-        }
-        this.updateSkipInput();
-        this.refreshBtns(needRefresh.includes(false));
-        this._storyWindow.update();
-        this.updateBg();
-    }
-    isSkipEnable(){
-        if(DEBUG_OPTIONS.forceSkipSplash && this._cinematicName == SC.CinematicConfig.splashCinematicName)
-            return true;
-        if(this._skipMode.enabled === false){
-            return false;
-        }else{
-            switch(this._skipMode.mode){
-                case "always":
-                    return true;
-                case "never":
-                    return false;
-                case "saveExisting":
-                    return DataManager.isAnySavefileExists();
-                default:
-                    return false;
-            }
-        }
-    }
-    updateSkipInput(){
-        if(this.isSkipEnable()) {
-            this._currentSequency = this._endSequency;
-            SoundManager.playCancel();
-            this.needToPressOk = false;
-            this.updateCinematic();
-        }else if (Input.isTriggered("cancel") || TouchInput.isCancelled()) {
-            SoundManager.playBuzzer();
-        }
-    }
-    updateInputOk(){
-        if(!this.needToPressOk){
-            this.passSequency();
-        } else if ((Input.isTriggered("ok") || Input.isTriggered("jump") || Input.isTriggered("enter") || TouchInput.isTriggered())) {
-            this.passSequency(true);
-        }else if(this._tick > 1500){
-            this.passSequency(true);
-        }
-        this._tick++;
-    }
-    passSequency(se){
-      this._tick = 0;
-      this._currentSequency++;
-      if(se)
-        SoundManager.playCursor();
-      this.updateCinematic();
-    }
 }
+
+//Gestion de la dependance conditionnelle
+SC._temp.dependency = ["SC_SystemLoader", "SC_CinematicConfig"];
+if(SC.CinematicConfig.skipRightClick)dependency.push("SC_TouchInputManager");
 
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister     = {
     name                : "Scene_Cinematic",
-    icon                : "\u{2699}\u{FE0F}\u{1F532}",
-    version             : "1.0.2",
+    icon                : "🎬",
+    version             : "1.1.3",
     author              : AUTHOR,
     license             : LICENCE,
-    dependencies        : ["SC_SystemLoader", "SC_CinematicConfig"],
+    dependencies        : SC._temp.dependency,
     loadDataFiles       : SC.CinematicConfig.dataFiles,
     createObj           : {autoCreate  : false},
     autoSave            : false
