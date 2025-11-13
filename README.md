@@ -28,7 +28,7 @@ En plus des termes de la licence CC BY-NC-SA 4.0, l’utilisation de ce code est
      - Un lien vers le dépôt officiel : [https://github.com/Omnipr3z/SCE](https://github.com/Omnipr3z/SCE).
 
 Aussi, certains scripts mentionnés ci-dessous sont dérivés du **code source de RPG Maker MZ**.
-Ces parties restent soumises à la **licence propriétaire de Gotcha Gotcha Games / Degica**.
+Ces scripts sont conçus pour fonctionner avec le moteur RPG Maker MZ et restent soumis à la **licence propriétaire de Gotcha Gotcha Games / Degica**.
 
 Par conséquent, **l'utilisation de ces scripts nécessite que vous possédiez une copie légale de RPG Maker MZ**.
 Ils ne peuvent pas être redistribués séparément ou utilisés en dehors du cadre autorisé par la licence utilisateur du logiciel.
@@ -74,3 +74,6 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
   - [Graphics Manager](DOC/GraphicsEx.md)
 - **Scènes**
   - [Scène de Cinématiques](DOC/Scene_Cinematic.md)
+
+# TODO ROADMAP
+- Faire le layer face/hair des actor avec la possibilité de le masqué avec certains equipements (casque chapeau...) pour evité que ca depasse ou que ca soit moche.

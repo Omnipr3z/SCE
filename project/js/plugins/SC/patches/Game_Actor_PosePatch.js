@@ -50,7 +50,7 @@ Game_Actor.prototype.setPose = function(poseName) {
     if (SC.posesConfig[poseName]) {
         this._currentPose = poseName;
     } else {
-        console.warn(`Tentative de définir une pose inconnue: "${poseName}"`);
+        console.warn(`Tentative de définir une pose inconnue: "${poseName}"`, true);
         this._currentPose = 'default';
     }
 };
@@ -81,7 +81,7 @@ ActorAnimManager.prototype.getIndexForState = function(animState) {
     const poseName = actor.getPose();
 
     if (poseName === 'default') {
-        console.log("Pose par défaut détectée pour l'acteur ID " + actor.actorId()); //
+        console.log("Pose par défaut détectée pour l'acteur ID " + actor.actorId(), true); //
         // Pour la pose par défaut, on utilise la configuration de base des animations.
         switch (animState) {
             case 'walk': return SC.CharacterAnimConfig.DEFAULT_ANIM_INDEX;
