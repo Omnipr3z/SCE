@@ -160,7 +160,7 @@ class CharacterVisualManager {
 
         // --- Phase 3: Couches Avant ---
         // C'est la partie la plus complexe. On parcourt à nouveau les équipements pour ajouter les couches avant (armures, etc.) et les cheveux.
-        []...actor.equips().forEach((item) => {
+        actor.equips().forEach((item) => {
             // On cherche une couche d'équipement avant (<visualLayer>).
             const match = this._matchVisualEquipFrtLayer(item);
             if (match) {
