@@ -66,7 +66,20 @@ Game_Actor.prototype.characterIndex = function() {
     // Sinon, on retourne le comportement par défaut.
     //return _Game_Actor_characterIndex.call(this);
 };
-
+Game_CharacterBase.prototype.pattern = function() {
+    if(this.actor && this.actor() !== null && this.actor() !== undefined){
+        if(this.actor().isVisual()){
+            return this._pattern;
+        }
+    }
+    if(this instanceof Game_Player){
+        const actor = $gameParty.leader();
+        if(actor && actor.isVisual()){
+            return this._pattern;
+        }
+    }
+    return this._pattern < 3 ? this._pattern : 1;
+};
 // Game_CharacterBase.prototype.setImage = function(
 //     characterName,
 //     characterIndex

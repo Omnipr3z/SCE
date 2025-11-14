@@ -81,7 +81,7 @@ ActorAnimManager.prototype.getIndexForState = function(animState) {
     const poseName = actor.getPose();
 
     if (poseName === 'default') {
-        console.log("Pose par défaut détectée pour l'acteur ID " + actor.actorId(), true); //
+        $debugTool.log("Pose par défaut détectée pour l'acteur ID " + actor.actorId(), true); //
         // Pour la pose par défaut, on utilise la configuration de base des animations.
         switch (animState) {
             case 'walk': return SC.CharacterAnimConfig.DEFAULT_ANIM_INDEX;
