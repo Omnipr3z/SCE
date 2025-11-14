@@ -30,6 +30,7 @@
  *   - SC_ActorsAnimsManagers.js
  *
  * ▸ Historique :
+ *   v1.0.1 - Correction pour inclure la mise à jour des événements d'acteurs.
  *   v1.0.0 - 2024-08-03 : Création initiale du patch.
  */
 

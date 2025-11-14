@@ -45,9 +45,18 @@ class ActorsAnimsManagers {
      * Méthode principale appelée à chaque frame de la carte.
      */
     update() {
+        // Personnages du groupe (joueur + followers)
         const characters = [$gamePlayer, ...$gamePlayer.followers().visibleFollowers()];
-
         for (const character of characters) {
+            const manager = this.getManagerFor(character);
+            if (manager) {
+                manager.update();
+            }
+        }
+
+        // Événements qui sont des acteurs
+        const eventsActors = $gameMap.events().filter(event => event.actor);
+        for (const character of eventsActors) {
             const manager = this.getManagerFor(character);
             if (manager) {
                 manager.update();

@@ -76,4 +76,6 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
   - [Scène de Cinématiques](DOC/Scene_Cinematic.md)
 
 # TODO ROADMAP
-- Faire le layer face/hair des actor avec la possibilité de le masqué avec certains equipements (casque chapeau...) pour evité que ca depasse ou que ca soit moche.
+
+La feuille de route complète du projet est désormais disponible dans un document dédié.
+- [Consulter la Roadmap](DOC/Roadmap.md)

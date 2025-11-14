@@ -67,7 +67,6 @@ class CharacterVisualManager {
             return this._createAndCacheBitmap(actor, cacheKey);
         }
     }
-
     /**
      * Récupère l'entrée de cache complète pour un acteur, y compris le compositeur et l'état.
      * @param {number} actorId L'ID de l'acteur.
@@ -81,7 +80,41 @@ class CharacterVisualManager {
         const cacheKey = this._generateCacheKey(actor);
         return this._cache.get(cacheKey) || null;
     }
+    _matchVisualEquipBckLayer(item){
+        const backLayerRegex = /<visualBackLayer:\s*(\S+)\s+(\d+)>/;
 
+        if(item && item.note) {
+            return item.note.match(backLayerRegex);
+        }
+        return null;
+    }
+    _matchVisualEquipFrtLayer(item){
+        const frontLayerRegex = /<visualLayer:\s*(\S+)\s+(\d+)>/;
+
+        if(item && item.note) {
+            return item.note.match(frontLayerRegex);
+        }
+        return null;
+    }
+    _shouldDisplayFaceLayer(actor) {
+        const faceLayerRegex = /<useFaceLayer>/;
+        if(actor && actor.note) {
+            return actor.note.match(faceLayerRegex)
+                && SC.VisualConfig.useFaceLayer;
+        }
+        return false; // Par défaut, on affiche pase la couche face
+    }
+    _needHair(actor){
+        // La variable 'actor' est une instance de Game_Actor.
+        // Pour accéder à ses données de base (notetags, nom, etc.), on utilise la méthode .actor().
+        const actorData = actor ? actor.actor() : null;
+        const hairRegex = /<useHairLayer>/;
+        if(actorData && actorData.note) {
+            return actorData.note.match(hairRegex)
+                && SC.VisualConfig.useHairLayer;
+        }
+        return false; // Par défaut, on affiche pase la couche hair
+    }
     /**
      * Crée une entrée dans le cache pour un acteur et lance la composition.
      * @param {Game_Actor} actor L'acteur pour lequel créer le bitmap.
@@ -90,52 +123,78 @@ class CharacterVisualManager {
      * @private
      */
     _createAndCacheBitmap(actor, cacheKey) {
-        $debugTool.log(`CharacterVisualManager: Cache miss for key "${cacheKey}". Creating new composite.`);
-
-        const composer = new Bitmap_Composite();
+        $debugTool.log(`CharacterVisualManager: Cache miss for key "${cacheKey}". Creating new composite.`, true);
         
-        // Regex pour les couches visuelles
-        const frontLayerRegex = /<visualLayer:\s*(\S+)\s+(\d+)>/;
-        const backLayerRegex = /<visualBackLayer:\s*(\S+)\s+(\d+)>/;
+        // 1. Initialisation du compositeur
+        // On crée une nouvelle instance de Bitmap_Composite qui va se charger d'assembler les différentes couches d'images.
+        const composer = new Bitmap_Composite();
 
         // --- Phase 1: Couches Arrière ---
+        // On parcourt tous les équipements de l'acteur pour trouver les couches qui doivent s'afficher DERRIÈRE le personnage (ex: capes).
         let backLayerCount = 0;
-        for (const item of actor.equips()) {
-            if (item && item.note) {
-                const match = item.note.match(backLayerRegex);
-                if (match) {
-                    composer.addLayer(match[1], parseInt(match[2]));
-                    backLayerCount++;
-                }
+        actor.equips().forEach((item) => {
+            const match = this._matchVisualEquipBckLayer(item);
+            if (match) {
+                // Si un notetag <visualBackLayer> est trouvé, on ajoute la couche au compositeur avec son z-index.
+                composer.addLayer(match[1], parseInt(match[2]));
+                backLayerCount++;
             }
-        }
+        });
 
         // --- Phase 2: Couche de Base ---
+        // On ajoute le corps du personnage (la base) et potentiellement son visage
         const baseSprite = actor.characterName();
         if (baseSprite) {
-            // Le z-index de la base est le nombre de couches arrière, la plaçant juste au-dessus.
+            // Le z-index de la base est `backLayerCount`, ce qui la place juste au-dessus de toutes les couches arrière.
             composer.addLayer(baseSprite, backLayerCount);
+            backLayerCount++;
+            // On vérifie si une couche de visage doit être ajoutée.
+            if(this._shouldDisplayFaceLayer(actor)) {
+                const faceSprite = actor.characterName() + "_face";
+                // Le visage est ajouté juste au-dessus de la couche de base.
+                backLayerCount++;
+                composer.addLayer(faceSprite, backLayerCount + backLayerCount);
+                
+            }
         }
 
         // --- Phase 3: Couches Avant ---
-        for (const item of actor.equips()) {
-            if (item && item.note) {
-                const match = item.note.match(frontLayerRegex);
-                if (match) {
-                    // On ajuste le z-index pour qu'il soit au-dessus de la base et des couches arrière.
-                    composer.addLayer(match[1], parseInt(match[2]) + backLayerCount + 1);
+        // C'est la partie la plus complexe. On parcourt à nouveau les équipements pour ajouter les couches avant (armures, etc.) et les cheveux.
+        []...actor.equips().forEach((item) => {
+            // On cherche une couche d'équipement avant (<visualLayer>).
+            const match = this._matchVisualEquipFrtLayer(item);
+            if (match) {
+                // On calcule le z-index de cette couche d'équipement.
+                // Il est basé sur le z-index du notetag, auquel on ajoute le nombre de couches de base et arrière.
+                if(parseInt(match[2]) != SC.VisualConfig.hairLayerZIndex){
+                    const layerIndex = parseInt(match[2]) + backLayerCount;
+                    composer.addLayer(match[1], layerIndex);
+                }else{
+                    $debugTool.error(`Le z-index ${SC.VisualConfig.hairLayerZIndex} est resérvé à la couche des cheveux.
+                        Veuillez utiliser un autre index pour l'équipement '${item.id}:${item.name}'.`);
                 }
             }
+        });
+
+        // Si, après avoir parcouru tous les équipements, les cheveux n'ont toujours pas été ajoutés,
+        // on fait une dernière vérification. C'est un filet de sécurité si la condition dans la boucle n'a jamais été remplie.
+        if(this._needHair(actor)){
+            composer.addLayer(actor.characterName() + "_hair", SC.VisualConfig.hairLayerZIndex  + backLayerCount);
         }
 
+        // 4. Lancement du chargement
+        // Maintenant que toutes les couches sont listées, on demande au compositeur de commencer à charger les images.
         composer.loadLayers();
 
+        // 5. Création du Bitmap de destination et mise en cache
         // On crée un bitmap de destination. La taille est fixe pour l'instant.
         // C'est moins flexible mais plus stable.
         const bitmapWidth = SC.VisualConfig.bitmapSize.width;
         const bitmapHeight = SC.VisualConfig.bitmapSize.height;
         const destinationBitmap = new Bitmap(bitmapWidth, bitmapHeight);
 
+        // On stocke tout dans le cache : le bitmap final (encore vide), le compositeur, et un drapeau `isReady`.
+        // Le sprite (`Sprite_VisualCharacter`) utilisera ce drapeau pour savoir quand le dessin final peut être effectué.
         this._cache.set(cacheKey, {
             bitmap: destinationBitmap,
             composer: composer,

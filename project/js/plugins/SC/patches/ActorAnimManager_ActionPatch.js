@@ -36,6 +36,7 @@ const _ActorAnimManager_initialize = ActorAnimManager.prototype.constructor;
 ActorAnimManager.prototype.constructor = function(character) {
     _ActorAnimManager_initialize.call(this, character);
     this.clearAction();
+    this._actionQueue = []; // File d'attente pour les actions
 };
 
 /**
@@ -46,11 +47,21 @@ ActorAnimManager.prototype.clearAction = function() {
     this._isActionPlaying = false;
     this._actionFrameIndex = 0;
     this._actionTimer = 0;
+    this._waitCallback = null; // Callback à appeler à la fin de l'action
 };
 
 // --- Surcharge de la mise à jour pour prioriser l'action ---
 const _ActorAnimManager_update = ActorAnimManager.prototype.update;
 ActorAnimManager.prototype.update = function() {
+    if(!this._actionQueue) this._actionQueue = [];
+    // S'il n'y a pas d'action en cours mais qu'il y en a dans la file, on lance la suivante.
+    if (!this._isActionPlaying && this._actionQueue.length > 0) {
+        const nextAction = this._actionQueue.shift();
+        this._playActionInternal(nextAction.actionName, nextAction.waitCallback);
+    }
+
+    // Si une action est en cours, on la met à jour.
+    // Sinon, on exécute la logique de mise à jour normale (marche, idle...).
     if (this._isActionPlaying) {
         this.updateAction();
     } else {
@@ -60,28 +71,40 @@ ActorAnimManager.prototype.update = function() {
 
 /**
  * [NOUVEAU] Démarre une animation d'action.
+ * Cette méthode ajoute l'action à la file d'attente.
  * @param {string} actionName Le nom de l'action à jouer.
+ * @param {function} [waitCallback=null] La fonction à appeler quand l'action est terminée.
  */
-ActorAnimManager.prototype.playAction = function(actionName) {
+ActorAnimManager.prototype.playAction = function(actionName, waitCallback = null) {
     const actionConfig = SC.ActionConfigs.actions[actionName];
     if (!actionConfig) {
         $debugTool.warn(`[ActorAnimManager] Action "${actionName}" non trouvée dans la configuration.`);
         return;
     }
+    this._actionQueue.push({ actionName, waitCallback });
+};
 
+/**
+ * [INTERNE] Logique interne pour démarrer une action depuis la file d'attente.
+ * @param {string} actionName Le nom de l'action.
+ * @param {function} waitCallback La fonction de callback pour l'attente.
+ * @private
+ */
+ActorAnimManager.prototype._playActionInternal = function(actionName, waitCallback) {
+    const actionConfig = SC.ActionConfigs.actions[actionName];
+    if (!actionConfig) return;
+    
     this.clearAction();
     this._currentAction = actionConfig;
     this._isActionPlaying = true;
     this._currentState = 'action'; // Met à jour l'état principal
-
-   
-    
+    this._waitCallback = waitCallback;
 
     // Assure que l'animation de pas est active pour voir le changement
     this._character.setWalkAnime(true);
     this._character.setStepAnime(false);
 
-     $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`);
+    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`);
     // Applique immédiatement la première frame
     this.updateActionFrame();
 };
@@ -94,6 +117,11 @@ ActorAnimManager.prototype.stopAction = function() {
 
     const actionName = this._currentAction.actionName;
     const returnToIdle = this._currentAction.returnToIdle;
+
+    // Si un callback d'attente est défini, on l'appelle.
+    if (this._waitCallback) {
+        this._waitCallback();
+    }
 
     this.clearAction();
     
@@ -154,7 +182,7 @@ ActorAnimManager.prototype.updateActionFrame = function() {
         (Sheet Index: ${action.sheetIndex},
         Pattern: ${pattern}).
         Character Pattern set to: ${this._character.pattern()}
-        Real Character Pattern set to: ${this._character._pattern}`);
+        Real Character Pattern set to: ${this._character._pattern}`, true);
 };
 
 

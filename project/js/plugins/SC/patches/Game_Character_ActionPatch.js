@@ -35,12 +35,32 @@
     }
     /**
      * [NOUVEAU] Démarre une animation d'action sur ce personnage.
+     * C'est un alias plus long pour la méthode `anim()`.
      * @param {string} actionName Le nom de l'action à jouer.
      */
     Game_CharacterBase.prototype.playAction = function(actionName) {
+        return this.anim(actionName);
+    };
+
+    /**
+     * [NOUVEAU] Raccourci pour jouer une animation d'action sur ce personnage.
+     * Conçu pour être utilisé dans les commandes de script (ex: this.anim('cast')).
+     * @param {string} actionName Le nom de l'action à jouer.
+     * @param {function} [waitCallback=null] Callback pour la gestion de l'attente.
+     */
+    Game_CharacterBase.prototype.anim = function(actionName, waitCallback = null) {
+        // Vérifie si le personnage est un acteur visuel (soit un membre du groupe, soit un Game_ActorEvent)
+        const actor = this.actor ? this.actor() : null;
+
+        if ((!actor || !actor.isVisual()) && this !== $gamePlayer) {
+            $debugTool.warn(`[ActionPatch] Tentative de jouer l'action '${actionName}' sur un personnage non-visuel (Event ID: ${this._eventId || 'N/A'}).`);
+            if (waitCallback) waitCallback(); // Débloque l'attente immédiatement si l'action ne peut pas être jouée.
+            return;
+        }
+
         const manager = this.getAnimManager();
         if (manager) {
-            manager.playAction(actionName);
+            manager.playAction(actionName, waitCallback); // Délègue à l'ActorAnimManager
         }
     };
 

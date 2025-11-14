@@ -48,18 +48,6 @@ Game_Map.prototype.setupEvents = function() {
     }
 };
 
-const _ActorAnimManager_update2 = ActorAnimManager.prototype.update;
-ActorsAnimsManagers.prototype.update = function() {
-    const eventsActors = $gameMap.events().filter(event => event.actor);
-    
-    for (const character of eventsActors) {
-        const manager = this.getManagerFor(character);
-        if (manager) {
-            manager.update();
-        }
-    }
-}
-
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {

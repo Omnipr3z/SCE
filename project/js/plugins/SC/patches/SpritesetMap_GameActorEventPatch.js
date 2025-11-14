@@ -33,11 +33,11 @@
  */
 const _Spriteset_Map_createActorEventSprite = Spriteset_Map.prototype.createActorEventSprite;
 Spriteset_Map.prototype.createActorEventSprite = function(event) {
-    $debugTool.log(`Création du sprite pour l'événement d'acteur ID=${event.eventId()}`);
+    $debugTool.log(`Création du sprite pour l'événement d'acteur ID=${event.eventId()}`, true);
 
     if(event._actorId && $gameActors.actor(event._actorId).isVisual()) {
         this._characterSprites.push(new Sprite_VisualCharacter(event));
-        $debugTool.log(`-> Utilisation de Sprite_VisualCharacter pour l'acteur ID=${event._actorId}`);
+        $debugTool.log(`-> Utilisation de Sprite_VisualCharacter pour l'acteur ID=${event._actorId}`, true);
     } else {    
         _Spriteset_Map_createActorEventSprite.call(this, event);}
 }

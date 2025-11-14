@@ -54,7 +54,7 @@ class ActorAnimManager {
         if (this._currentState !== 'dash') {
             this._currentState = 'dash';
             $gameVariables.setValue(this._visualIndexVarId, this.getDashIndex());
-            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en dash (index: ${this.getDashIndex()}).`);
+            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en dash (index: ${this.getDashIndex()}).`, true);
         }
         this._idleTimer = 0; // La course n'est pas de l'inactivité
     }
@@ -66,7 +66,7 @@ class ActorAnimManager {
             this._currentState = 'idle';
             $gameVariables.setValue(this._visualIndexVarId, this.getIdleIndex());
             this._character.setStepAnime(true);
-            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en idle (index: ${this.getIdleIndex()}).`);
+            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en idle (index: ${this.getIdleIndex()}).`, true);
         }
     }
     /**
@@ -81,7 +81,7 @@ class ActorAnimManager {
             // Cela annule toute activation forcée par 'idle' ou 'dash'.
             this._character.setStepAnime(false);
             
-            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en marche/par défaut (index: ${this.getDefaultIndex()}).`);
+            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en marche/par défaut (index: ${this.getDefaultIndex()}).`, true);
         }
          // Réinitialise le timer d'idle dès que le personnage bouge
         this._idleTimer = 0;
