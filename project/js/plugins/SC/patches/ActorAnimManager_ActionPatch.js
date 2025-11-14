@@ -183,6 +183,13 @@ ActorAnimManager.prototype.updateActionFrame = function() {
         Character Pattern set to: ${this._character.pattern()}
         Real Character Pattern set to: ${this._character._pattern}`, true);
 };
+/**
+ * Returns the name of the currently playing action.
+ * @returns {string|null} The name of the action, or null if none is playing.
+ */
+ActorAnimManager.prototype.getCurrentActionName = function() {
+    return this._currentAction ? this._currentAction.actionName : null;
+};
 
 
 // --- Enregistrement du plugin ---

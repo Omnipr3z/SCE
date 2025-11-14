@@ -20,19 +20,25 @@
 ## Améliorations et Nouveaux Systèmes
 
 4.  **[ ] Création d'un `ActorMainManager`**
-    -   Développer un "hub" central pour accéder facilement à toutes les entités liées à un acteur (son `Game_Actor`, son `Game_Event` sur la carte, son sprite, son `ActorAnimManager`, etc.) via son ID.
+    -   **[X]** Développer un "hub" central pour lier `actorId` -> `Game_Event` -> `Sprite_Character`.
+    -   **[ ]** Intégrer l'accès au `Game_Actor` et aux autres managers (Anim, Health...).
     -   Ce manager servira à orchestrer des actions complexes qui affectent plusieurs aspects d'un acteur simultanément.
 
-5.  **[ ] Amélioration du `CharacterShadow`**
+5.  **[ ] Création d'un `ActorHealthManager` (Système de survie)**
+    -   **[X]** Créer la classe `ActorHealthManager` et son conteneur `$actorHealthManagers`.
+    -   **[ ]** Implémenter la logique de dégradation des stats (`updateMin`, `updateHr`).
+    -   **[ ]** Implémenter les actions de base (manger, boire, dormir).
+
+6.  **[ ] Amélioration du `CharacterShadow`**
     -   Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre. *OK - Testing on going* 
 
 ## Tâches Techniques et de Fond
 
-6.  **[ ] Optimisation du Chargement des Bitmaps**
+7.  **[ ] Optimisation du Chargement des Bitmaps**
     -   Rechercher et implémenter une solution pour fiabiliser le chargement des images et éviter les problèmes de "pop-in" ou d'images non chargées, notamment sur les configurations moins puissantes ou lors de la perte de focus de la fenêtre.
     -   Pistes : Surcharger `ImageManager` avec un système de `Promise` ou d'`EventListener` pour mieux suivre l'état du chargement.
 
-7.  **[ ] Finalisation de la Gestion de la Résolution**
+8.  **[ ] Finalisation de la Gestion de la Résolution**
     -   Gérer la différence entre la taille de la "box" de l'interface et la taille réelle de l'écran, un comportement spécifique à RMMZ.
     -   Mettre en place la stratégie pour le mode "fenêtre sans bordures" en production (via `package.json`), en documentant clairement que cela ne fonctionne pas lors des tests depuis l'éditeur.
 
