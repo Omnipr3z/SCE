@@ -13,7 +13,7 @@
     -   **Intégration aux "Move Routes" :** Ajouter un paramètre `waitEnd` à la commande `this.anim('nom', waitEnd)`. Si `true`, le système calculera automatiquement la durée de l'animation et mettra en pause l'interpréteur de l'événement, évitant d'avoir à ajouter des commandes "Attendre" manuelles.
 
 3.  **[ ] Évolution du `VisualCharacter` (Paper-Doll)**
-    -   **Couches pour le visage/cheveux :** Intégrer un système de couches pour le visage (`face`) et les cheveux (`hair`) sur le sprite du personnage.
+    -   **Couches pour le visage/cheveux :** Intégrer un système de couches pour le visage (`face`) et les cheveux (`hair`) sur le sprite du personnage. *OK - Testing on going* 
     -   **Masquage dynamique :** Permettre à un équipement (casque, chapeau) de masquer certaines couches (ex: les cheveux) via un notetag pour éviter les superpositions disgracieuses.
     -   **Adaptation aux Facesets :** Étendre le système de Paper-Doll pour qu'il s'applique également aux `facesets` dans les dialogues, en utilisant `Bitmap_Composite`.
 
@@ -24,7 +24,7 @@
     -   Ce manager servira à orchestrer des actions complexes qui affectent plusieurs aspects d'un acteur simultanément.
 
 5.  **[ ] Amélioration du `CharacterShadow`**
-    -   Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre.
+    -   Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre. *OK - Testing on going* 
 
 ## Tâches Techniques et de Fond
 

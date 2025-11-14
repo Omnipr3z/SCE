@@ -94,7 +94,7 @@ class ActorAnimManager {
             this._currentState = 'jump';
             $gameVariables.setValue(this._visualIndexVarId, this.getJumpIndex());
             this._character.setStepAnime(false); // Le saut n'a pas d'animation de pas
-            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en saut (index: ${this.getJumpIndex()}).`);
+            $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Passe en saut (index: ${this.getJumpIndex()}).`, true);
         }
         this._idleTimer = 0;
     }

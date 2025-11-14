@@ -33,7 +33,7 @@ class Sprite_CharacterShadow extends Sprite {
     }
 
     loadBitmap() {
-        this.bitmap = ImageManager.loadSystem("Shadow2");
+        this.bitmap = ImageManager.loadSystem(SC.ShadowConfig.fileName || "Shadow1");
     }
 
     update() {

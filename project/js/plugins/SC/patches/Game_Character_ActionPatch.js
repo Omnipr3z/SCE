@@ -65,6 +65,25 @@
     };
 
     /**
+     * [NOUVEAU] Démarre une séquence d'actions sur ce personnage.
+     * @param {string} sequenceName Le nom de la séquence à jouer.
+     */
+    Game_CharacterBase.prototype.playSequence = function(sequenceName) {
+        // Vérifie si le personnage est un acteur visuel
+        const actor = this.actor ? this.actor() : null;
+
+        if ((!actor || !actor.isVisual()) && this !== $gamePlayer) {
+            $debugTool.warn(`[ActionPatch] Tentative de jouer la séquence '${sequenceName}' sur un personnage non-visuel (Event ID: ${this._eventId || 'N/A'}).`);
+            return;
+        }
+
+        const manager = this.getAnimManager();
+        if (manager) {
+            manager.playSequence(sequenceName); // Délègue à l'ActorAnimManager
+        }
+    };
+
+    /**
      * [NOUVEAU] Arrête l'animation d'action en cours sur ce personnage.
      */
     Game_CharacterBase.prototype.stopAction = function() {

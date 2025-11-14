@@ -23,6 +23,17 @@
  * 
  * Ce fichier de configuration définit si le système d'ombres dynamiques
  * pour les personnages doit être activé.
+ * 
+ * Il expose également plusieurs paramètres pour ajuster le comportement
+ * des ombres en fonction des sauts des personnages.
+ * 
+ * ▸ Nécessite :
+ *  - SC_SystemLoader.js
+ * 
+ * ▸ Historique :
+ * v1.1.1: -ajout du paramètre 'shadowFileName' pour choisir le fichier d'ombre.
+ * v1.1.0 - 2024-08-15 : Ajout des paramètres de configuration des ombres dynamiques.
+ * v1.0.0 - 2024-08-01 : Création initiale du plugin pour les ombres dynamiques.
  *
  * @param useShadow
  * @text Utiliser les Ombres Dynamiques
@@ -49,6 +60,14 @@
  * @type number
  * @decimals 2
  * @default 2.5
+ * 
+ * @param shadowFileName
+ * @type string
+ * @text Nom du fichier d'Ombre
+ * @default Shadow1
+ * @desc Nom du fichier image de l'ombre à utiliser (dans le dossier 'img/system/').
+ * Par default le systeme utilisera "Shadow1".
+ * 
  */
 
 SC.ShadowConfig = SC.ShadowConfig || {};
@@ -59,6 +78,7 @@ SC.ShadowConfig = SC.ShadowConfig || {};
     SC.ShadowConfig.yOffset = parseInt(params.shadowYOffset) || 0;
     SC.ShadowConfig.jumpScaleRate = parseFloat(params.jumpScaleRate) || 0.01;
     SC.ShadowConfig.jumpOpacityRate = parseFloat(params.jumpOpacityRate) || 2.5;
+    SC.ShadowConfig.fileName = params.shadowFileName || "Shadow1"; // Nom du fichier d'ombre par défaut.
 })();
 
 // --- Enregistrement du plugin ---

@@ -31,6 +31,10 @@
 
 class ActorsAnimsManagers {
     constructor() {
+        this.initialize();
+    }
+
+    initialize() {
         this.clear();
     }
 

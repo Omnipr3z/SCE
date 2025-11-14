@@ -31,6 +31,7 @@ class ActorMainManager {
      */
     constructor(actorId) {
         this._id = actorId;
+        this._actionQueue = [];
     }
 
     /**

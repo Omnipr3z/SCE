@@ -32,11 +32,10 @@
 
 
 // --- Surcharge du constructeur pour initialiser les états de l'action ---
-const _ActorAnimManager_initialize = ActorAnimManager.prototype.constructor;
-ActorAnimManager.prototype.constructor = function(character) {
+const _ActorAnimManager_initialize = ActorAnimManager.prototype.initialize;
+ActorAnimManager.prototype.initialize = function(character) {
     _ActorAnimManager_initialize.call(this, character);
     this.clearAction();
-    this._actionQueue = []; // File d'attente pour les actions
 };
 
 /**
@@ -104,7 +103,7 @@ ActorAnimManager.prototype._playActionInternal = function(actionName, waitCallba
     this._character.setWalkAnime(true);
     this._character.setStepAnime(false);
 
-    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`);
+    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`, true);
     // Applique immédiatement la première frame
     this.updateActionFrame();
 };
@@ -132,7 +131,7 @@ ActorAnimManager.prototype.stopAction = function() {
         this.setWalkAnim();
     }
     
-    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Arrête l'action "${actionName}". Retour à "${returnToIdle ? 'idle' : 'walk'}".`);
+    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Arrête l'action "${actionName}". Retour à "${returnToIdle ? 'idle' : 'walk'}".`,true);
 };
 
 /**
