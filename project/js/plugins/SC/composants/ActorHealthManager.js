@@ -210,7 +210,42 @@ class ActorHealthManager {
     canSleep(bedData) { /* TBD */ return false; }
     sleep(bedData) { /* TBD */ }
 
-    impulse() { /* TBD: Logic for jumps/dashes affecting breath */ }
+    /**
+     * Checks if the actor has enough breath to perform a jump.
+     * @returns {boolean}
+     */
+    canJump() {
+        return this._breath >= SC.HealthConfig.jumpMinBreathCost;
+    }
+
+    /**
+     * Calculates the jump distance based on the current impulse.
+     * Uses the threshold system defined in the config.
+     * @returns {number} The calculated jump distance in tiles.
+     */
+    calculateJumpDistance() {
+        let distance = SC.HealthConfig.jumpBaseDistance;
+        const thresholds = SC.HealthConfig.jumpImpulseThresholds;
+
+        for (const threshold of thresholds) {
+            if (this._impulse >= threshold) {
+                distance++;
+            } else {
+                break; // Stop checking once a threshold is not met
+            }
+        }
+
+        return distance.clamp(SC.HealthConfig.jumpBaseDistance, SC.HealthConfig.jumpMaxDistance);
+    }
+
+    /**
+     * Called after a jump has been performed.
+     * Consumes breath and resets impulse.
+     */
+    onJump() {
+        this._breath -= SC.HealthConfig.jumpMinBreathCost;
+        this._impulse = 0;
+    }
 
     wash() { /* TBD */ }
     getDirty() { /* TBD */ }
