@@ -80,6 +80,7 @@ class ActorHealthManager {
         this.updateMinCounter();
         this.updateHealthActivity();
     }
+
     updateHealthChanges() {
         this._alim += this._healthChange.alim || 0;
         this._form += this._healthChange.form || 0;
@@ -153,9 +154,9 @@ class ActorHealthManager {
     }
     mapUpdate() {
         this.updateBreath();
-        if($gameDate._timestamp != this._lastTimeStamp){
+        if($gameDate.timestamp != this._lastTimeStamp){
             this.updateMin();
-            this._lastTimeStamp = $gameDate._timestamp;
+            this._lastTimeStamp = $gameDate.timestamp;
         }
     }
 

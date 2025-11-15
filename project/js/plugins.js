@@ -72,8 +72,11 @@ var $plugins =
 {"name":"SC/patches/ActorAnimManager_ActionSequencePatch","status":true,"description":"!SC [v1.0.0] Ajoute le séquenceur d'actions à ActorAnimManager.","parameters":{}},
 {"name":"SC/patches/SceneMap_HealthPatch","status":true,"description":"!SC [v1.0.0] Patch pour mettre à jour la santé des acteurs sur la carte.","parameters":{}},
 {"name":"SC/patches/GamePlayer_JumpPatch","status":true,"description":"!SC [v1.0.0] Patch pour gérer le saut dynamique du joueur.","parameters":{}},
+{"name":"SC/patches/ActorAnimManager_ValidationPatch","status":true,"description":"!SC [v1.0.0] Patch pour ajouter des méthodes de validation à ActorAnimManager.","parameters":{}},
+{"name":"SC/patches/SceneMap_GameDatePatch","status":true,"description":"!SC [v1.0.0] Patch pour Scene_Map pour mettre à jour Game_Date.","parameters":{}},
 {"name":"======== OTHER PLUGINS","status":false,"description":"","parameters":{}},
 {"name":"SC_WIP/TextManager_AnkarosPatch","status":true,"description":"","parameters":{}},
 {"name":"SC_WIP/Window_TitleCommand_AnkarosPatch","status":true,"description":"","parameters":{}},
-{"name":"SC_WIP/Scene_Titles_AnkarosPatch","status":true,"description":"","parameters":{}}
+{"name":"SC_WIP/Scene_Titles_AnkarosPatch","status":true,"description":"","parameters":{}},
+{"name":"SC_WIP/testHud","status":true,"description":"","parameters":{}}
 ];

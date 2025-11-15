@@ -27,32 +27,45 @@
 
 5.  **[ ] Création d'un `ActorHealthManager` (Système de survie)**
     -   **[X]** Créer la classe `ActorHealthManager` et son conteneur `$actorHealthManagers`.
-    -   **[X]** Implémenter le système de souffle (`breath`) pour le joueur.
-    -   **[ ]** Implémenter la logique de dégradation des stats (`updateMin`, `updateHr`).
-    -   **[ ]** Implémenter les actions de base (manger, boire, dormir).
+    -   **[X]** Implémenter le système de souffle (`breath`) et de saut dynamique.
+    -   **[X]** Implémenter la logique de dégradation des stats (`updateMin`, `updateHr`).
+    -   **[X]** Implémenter les actions de base (manger, dormir, se laver).
+    -   **[ ]** **Tests et Équilibrage :** Effectuer des tests approfondis sur l'ensemble du système pour valider son fonctionnement et équilibrer les valeurs (gains, pertes, seuils).
+    -   **[ ]** **Intégration avec les Buffs/États :** Étudier comment les buffs et les états du moteur de base peuvent influencer les statistiques de santé (ex: un état "Malade" qui accélère la perte de faim).
+    -   **[ ]** **Impact sur les Statistiques de Combat :** Définir et implémenter l'impact du `getHealthScore()` sur les statistiques de base de l'acteur (ATK, DEF, etc.) et inversement (ex: une statistique de Constitution qui ralentit la perte de faim).
 
 6.  **[ ] Amélioration du `CharacterShadow`**
     -   **[X]** Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre.
 
+7.  **[ ] Implémentation du Système de Temps Dynamique**
+    -   **[ ]** Gestion du temps dynamique.
+    -   **[ ]** Mise à jour automatique sur la `Scene_Map`.
+    -   **[ ]** Gestion du changement de mode de défilement.
+    -   **[ ]** Application aux éléments graphiques de la map (ex: accélération des autotiles d'eau, gel en cas de pause).
+    -   **[ ]** Prise en charge des sauts et ellipses de temps.
+
+8.  **[ ] Amélioration du `CharacterShadow`**
+    -   **[X]** Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre.
+
 ## Tâches Techniques et de Fond
 
-7.  **[ ] Optimisation du Chargement des Bitmaps**
+9.  **[ ] Optimisation du Chargement des Bitmaps**
     -   Rechercher et implémenter une solution pour fiabiliser le chargement des images et éviter les problèmes de "pop-in" ou d'images non chargées, notamment sur les configurations moins puissantes ou lors de la perte de focus de la fenêtre.
     -   Pistes : Surcharger `ImageManager` avec un système de `Promise` ou d'`EventListener` pour mieux suivre l'état du chargement.
 
-8.  **[ ] Finalisation de la Gestion de la Résolution**
+10. **[ ] Finalisation de la Gestion de la Résolution**
     -   Gérer la différence entre la taille de la "box" de l'interface et la taille réelle de l'écran, un comportement spécifique à RMMZ.
     -   Mettre en place la stratégie pour le mode "fenêtre sans bordures" en production (via `package.json`), en documentant clairement que cela ne fonctionne pas lors des tests depuis l'éditeur.
 
 ## Révisions Architecturales et Standards
 
-9.  **[ ] Vérification du Parsing des Configurations**
+11. **[ ] Vérification du Parsing des Configurations**
     -   S'assurer que tous les paramètres de plugin sont correctement parsés et castés (Number, Boolean, Array) lors de leur lecture depuis `PluginManager`, avec des valeurs par défaut robustes pour éviter les `NaN` ou `undefined`.
 
-10. **[ ] Optimisation de la Récupération des Notetags**
+12. **[ ] Optimisation de la Récupération des Notetags**
     -   Refactoriser la lecture des notetags pour qu'elle soit effectuée une seule fois au chargement des données (`$data*`). Les métadonnées extraites seront stockées directement dans les objets de jeu correspondants (`$gameActors`, `$gameItems`, etc.) pour un accès instantané et performant pendant le jeu, évitant ainsi le parsing répétitif.
 
-11. **[ ] Standardisation de l'Architecture et du Nommage**
+13. **[ ] Standardisation de l'Architecture et du Nommage**
     -   **[ ]** **Implémentation des Espaces de Noms (Namespacing) :** Refactoriser le code pour utiliser un espace de noms global unique (ex: `SC` ou `SimCraft`) au lieu d'exposer les classes directement sur l'objet `window`. Cela améliorera l'organisation, la lisibilité et préviendra les conflits potentiels.
     -   **[ ]** **Révision des Standards de Nommage :** Définir et appliquer des conventions de nommage cohérentes pour les classes, les fichiers, les variables et les fonctions à travers tout le moteur pour assurer une meilleure lisibilité et maintenabilité.
 
@@ -61,3 +74,4 @@
 # Idea
 -   Gestion de l'image du curseur
 -   systeme de popup Mouse Hover
+-   Chute de falaise (jump system -> plateformer)

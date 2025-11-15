@@ -36,7 +36,7 @@
      * @returns {boolean}
      */
     ActorAnimManager.prototype.validateImmobilizingAction = function(actionName) {
-        const actionConfig = this.getActionConfig(actionName);
+        const actionConfig = SC.ActionConfigs.actions[actionName];
 
         if (!actionConfig) {
             $debugTool.error(`Action '${actionName}' not defined for actor ${this._character.actorId()}.`);
