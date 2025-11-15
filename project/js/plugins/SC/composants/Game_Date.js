@@ -49,7 +49,7 @@
  *   v0.2.1 - Version initiale.
  */
 class Game_Date {
-    constructor(timestamp = 0) {
+    constructor(timestamp = 55657647) { // Par défaut,  
         this.timestamp = $dataTimeSystem.start_timestamp || timestamp;
         this._tick = 0;
         this._tmpScroll = 0;

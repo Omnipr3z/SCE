@@ -49,3 +49,6 @@ project/js/plugins/SRPG/
 .DS_Store
 Thumbs.db
 PRESS/
+
+project/img/cinematics/prologue/
+project/data/SC/Prologue_40K.json
