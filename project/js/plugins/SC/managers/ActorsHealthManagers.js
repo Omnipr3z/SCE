@@ -16,8 +16,8 @@
  * @author SimCraft
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
- * @base SCE_ActorHealthManager
- * @orderAfter SCE_ActorHealthManager
+ * @base ActorHealthManager
+ * @orderAfter ActorHealthManager
  *
  * @help
  * ActorsHealthManagers.js
@@ -62,7 +62,7 @@ SC._temp.pluginRegister = {
     icon: "❤️",
     author: "SimCraft",
     license: "CC BY-NC-SA 4.0",
-    dependencies: ["SC_SystemLoader", "SCE_ActorHealthManager"],
+    dependencies: ["SC_SystemLoader", "SC_ActorHealthManager"],
     createObj: {
         autoCreate: true,
         classProto: ActorsHealthManagers,

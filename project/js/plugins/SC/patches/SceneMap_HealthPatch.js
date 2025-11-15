@@ -16,8 +16,8 @@
  * @author SimCraft
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
- * @base SC_ActorsHealthManagers
- * @orderAfter SC_ActorsHealthManagers
+ * @base ActorsHealthManagers
+ * @orderAfter ActorsHealthManagers
  *
  * @help
  * SceneMap_HealthPatch.js
