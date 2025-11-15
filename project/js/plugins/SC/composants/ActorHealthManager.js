@@ -29,19 +29,6 @@
  * 'ActorsHealthManagers' qui se charge de créer et de gérer les instances
  * de cette classe pour chaque acteur.
  */
-
-var Imported = Imported || {};
-Imported.ActorHealthManager = true;
-
-var SimCraft = SimCraft || {};
-SimCraft.ActorHealthManager = SimCraft.ActorHealthManager || {};
-
-
-    //=============================================================================
-    // ActorHealthManager
-    //=============================================================================
-    // Manages the health and well-being stats for a single actor.
-
 class ActorHealthManager {
     /**
      * @param {number} actorId
@@ -63,6 +50,8 @@ class ActorHealthManager {
         this._hydra = 100;  // Hydration
         this._breath = 100; // Breath / Short-term stamina
         this._impulse = 0;  // Impulse / Sudden exertion level
+        this._lastTimeStamp = -1; // Last timestamp for minute-based updates
+        this._minCounter = 0; // Minute counter for tracking time-based updates
     }
 
     /**
@@ -80,10 +69,82 @@ class ActorHealthManager {
     getBreath() { return this._breath; }
 
     //--- Update Hooks
-    updateMin() { /* Logic for minute-by-minute updates */ }
-    updateHr() { /* Logic for hour-by-hour updates */ }
+    updateMinCounter(){
+        if(this._minCounter >= 60){
+            this.updateHr();
+            this._minCounter = 0;
+        }
+        this._minCounter++;
+    }
+    updateMin() { 
+        this.updateMinCounter();
+        this.updateHealthActivity();
+    }
+    updateHealthChanges() {
+        this._alim += this._healthChange.alim || 0;
+        this._form += this._healthChange.form || 0;
+        this._clean += this._healthChange.clean || 0;
+        this._hydra += this._healthChange.hydra || 0;
+        this._alim .clamp(0,100);
+        this._form .clamp(0,100);
+        this._clean.clamp(0,100);
+        this._hydra.clamp(0,100);
+    }
+    isEndSleepMode() {
+        return manager._currentAction !== "sleep"
+            || this._form >= this._healthChange.formMaxThreshold
+    }
+    checkWakeUp() {
+        if(this._healthChange.activityDuration !== "sleepMode") return;
+        if(this.isEndSleepMode()){
+            this._healthActivityTimer = 0;
+        }
+    }
+    updateHealthActivity() {
+        if(!this._healthChange) return;
+        if(this._healthActivityTimer === "sleepMode") {
+            this.updateHealthChanges();
+            this.checkWakeUp();
+        }else if(this._healthActivityTimer > 0){
+            this.updateHealthChanges();
+            this._healthActivityTimer--;
+        }else{
+            this._healthChange = null;
+            this._healthActivityTimer = 0;
+            const manager = $gameActorsAnims.getManagerFor(this.actor());
+            if (manager) {
+                manager.stopAction()
+            }
+        }
+    }
+    updateHr() {
+        this._alim -= SC.HealthConfig.alimDecreaseRate;
+        this._form -= SC.HealthConfig.formDecreaseRate;
+        this._clean -= SC.HealthConfig.cleanDecreaseRate;
+        this._hydra -= SC.HealthConfig.hydraDecreaseRate;
+        this._alim .clamp(0,100);
+        this._form .clamp(0,100);
+        this._clean.clamp(0,100);
+        this._hydra.clamp(0,100);
+        if(this._alim <= 0){
+            this.actor().addState(SC.HealthConfig.hungryStateId);
+        }
+        if(this._form <= 0){
+            this.actor().addState(SC.HealthConfig.deformStateId);
+        }
+        if(this._clean <= 0){
+            this.actor().addState(SC.HealthConfig.dirtyStateId);
+        }
+        if(this._hydra <= 0){
+            this.actor().addState(SC.HealthConfig.thirstyStateId);
+        }
+    }
     mapUpdate() {
         this.updateBreath();
+        if($gameDate._timestamp != this._lastTimeStamp){
+            this.updateMin();
+            this._lastTimeStamp = $gameDate._timestamp;
+        }
     }
 
     /**
@@ -143,26 +204,30 @@ class ActorHealthManager {
     isOutOfBreath() {
         return this._breath <= SC.HealthConfig.breathOutThreshold;
     }
+    isReadyAction(actionName) {
+        const actionConfig = SC.ActionConfigs.actions[actionName];
 
+        if (!actionConfig) {
+            $debugTool.error(`Action '${actionName}' is not defined in the animation config for actor ${this._actorId}.`);
+            return false;
+        }
+        if (actionConfig.loop !== true) {
+            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must be loopable (loop: true).`);
+            return false;
+        }
+        if (actionConfig.blockMovement !== true) {
+            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must block movement (canMove: false).`);
+            return false;
+        }
+        return true;
+    }
     startBreathing(character) {
         const animManager = $gameActorsAnims.getManagerFor(character);
         if (!animManager) return;
 
         const actionName = "breathing";
-        const actionConfig = SC.ActionConfigs.actions[actionName];
 
-        if (!actionConfig) {
-            $debugTool.error(`Action '${actionName}' is not defined in the animation config for actor ${this._actorId}.`);
-            return;
-        }
-        if (actionConfig.loop !== true) {
-            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must be loopable (loop: true).`);
-            return;
-        }
-        if (actionConfig.blockMovement !== true) {
-            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must block movement (canMove: false).`);
-            return;
-        }
+        if (!this.isReadyAction(actionName)) return;
 
         if (animManager.getCurrentActionName() !== actionName) {
             character.playAction("breathing");
@@ -204,11 +269,50 @@ class ActorHealthManager {
     }
 
     //--- Actions
-    canEat(item) { /* TBD */ return false; }
-    eat(item) { /* TBD */ }
+    canConsumeItem(item) {
+        if(!item) return false;
+        return true;
+    }
+    useHealthItem(item) {
+        if(this.canConsumeItem(item)){
+            if(!item.meta)
+                DataManager.extractMetadata(item);
 
-    canSleep(bedData) { /* TBD */ return false; }
-    sleep(bedData) { /* TBD */ }
+            this._healthChange= {
+                alim: item.meta.alimIncrease || 0, // un nombre négatif peut reduire la valeur
+                form: item.meta.formIncrease || 0,
+                clean: item.meta.cleanIncrease || 0,
+                hydra: item.meta.hydraIncrease || 0,
+                activityDuration: item.meta.activityDuration || 0
+            }
+            this._healthActivityTimer = item.meta.activityDuration || 0;
+            const actionName = item.meta.actionName || "useItem";
+
+            if (!this.isReadyAction(actionName))  return;
+            const manager = $gameActorsAnims.getManagerFor(this.actor());
+            if (manager) {
+                manager.stopAction()
+                manager.playAction(actionName);
+            }
+        }
+    }
+
+    canSleep(bedData) { return this._form < 70; }
+    sleep(bedData) {
+        if(this.canSleep(bedData)){
+            this.useHealthItem({
+                meta: {
+                    alimIncrease: bedData.alimIncrease || 0,
+                    formIncrease: bedData.formIncrease || 1,
+                    cleanIncrease: bedData.cleanIncrease || 0,
+                    hydraIncrease: bedData.hydraIncrease || 0,
+                    formMaxThreshold: bedData.formMaxThreshold || 100,
+                    activityDuration: 'sleepMode',
+                    actionName: 'sleep'
+                }
+            });
+        }
+    }
 
     /**
      * Checks if the actor has enough breath to perform a jump.
@@ -246,12 +350,6 @@ class ActorHealthManager {
         this._breath -= SC.HealthConfig.jumpMinBreathCost;
         this._impulse = 0;
     }
-
-    wash() { /* TBD */ }
-    getDirty() { /* TBD */ }
-
-    drink() { /* TBD */ }
-    thirst() { /* TBD */ }
 }
 
 // Expose the class within the SimCraft (SC) namespace.

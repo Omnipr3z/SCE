@@ -44,12 +44,20 @@
     -   Gérer la différence entre la taille de la "box" de l'interface et la taille réelle de l'écran, un comportement spécifique à RMMZ.
     -   Mettre en place la stratégie pour le mode "fenêtre sans bordures" en production (via `package.json`), en documentant clairement que cela ne fonctionne pas lors des tests depuis l'éditeur.
 
+## Révisions Architecturales et Standards
+
+9.  **[ ] Vérification du Parsing des Configurations**
+    -   S'assurer que tous les paramètres de plugin sont correctement parsés et castés (Number, Boolean, Array) lors de leur lecture depuis `PluginManager`, avec des valeurs par défaut robustes pour éviter les `NaN` ou `undefined`.
+
+10. **[ ] Optimisation de la Récupération des Notetags**
+    -   Refactoriser la lecture des notetags pour qu'elle soit effectuée une seule fois au chargement des données (`$data*`). Les métadonnées extraites seront stockées directement dans les objets de jeu correspondants (`$gameActors`, `$gameItems`, etc.) pour un accès instantané et performant pendant le jeu, évitant ainsi le parsing répétitif.
+
+11. **[ ] Standardisation de l'Architecture et du Nommage**
+    -   **[ ]** **Implémentation des Espaces de Noms (Namespacing) :** Refactoriser le code pour utiliser un espace de noms global unique (ex: `SC` ou `SimCraft`) au lieu d'exposer les classes directement sur l'objet `window`. Cela améliorera l'organisation, la lisibilité et préviendra les conflits potentiels.
+    -   **[ ]** **Révision des Standards de Nommage :** Définir et appliquer des conventions de nommage cohérentes pour les classes, les fichiers, les variables et les fonctions à travers tout le moteur pour assurer une meilleure lisibilité et maintenabilité.
+
+
+
 # Idea
 -   Gestion de l'image du curseur
 -   systeme de popup Mouse Hover
-
-## Révisions Architecturales et Standards
-
-9.  **[ ] Standardisation de l'Architecture et du Nommage**
-    -   **[ ]** **Implémentation des Espaces de Noms (Namespacing) :** Refactoriser le code pour utiliser un espace de noms global unique (ex: `SC` ou `SimCraft`) au lieu d'exposer les classes directement sur l'objet `window`. Cela améliorera l'organisation, la lisibilité et préviendra les conflits potentiels.
-    -   **[ ]** **Révision des Standards de Nommage :** Définir et appliquer des conventions de nommage cohérentes pour les classes, les fichiers, les variables et les fonctions à travers tout le moteur pour assurer une meilleure lisibilité et maintenabilité.
