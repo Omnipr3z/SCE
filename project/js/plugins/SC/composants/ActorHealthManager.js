@@ -85,26 +85,43 @@ class ActorHealthManager {
         this._form += this._healthChange.form || 0;
         this._clean += this._healthChange.clean || 0;
         this._hydra += this._healthChange.hydra || 0;
-        this._alim .clamp(0,100);
-        this._form .clamp(0,100);
-        this._clean.clamp(0,100);
-        this._hydra.clamp(0,100);
+        this._alim = this._alim.clamp(0, 100);
+        this._form = this._form.clamp(0, 100);
+        this._clean = this._clean.clamp(0, 100);
+        this._hydra = this._hydra.clamp(0, 100);
     }
     isEndSleepMode() {
         return manager._currentAction !== "sleep"
+        const manager = $gameActorsAnims.getManagerFor(this.actor());
+        return !manager || manager.getCurrentActionName() !== "sleep"
             || this._form >= this._healthChange.formMaxThreshold
     }
     checkWakeUp() {
         if(this._healthChange.activityDuration !== "sleepMode") return;
         if(this.isEndSleepMode()){
             this._healthActivityTimer = 0;
+    isEndWashMode() {
+        const manager = $gameActorsAnims.getManagerFor(this.actor());
+        return !manager || manager.getCurrentActionName() !== "wash"
+            || this._clean >= this._healthChange.cleanMaxThreshold
+    }
+    checkContinuousActivityEnd() {
+        if (this._healthActivityTimer === "sleepMode" && this.isEndSleepMode()) {
+            this._healthActivityTimer = 0; // End activity
+        } else if (this._healthActivityTimer === "washMode" && this.isEndWashMode()) {
+            this._healthActivityTimer = 0; // End activity
         }
+    }
+    isContinuousActivity() {
+        return this._healthActivityTimer === "sleepMode" || this._healthActivityTimer === "washMode";
     }
     updateHealthActivity() {
         if(!this._healthChange) return;
         if(this._healthActivityTimer === "sleepMode") {
+        if(this.isContinuousActivity()) {
             this.updateHealthChanges();
             this.checkWakeUp();
+            this.checkContinuousActivityEnd();
         }else if(this._healthActivityTimer > 0){
             this.updateHealthChanges();
             this._healthActivityTimer--;
@@ -122,10 +139,10 @@ class ActorHealthManager {
         this._form -= SC.HealthConfig.formDecreaseRate;
         this._clean -= SC.HealthConfig.cleanDecreaseRate;
         this._hydra -= SC.HealthConfig.hydraDecreaseRate;
-        this._alim .clamp(0,100);
-        this._form .clamp(0,100);
-        this._clean.clamp(0,100);
-        this._hydra.clamp(0,100);
+        this._alim = this._alim.clamp(0, 100);
+        this._form = this._form.clamp(0, 100);
+        this._clean = this._clean.clamp(0, 100);
+        this._hydra = this._hydra.clamp(0, 100);
         if(this._alim <= 0){
             this.actor().addState(SC.HealthConfig.hungryStateId);
         }
@@ -204,30 +221,12 @@ class ActorHealthManager {
     isOutOfBreath() {
         return this._breath <= SC.HealthConfig.breathOutThreshold;
     }
-    isReadyAction(actionName) {
-        const actionConfig = SC.ActionConfigs.actions[actionName];
-
-        if (!actionConfig) {
-            $debugTool.error(`Action '${actionName}' is not defined in the animation config for actor ${this._actorId}.`);
-            return false;
-        }
-        if (actionConfig.loop !== true) {
-            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must be loopable (loop: true).`);
-            return false;
-        }
-        if (actionConfig.blockMovement !== true) {
-            $debugTool.error(`Action '${actionName}' for actor ${this._actorId} must block movement (canMove: false).`);
-            return false;
-        }
-        return true;
-    }
     startBreathing(character) {
         const animManager = $gameActorsAnims.getManagerFor(character);
         if (!animManager) return;
 
         const actionName = "breathing";
-
-        if (!this.isReadyAction(actionName)) return;
+        if (!animManager.validateImmobilizingAction(actionName)) return;
 
         if (animManager.getCurrentActionName() !== actionName) {
             character.playAction("breathing");
@@ -288,10 +287,11 @@ class ActorHealthManager {
             this._healthActivityTimer = item.meta.activityDuration || 0;
             const actionName = item.meta.actionName || "useItem";
 
-            if (!this.isReadyAction(actionName))  return;
             const manager = $gameActorsAnims.getManagerFor(this.actor());
             if (manager) {
-                manager.stopAction()
+                if (!manager.validateImmobilizingAction(actionName))  return;
+
+                manager.stopAction();
                 manager.playAction(actionName);
             }
         }
@@ -309,6 +309,23 @@ class ActorHealthManager {
                     formMaxThreshold: bedData.formMaxThreshold || 100,
                     activityDuration: 'sleepMode',
                     actionName: 'sleep'
+                }
+            });
+        }
+    }
+
+    canWash() {
+        // Can wash if not perfectly clean and no other activity is running
+        return this._clean < 100 && !this._healthChange;
+    }
+    wash(washData = {}) {
+        if (this.canWash()) {
+            this.useHealthItem({
+                meta: {
+                    cleanIncrease: washData.cleanIncrease || 1,
+                    cleanMaxThreshold: washData.cleanMaxThreshold || 100,
+                    activityDuration: 'washMode',
+                    actionName: 'wash'
                 }
             });
         }
