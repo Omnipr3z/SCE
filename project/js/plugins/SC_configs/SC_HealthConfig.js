@@ -82,6 +82,62 @@
  * @type string
  * @default 20,50,90
  * 
+ *  * @param --- Passive Decrease ---
+ * @default
+ *
+ * @param alimDecreaseRate
+ * @text Perte Faim /h
+ * @desc Perte de satiété par heure virtuelle.
+ * @type number
+ * @decimals 2
+ * @default 1.0
+ *
+ * @param formDecreaseRate
+ * @text Perte Forme /h
+ * @desc Perte de forme par heure virtuelle.
+ * @type number
+ * @decimals 2
+ * @default 0.5
+ *
+ * @param cleanDecreaseRate
+ * @text Perte Propreté /h
+ * @desc Perte de propreté par heure virtuelle.
+ * @type number
+ * @decimals 2
+ * @default 0.2
+ *
+ * @param hydraDecreaseRate
+ * @text Perte Soif /h
+ * @desc Perte d'hydratation par heure virtuelle.
+ * @type number
+ * @decimals 2
+ * @default 1.5
+ *
+ * @param hungryStateId
+ * @text ID État (Affamé)
+ * @desc ID de l'état appliqué quand la satiété est à 0.
+ * @type state
+ * @default 0
+ *
+ * @param deformStateId
+ * @text ID État (Épuisé)
+ * @desc ID de l'état appliqué quand la forme est à 0.
+ * @type state
+ * @default 0
+ *
+ * @param dirtyStateId
+ * @text ID État (Sale)
+ * @desc ID de l'état appliqué quand la propreté est à 0.
+ * @type state
+ * @default 0
+ *
+ * @param thirstyStateId
+ * @text ID État (Assoiffé)
+ * @desc ID de l'état appliqué quand l'hydratation est à 0.
+ * @type state
+ * @default 0
+ *
+ * 
  * @help
  * SC_HealthConfig.js
  * 
@@ -118,6 +174,16 @@ SC.HealthConfig = {
     jumpBaseDistance: Number(params.jumpBaseDistance) || 1,
     jumpMaxDistance: Number(params.jumpMaxDistance) || 4,
     jumpImpulseThresholds: parseNumberArray(params.jumpImpulseThresholds) || [20, 50, 90],
+
+    // --- Passive Decrease ---
+    alimDecreaseRate: Number(params.alimDecreaseRate) || 1.0,
+    formDecreaseRate: Number(params.formDecreaseRate) || 0.5,
+    cleanDecreaseRate: Number(params.cleanDecreaseRate) || 0.2,
+    hydraDecreaseRate: Number(params.hydraDecreaseRate) || 1.5,
+    hungryStateId: Number(params.hungryStateId) || 0,
+    deformStateId: Number(params.deformStateId) || 0,
+    dirtyStateId: Number(params.dirtyStateId) || 0,
+    thirstyStateId: Number(params.thirstyStateId) || 0
 
 };
 

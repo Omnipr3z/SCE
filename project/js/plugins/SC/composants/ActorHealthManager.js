@@ -91,25 +91,22 @@ class ActorHealthManager {
         this._hydra = this._hydra.clamp(0, 100);
     }
     isEndSleepMode() {
-        return manager._currentAction !== "sleep"
         const manager = $gameActorsAnims.getManagerFor(this.actor());
-        return !manager || manager.getCurrentActionName() !== "sleep"
-            || this._form >= this._healthChange.formMaxThreshold
+        if (!manager) return true; // Can't be sleeping if no anim manager
+        return manager.getCurrentActionName() !== "sleep"
+            || this._form >= this._healthChange.formMaxThreshold;
     }
-    checkWakeUp() {
-        if(this._healthChange.activityDuration !== "sleepMode") return;
-        if(this.isEndSleepMode()){
-            this._healthActivityTimer = 0;
     isEndWashMode() {
         const manager = $gameActorsAnims.getManagerFor(this.actor());
-        return !manager || manager.getCurrentActionName() !== "wash"
-            || this._clean >= this._healthChange.cleanMaxThreshold
+        if (!manager) return true; // Can't be washing if no anim manager
+        return manager.getCurrentActionName() !== "wash"
+            || this._clean >= this._healthChange.cleanMaxThreshold;
     }
     checkContinuousActivityEnd() {
         if (this._healthActivityTimer === "sleepMode" && this.isEndSleepMode()) {
             this._healthActivityTimer = 0; // End activity
         } else if (this._healthActivityTimer === "washMode" && this.isEndWashMode()) {
-            this._healthActivityTimer = 0; // End activity
+            this._healthActivityTimer = 0;
         }
     }
     isContinuousActivity() {
@@ -117,17 +114,15 @@ class ActorHealthManager {
     }
     updateHealthActivity() {
         if(!this._healthChange) return;
-        if(this._healthActivityTimer === "sleepMode") {
         if(this.isContinuousActivity()) {
             this.updateHealthChanges();
-            this.checkWakeUp();
             this.checkContinuousActivityEnd();
         }else if(this._healthActivityTimer > 0){
             this.updateHealthChanges();
             this._healthActivityTimer--;
         }else{
             this._healthChange = null;
-            this._healthActivityTimer = 0;
+            // this._healthActivityTimer is already 0 or less
             const manager = $gameActorsAnims.getManagerFor(this.actor());
             if (manager) {
                 manager.stopAction()

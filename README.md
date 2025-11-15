@@ -66,6 +66,7 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
   - [Animations Dynamiques](DOC/CharacterAnim.md)
   - [Système d'Actions](DOC/CharacterAction.md)
   - [Système de Poses](DOC/CharacterPose.md)
+  - [Système de Santé (Survie)](DOC/HealthSystem.md)
 - **Effets Visuels**
   - [Système d'Ombres Dynamiques](DOC/CharacterShadow.md)
 - **Managers**
