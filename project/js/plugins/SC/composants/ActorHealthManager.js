@@ -363,6 +363,7 @@ class ActorHealthManager {
         this._breath -= SC.HealthConfig.jumpMinBreathCost;
         this._impulse = 0;
     }
+    
 }
 
 // Expose the class within the SimCraft (SC) namespace.
@@ -381,3 +382,4 @@ SC._temp.pluginRegister = {
     save: null
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);
+

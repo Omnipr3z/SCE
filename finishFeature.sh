@@ -86,8 +86,11 @@ print_header "FUSION DE LA FONCTIONNALITÉ"
 echo "[INFO] Passage à la branche '$BASE_BRANCH' pour la fusion..."
 git checkout "$BASE_BRANCH" > /dev/null 2>&1
 
+MERGE_COMMIT_MSG="Merge branch '$CURRENT_BRANCH' into '$BASE_BRANCH'"
+echo "[INFO] Message du commit de fusion : \"$MERGE_COMMIT_MSG\""
+
 echo "[INFO] Fusion de '$CURRENT_BRANCH' dans '$BASE_BRANCH' avec --no-ff..."
-if ! git merge --no-ff "$CURRENT_BRANCH"; then
+if ! git merge --no-ff -m "$MERGE_COMMIT_MSG" "$CURRENT_BRANCH"; then
     echo "[ERREUR] La fusion finale a échoué. Un conflit inattendu est peut-être survenu."
     echo "Veuillez résoudre le problème manuellement."
     exit 1
