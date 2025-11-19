@@ -27,15 +27,15 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-# Identifier la branche de feature actuelle
+# Identifier la branche de travail actuelle
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [[ ! "$CURRENT_BRANCH" =~ ^feature/ ]]; then
-    echo "[ERREUR] Vous n'êtes pas sur une branche de fonctionnalité (doit commencer par 'feature/')."
+if [[ ! "$CURRENT_BRANCH" =~ ^(feature|hotfix|refacto|doc)/ ]]; then
+    echo "[ERREUR] Vous n'êtes pas sur une branche de travail valide (doit commencer par 'feature/', 'hotfix/', 'refacto/' ou 'doc/')."
     echo "Branche actuelle : '$CURRENT_BRANCH'"
     exit 1
 fi
 
-echo "[INFO] Branche de fonctionnalité à terminer : '$CURRENT_BRANCH'"
+echo "[INFO] Branche de travail à terminer : '$CURRENT_BRANCH'"
 
 # Déterminer la branche de base (develop ou main)
 BASE_BRANCH=""
@@ -85,7 +85,7 @@ print_header "PRÊT POUR LA PULL REQUEST"
 
 echo "✅ La branche '$CURRENT_BRANCH' a été synchronisée et poussée avec succès."
 echo ""
-echo "Prochaine étape : Créez une Pull Request (PR) sur votre plateforme Git (GitHub, GitLab, etc.)."
+echo "Prochaine étape : Créez une Pull Request (PR) sur votre plateforme Git (GitHub)."
 echo ""
 echo "  De la branche : $CURRENT_BRANCH"
 echo "  Vers la branche : $BASE_BRANCH"

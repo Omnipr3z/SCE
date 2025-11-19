@@ -29,7 +29,7 @@
  * Il sera instancié en tant que $characterMainManager.
  * 
  * historique:
- * - v1.0.0 - 2024-06-12 : Version initiale.
+ * - v1.0.0 - 2024-06-12 : Version initiale. 
  */
 
 class ActorsMainManagers {
