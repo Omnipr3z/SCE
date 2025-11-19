@@ -68,27 +68,43 @@ fi
 
 echo "[INFO] La branche '$BASE_BRANCH' est maintenant à jour."
 
-print_header "CRÉATION DE LA BRANCHE DE FONCTIONNALITÉ"
+print_header "CRÉATION DE LA NOUVELLE BRANCHE"
 
-# --- 4. Demander le nom de la fonctionnalité ---
-read -p "Nom de la nouvelle fonctionnalité (ex: page-contact, refacto-api): " FEATURE_NAME
+# --- 4. Choisir le type de branche ---
+echo "Choisissez le type de branche :"
+options=("feature" "hotfix" "refacto" "doc")
+PS3="Votre choix (entrez le numéro): "
+select opt in "${options[@]}"
+do
+    case $opt in
+        "feature"|"hotfix"|"refacto"|"doc")
+            BRANCH_PREFIX="$opt/"
+            echo "[INFO] Préfixe de branche sélectionné : '$BRANCH_PREFIX'"
+            break
+            ;;
+        *) echo "Option invalide '$REPLY'. Veuillez choisir 1, 2, ou 3.";;
+    esac
+done
 
-if [ -z "$FEATURE_NAME" ]; then
-    echo "[ERREUR] Le nom de la fonctionnalité ne peut pas être vide."
+# --- 5. Demander le nom de la branche ---
+read -p "Description de la branche (ex: page-contact, bug-connexion): " BRANCH_DESCRIPTION
+
+if [ -z "$BRANCH_DESCRIPTION" ]; then
+    echo "[ERREUR] La description ne peut pas être vide."
     exit 1
 fi
 
-# Nettoyage simple du nom pour en faire un nom de branche valide
-FEATURE_NAME_SLUG=$(echo "$FEATURE_NAME" | iconv -t ascii//TRANSLIT | sed -r 's/[^a-zA-Z0-9]+/-/g' | sed -r 's/^-+\|-+$//g' | tr '[:upper:]' '[:lower:]')
+# Nettoyage du nom pour en faire un nom de branche valide
+BRANCH_NAME_SLUG=$(echo "$BRANCH_DESCRIPTION" | iconv -t ascii//TRANSLIT | sed -r 's/[^a-zA-Z0-9]+/-/g' | sed -r 's/^-+|-+$//g' | tr '[:upper:]' '[:lower:]')
 
-FEATURE_BRANCH="feature/$FEATURE_NAME_SLUG"
+FINAL_BRANCH_NAME="$BRANCH_PREFIX$BRANCH_NAME_SLUG"
 
 echo ""
 echo "La branche suivante va être créée :"
-echo "  -> $FEATURE_BRANCH"
+echo "  -> $FINAL_BRANCH_NAME"
 echo ""
 
-# --- 5. Confirmer et créer la branche ---
+# --- 6. Confirmer et créer la branche ---
 read -p "Confirmez-vous la création de cette branche ? (Y/n): " CONFIRM_CREATE
 if [[ "$CONFIRM_CREATE" =~ ^[Nn]$ ]]; then
     echo "[INFO] Opération annulée."
@@ -96,9 +112,9 @@ if [[ "$CONFIRM_CREATE" =~ ^[Nn]$ ]]; then
 fi
 
 echo ""
-echo "[INFO] Création de la branche '$FEATURE_BRANCH'..."
-git checkout -b "$FEATURE_BRANCH"
+echo "[INFO] Création de la branche '$FINAL_BRANCH_NAME'..."
+git checkout -b "$FINAL_BRANCH_NAME"
 
 echo ""
-echo "✅ Succès ! Vous êtes maintenant sur votre nouvelle branche '$FEATURE_BRANCH'."
+echo "✅ Succès ! Vous êtes maintenant sur votre nouvelle branche '$FINAL_BRANCH_NAME'."
 echo "Bon développement !"
