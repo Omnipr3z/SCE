@@ -46,7 +46,7 @@ class ActorMainManager {
      * Raccourci pour accéder au manager d'animation de cet acteur.
      * @returns {ActorAnimManager|null}
      */
-    get actorAnimManager() {
+    get animator() {
         return $gameActorsAnims.getManagerForActorId(this._id);
     }
 
@@ -76,6 +76,14 @@ class ActorMainManager {
         // L'acteur n'est pas sur la carte en tant que joueur, follower ou événement.
         return null;
     }
+
+    get health() {
+        return $actorHealthManagers.manager(this._id);
+    }
+
+
+
+
 }
 
 // --- Enregistrement du plugin ---

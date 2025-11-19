@@ -57,7 +57,14 @@ fi
 
 # --- 1 & 2. Demander le titre et récupérer la date ---
 echo ""
-read -p "Titre du commit: " TITLE
+while true; do
+    read -p "Titre du commit (max 50 caractères): " TITLE
+    if [ ${#TITLE} -le 50 ]; then
+        break
+    else
+        echo "Erreur : Le titre ne doit pas dépasser 50 caractères. Il en contient ${#TITLE}."
+    fi
+done
 if [ -z "$TITLE" ]; then
     echo "[ERREUR] Le titre ne peut pas être vide."
     exit 1
@@ -69,13 +76,12 @@ FINAL_TITLE="$TITLE [$DATE]"
 
 # --- 3 & 4. Demander les lignes de description en boucle ---
 echo ""
-echo "Entrez les lignes de description une par une."
+echo "Entrez les lignes de description une par une (max 50 caractères par ligne)."
+echo "Indiquer pour chacune le QUOI et le POURQUOI pas le COMMENT."
 echo "Laissez vide et appuyez sur Entrée pour terminer."
 echo ""
 
-# Utilise un tableau pour stocker les messages, c'est plus sûr
-MESSAGES=("-m" "$FINAL_TITLE")
-DESC_LINES=""
+BODY_CONTENT=""
 line_num=1
 
 while true; do
@@ -83,10 +89,30 @@ while true; do
     if [ -z "$LINE" ]; then
         break
     fi
-    MESSAGES+=("-m" "$LINE")
-    DESC_LINES+="$LINE\n"
+
+    if [ ${#LINE} -gt 50 ]; then
+        echo "Erreur : La ligne ne doit pas dépasser 50 caractères. Veuillez la réécrire."
+        continue # Reste dans la boucle pour la même ligne
+    fi
+
+    # Concatène les lignes de description dans une seule variable avec des sauts de ligne
+    if [ -z "$BODY_CONTENT" ]; then
+        BODY_CONTENT="$LINE"
+    else
+        BODY_CONTENT+=$'\n'"$LINE"
+    fi
     ((line_num++))
 done
+
+# Construit le message de commit complet avec une ligne vide entre le titre et le corps.
+if [ -n "$BODY_CONTENT" ]; then
+    COMMIT_MESSAGE="$FINAL_TITLE"$'\n\n'"$BODY_CONTENT"
+else
+    COMMIT_MESSAGE="$FINAL_TITLE"
+fi
+
+# Utilise un seul -m avec le message complet.
+MESSAGES=("-m" "$COMMIT_MESSAGE")
 
 # --- 5. Composer et afficher la commande finale pour confirmation ---
 clear
@@ -95,8 +121,8 @@ echo ""
 echo "Titre: $FINAL_TITLE"
 echo ""
 echo "Description:"
-if [ -n "$DESC_LINES" ]; then
-    echo -e "$DESC_LINES" # -e pour interpréter le \n
+if [ -n "$BODY_CONTENT" ]; then
+    echo -e "$BODY_CONTENT"
 else
     echo "(aucune)"
 fi

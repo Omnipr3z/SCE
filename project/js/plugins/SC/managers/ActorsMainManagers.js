@@ -69,7 +69,7 @@ SC._temp.pluginRegister = {
     createObj: {
         autoCreate: true,
         classProto: ActorsMainManagers,
-        instName: "$characterMainManager"
+        instName: "$actorsMainManagers"
     },
     autoSave: false
 };
