@@ -27,6 +27,9 @@
  * récupérer le "hub" de n'importe quel acteur via son ID.
  * 
  * Il sera instancié en tant que $characterMainManager.
+ * 
+ * historique:
+ * - v1.0.0 - 2024-06-12 : Version initiale.
  */
 
 class ActorsMainManagers {
