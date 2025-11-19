@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Assistant interactif pour terminer une branche de fonctionnalité (feature branch).
+# Assistant interactif pour préparer une branche de fonctionnalité (feature branch) pour une Pull Request.
 # Ce script va :
-# 1. Mettre à jour la branche de feature avec la branche de base (develop/main).
-# 2. Fusionner la branche de feature dans la branche de base.
-# 3. Supprimer la branche de feature localement et à distance.
+# 1. Mettre à jour la branche de feature avec les derniers changements de la branche de base (develop/main).
+# 2. Pousser la branche de feature à jour sur le dépôt distant.
+# 3. Afficher les instructions pour créer la Pull Request.
 
 # --- Fonctions utilitaires ---
 function print_header() {
@@ -80,46 +80,21 @@ fi
 echo "[INFO] Poussée de la branche de fonctionnalité mise à jour (au cas où il y aurait une Pull Request)..."
 git push
 
-# --- 3. Fusion finale ---
-print_header "FUSION DE LA FONCTIONNALITÉ"
+# --- 3. Création de la Pull Request ---
+print_header "PRÊT POUR LA PULL REQUEST"
 
-echo "[INFO] Passage à la branche '$BASE_BRANCH' pour la fusion..."
-git checkout "$BASE_BRANCH" > /dev/null 2>&1
-
-MERGE_COMMIT_MSG="Merge branch '$CURRENT_BRANCH' into '$BASE_BRANCH'"
-echo "[INFO] Message du commit de fusion : \"$MERGE_COMMIT_MSG\""
-
-echo "[INFO] Fusion de '$CURRENT_BRANCH' dans '$BASE_BRANCH' avec --no-ff..."
-if ! git merge --no-ff -m "$MERGE_COMMIT_MSG" "$CURRENT_BRANCH"; then
-    echo "[ERREUR] La fusion finale a échoué. Un conflit inattendu est peut-être survenu."
-    echo "Veuillez résoudre le problème manuellement."
-    exit 1
-fi
-
-echo "[INFO] Poussée de la branche '$BASE_BRANCH' mise à jour vers l'origine..."
-if ! git push; then
-    echo "[ERREUR] 'git push' sur '$BASE_BRANCH' a échoué. Veuillez vérifier votre connexion ou les permissions."
-    exit 1
-fi
-
-echo "✅ La fonctionnalité a été fusionnée et poussée avec succès dans '$BASE_BRANCH' !"
-
-# --- 4. Nettoyage ---
-print_header "NETTOYAGE DE LA BRANCHE"
-
-read -p "Voulez-vous supprimer la branche '$CURRENT_BRANCH' localement et à distance ? (Y/n): " CONFIRM_DELETE
-if [[ "$CONFIRM_DELETE" =~ ^[Nn]$ ]]; then
-    echo "[INFO] Nettoyage annulé. Vous pouvez supprimer la branche manuellement plus tard avec :"
-    echo "  git branch -d $CURRENT_BRANCH"
-    echo "  git push origin --delete $CURRENT_BRANCH"
-    exit 0
-fi
-
-echo "[INFO] Suppression de la branche locale '$CURRENT_BRANCH'..."
-git branch -d "$CURRENT_BRANCH"
-
-echo "[INFO] Suppression de la branche distante '$CURRENT_BRANCH'..."
-git push origin --delete "$CURRENT_BRANCH"
-
+echo "✅ La branche '$CURRENT_BRANCH' a été synchronisée et poussée avec succès."
 echo ""
-echo "🎉 Opération terminée ! La branche a été nettoyée."
+echo "Prochaine étape : Créez une Pull Request (PR) sur votre plateforme Git (GitHub, GitLab, etc.)."
+echo ""
+echo "  De la branche : $CURRENT_BRANCH"
+echo "  Vers la branche : $BASE_BRANCH"
+echo ""
+echo "Une fois la PR validée et mergée, la branche de fonctionnalité sera automatiquement supprimée (si configuré sur la plateforme)."
+echo ""
+echo "🎉 Opération terminée ! La branche est prête pour la revue."
+
+# --- 4. Retour à la branche de base ---
+echo ""
+echo "[INFO] Retour à la branche '$BASE_BRANCH' pour continuer le travail."
+git checkout "$BASE_BRANCH" > /dev/null 2>&1
