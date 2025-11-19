@@ -82,7 +82,7 @@ do
             echo "[INFO] Préfixe de branche sélectionné : '$BRANCH_PREFIX'"
             break
             ;;
-        *) echo "Option invalide '$REPLY'. Veuillez choisir 1, 2, ou 3.";;
+        *) echo "Option invalide '$REPLY'. Veuillez choisir 1, 2, 3, ou 4.";;
     esac
 done
 

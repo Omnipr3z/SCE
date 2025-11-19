@@ -48,7 +48,7 @@ SC.SequenceConfig = SC.SequenceConfig || {};
     const params = PluginManager.parameters("SC_ActionSequencesConfig");
 
     // --- Traitement des Séquences ---
-    SC.SequenceConfig.sequences = {};
+    SC.SequenceConfig.sequences = {}; 
     const sequencesParam = JSON.parse(params.sequences || "[]");
 
     for (const seq of sequencesParam) {
