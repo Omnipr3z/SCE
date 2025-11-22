@@ -1,0 +1,27 @@
+{
+    "climates": {
+      "temperate": {
+        "spring": [
+          { "type": "clear", "weight": 60 },
+          { "type": "cloudy", "weight": 25 },
+          { "type": "rain", "weight": 15 }
+        ],
+        "summer": [
+          { "type": "clear", "weight": 75 },
+          { "type": "cloudy", "weight": 20 },
+          { "type": "storm", "weight": 5 }
+        ],
+        "autumn": [
+          { "type": "clear", "weight": 40 },
+          { "type": "cloudy", "weight": 40 },
+          { "type": "rain", "weight": 20 }
+        ],
+        "winter": [
+          { "type": "clear", "weight": 50 },
+          { "type": "cloudy", "weight": 30 },
+          { "type": "snow", "weight": 20 }
+        ]
+      }
+    }
+  }
+  
