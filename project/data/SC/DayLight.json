@@ -1,0 +1,25 @@
+{
+    "meta": {
+        "version": "1.0.0",
+        "date": "2025-11-22",
+        "description": "Configuration file for the daylight system tones."
+    },
+    "tones": {
+        "outside": [
+            { "period": "night", "tone": [-102, -102, -68, 102] },
+            { "period": "dawn", "tone": [-34, -34, 0, 0] },
+            { "period": "morning", "tone": [0, 0, 0, 0] },
+            { "period": "day", "tone": [0, 0, 0, 0] },
+            { "period": "dusk", "tone": [-34, -34, 0, 0] },
+            { "period": "twilight", "tone": [-68, -68, -34, 68] }
+        ],
+        "inside": [
+            { "period": "night", "tone": [-136, -136, -102, 119] },
+            { "period": "dawn", "tone": [-102, -102, -68, 102] },
+            { "period": "morning", "tone": [-68, -68, -34, 68] },
+            { "period": "day", "tone": [-68, -68, -34, 68] },
+            { "period": "dusk", "tone": [-102, -102, -68, 102] },
+            { "period": "twilight", "tone": [-136, -136, -102, 119] }
+        ]
+    }
+}
