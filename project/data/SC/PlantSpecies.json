@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "Sun-flower",
+        "maxGrowthStage":2,
+        "growthStages": {
+            "seed":{
+                    "normal":{
+                    "growthRate": 1,
+                    "hydradationRate":1,
+                    "idealTemperature": 25,
+                    "idealWeather": "clear",
+                    "harvest": [],
+                    "felled":[]
+                }
+            },
+            "sprouting":{
+                    "normal":{
+                    "growthRate": 1,
+                    "hydradationRate":1,
+                    "idealTemperature": 25,
+                    "idealWeather": "clear",
+                    "harvest": {
+                        "normal":[],
+                        "wiltered":[],
+                        "frozen":[]
+                    },
+                    "felled":[]
+                }
+            },
+            "growing1":{
+                    "normal":{
+                    "growthRate": 1,
+                    "hydradationRate":1,
+                    "idealTemperature": 25,
+                    "idealWeather": "clear",
+                    "harvest": {
+                        "normal":[
+                            {"itemId":1,"amount":1,"chance":100,"nextStage":"sprouting", "note":"herbe"}
+                        ],
+                        "wiltered":[
+                            {"itemId":1,"amount":1,"chance":50,"nextStage":"sprouting", "note":"herbe"}
+                        ],
+                        "frozen":[]
+                    }
+                }
+            }
+        } 
+    }
+]

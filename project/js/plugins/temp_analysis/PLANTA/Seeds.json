@@ -1,0 +1,174 @@
+[
+    {   "id":0, "name":"Test",    "itemId":0,
+        "steps":[
+            {   "id":0,
+                "name":"blank",
+                "character":{"name":"", "index":0, "dir":2, "stepAnim":false},
+                "fertilizerMax":0,
+                "needHydra":0,
+                "supportDryness":100,
+                "growSpeed":0,
+                "step.nextStep":0,
+                "gathers":[
+                    {"needs":0, "itemId":1, "min":0}
+                ]
+            }
+        ]
+    },
+    {   "id":1, "name":"Grain de blé",    "itemId":1,
+        "steps":[
+            {   "id":0,
+                "name":"blank",
+                "character":{"name":"", "index":0, "dir":2, "stepAnim":false},
+                "fertilizerMax":0,
+                "needHydra":0,
+                "supportDryness":50,
+                "growSpeed":0,
+                "nextStep":0,
+                "gathers":[
+                    {"needs":0, "itemId":1, "min":0}
+                ]
+            },
+            {   "id":1,
+                "name":"Graines",
+                "character":{"name":"Gather_1", "index":0, "dir":2, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":100,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            },
+            {   "id":2,
+                "name":"Jeune Pousse",
+                "character":{"name":"Gather_1", "index":1, "dir":2, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":150,
+                "growSpeed":5,
+                "nextStep":3,
+                "gathers":[]
+            },
+            {   "id":3,
+                "name":"Jeune plante",
+                "character":{"name":"Gather_1", "index":1, "dir":4, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":0.5,
+                "supportDryness":150,
+                "growSpeed":5,
+                "nextStep":4,
+                "gathers":[]
+            },
+            {   "id":4,
+                "name":"Près à récolter",
+                "character":{"name":"Gather_1", "index":1, "dir":6, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":200,
+                "growSpeed":5,
+                "nextStep":4,
+                "gathers":[
+                    {
+                        "id":0,
+                        "itemId": 132,
+                        "min":10,
+                        "max":25,
+                        "growNum":1,
+                        "nextStep":0,
+                        "needs":15,
+                        "talentsReq":[],
+                        "formReq":15,
+                        "activityId":11
+                    },
+                    {   "id":1,
+                        "itemId": 11,
+                        "min":1,
+                        "max":3,
+                        "growNum":1,
+                        "nextStep":0,
+                        "needs":25,
+                        "talentsReq":[{"name":"agriculteur", "lvl":1}],
+                        "formReq":15,
+                        "activityId":11
+                    }
+                ]
+            },
+            {   "id":5,
+                "name":"Plante morte",
+                "character":{"name":"Gather_1", "index":0, "dir":8, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":15,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            }
+        ]
+    },
+    {   "id":2, "name":"Graine d'arbre",    "itemId":1,
+        "steps":[
+            {   "id":0,
+                "name":"blank",
+                "character":{"name":"", "index":0, "dir":2, "stepAnim":false},
+                "fertilizerMax":0,
+                "needHydra":0,
+                "supportDryness":50,
+                "growSpeed":0,
+                "nextStep":0,
+                "gathers":[
+                    {"needs":0, "itemId":1, "min":0}
+                ]
+            },
+            {   "id":1,
+                "name":"Graines",
+                "character":{"name":"Gather_1", "index":0, "dir":2, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":100,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            },
+            {   "id":2,
+                "name":"Jeune Pousse",
+                "character":{"name":"Gather_1", "index":1, "dir":2, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":150,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            },
+            {   "id":3,
+                "name":"Jeune plante",
+                "character":{"name":"Gather_1", "index":1, "dir":4, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":150,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            },
+            {   "id":4,
+                "name":"Près à récolter",
+                "character":{"name":"Gather_1", "index":1, "dir":6, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":200,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            },
+            {   "id":5,
+                "name":"Plante morte",
+                "character":{"name":"Gather_1", "index":0, "dir":8, "stepAnim":false},
+                "fertilizerMax":3,
+                "needHydra":1,
+                "supportDryness":15,
+                "growSpeed":5,
+                "nextStep":2,
+                "gathers":[]
+            }
+        ]
+    }
+]

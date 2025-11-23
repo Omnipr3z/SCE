@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "mapId": 1,
+        "eventId": 1,
+        "speciesId": 1,
+        "growth": 0,
+        "yield": 100,
+        "stage":1,
+        "lastUpdateFrame": 0
+    }
+]
