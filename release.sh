@@ -47,16 +47,58 @@ echo "'main' a été mise à jour et pushée."
 
 
 # --- 3. Tagger la release ---
-echo -e "\n--> Étape 3/4 : Création et push du tag de version..."
-if ! git tag -a "$VERSION" -m "Release $VERSION"; then
-    echo "ERREUR : La création du tag '$VERSION' a échoué. Le tag existe peut-être déjà."
+echo -e "\n--> Étape 3/4 : Création du tag annoté..."
+
+# Demander un titre pour le tag (avec valeur par défaut)
+read -p "Titre du tag (appuyez sur Entrée pour 'Release $VERSION'): " TAG_TITLE
+if [ -z "$TAG_TITLE" ]; then
+    TAG_TITLE="Release $VERSION"
+fi
+
+echo "Entrez les lignes de description pour le tag. Laissez vide et appuyez sur Entrée pour terminer."
+BODY_CONTENT=""
+line_num=1
+while true; do
+    read -p "[Ligne $line_num]: " LINE
+    if [ -z "$LINE" ]; then
+        break
+    fi
+    if [ -z "$BODY_CONTENT" ]; then
+        BODY_CONTENT="$LINE"
+    else
+        BODY_CONTENT+=$'\n'"$LINE"
+    fi
+    line_num=$((line_num+1))
+done
+
+if [ -n "$BODY_CONTENT" ]; then
+    TAG_MESSAGE="$TAG_TITLE"$'\n\n'"$BODY_CONTENT"
+else
+    TAG_MESSAGE="$TAG_TITLE"
+fi
+
+# Vérifier si le tag existe déjà
+if git rev-parse "refs/tags/$VERSION" >/dev/null 2>&1; then
+    echo "ERREUR : Le tag '$VERSION' existe déjà. Annulation."
     exit 1
 fi
-if ! git push --tags; then
-    echo "ERREUR : Échec du push des tags."
+
+if ! git tag -a "$VERSION" -m "$TAG_MESSAGE"; then
+    echo "ERREUR : La création du tag '$VERSION' a échoué."
     exit 1
 fi
-echo "Tag '$VERSION' créé et pushé avec succès."
+
+# Proposer de pousser les tags
+read -p "Voulez-vous pousser le(s) tag(s) maintenant ? (y/N): " PUSH_TAGS
+if [[ "$PUSH_TAGS" =~ ^[Yy]$ ]]; then
+    if ! git push --tags; then
+        echo "ERREUR : Échec du push des tags."
+        exit 1
+    fi
+    echo "Tag '$VERSION' créé et pushé avec succès."
+else
+    echo "Tag '$VERSION' créé localement. N'oubliez pas de faire 'git push --tags' plus tard."
+fi
 
 
 # --- 4. Synchroniser 'develop' ---
