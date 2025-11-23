@@ -19,133 +19,6 @@
  *
  * @help
  * 
- * Desription du fichier sprite des plantes par block/index:
- * 
- *  ___________________________________________
- * | seed     |sprouting | growing1 | growing2 |
- * |__________|__________|__________|__________|
- * | growing3 |   dead   |  felled  |  others  |
- * |__________|__________|__________|__________|
- * 
- * Others(burned, flooded, infested, overgrown, stressed, dormant)
- * 
- * Description des block du fichier sprite des plantes par frame/pattern:
- *                   ______________________________
- *                  | normal |  watered |  naked   | 
- *  ________________|________|__________|__________|   
- * |    normal      |    A   |          |          |
- * |________________|________|__________|__________| 
- * |    yielded     |        |          |          |
- * |________________|________|__________|__________|  
- * |   harvested    |        |          |          |
- * |________________|________|__________|__________|     
- * |    felled      |        |          |          |
- * |________________|________|__________|__________|       
- *  
- * Logic d'evolution des plantes
- * 
- * Les plantationSpot sont des Events optimiser pour représenter
- * une zone de la map oou une plante peut être planter et peut
- * évoluer automatiquement au fil du temps en fonction du
- * context et des actions du joueur.
- * 
- * Dans ces plantations, differentes espèces de plante peuvent être
- * plantées. L'ID du type de plante est defini par la propriété
- * **._specyId**. Selon l'espèce de plante qui est planté sur cette
- * plantation, elle va évoluer en suivnt les données recupérées
- * dans $dataPlantSpecies. Ces données permettrons de mettre à jour
- * le sprite sur la map dynamiquement et de gérer la récolte de ressources
- * par le joueur.
- * 
- * L'evolution globale des plantations est automatiser en se basant sur 
- * plusieurs critères:
- * 
- * # Le Temps
- * Pour fonctionner le systeme nécessite le module DATE car il utilise le
- * temps virtuel pour se mettre à jour.
- *  
- * # La Saison
- * Récupérer dans $gameMap, chaque saison a sa propre logique de croissance
- * definie dans $dataPlantSpecies[ID_DE_L_ESPECE].stages[ID_DE_LA_SAISON].
- * De plus une image spécifique peut être utilisée selon la saison si
- * $dataPlantSpecies[ID_DE_L_ESPECE].useSeason == true.
- * 
- * # Les Stages '._stage'
- * Chaque logique de croissance saisonnière est divisé en stage. Ce sont les
- * étapes de croissance naturelle de la plante :
- * "seed": Graine plantée
- * "sprouting": Plante en germination
- * "gorwing1", "growing2", "growing3": avancement de la croissance
- * "dead": La plante est morte
- * 
- * #Les États '._states'
- * En plus du stage, une plante peut avoir un état. Les 
- * états represente des situation particulière de la plante en fonction
- * du contexte et de differents événements. Les states forment une combinaison
- * de 2 valeurs. :
- * Valeur 1:
- * "normal": , "watered", "naked"
- * Valeur 2: "normal", "yielded", "harvested", "felled"
- * Toutes les plantes n'utilisent pas tout les états ni tout les stages.
- * 
- * Voici un exemple pour un pommier pour le printemps :
- *  ___________________________________________________________________________
- * |                            STAGE 0 :  SEED                                |
- * |_______________________ _____________________________ _____________________|
- * | State1    |  State2   |     ACTION/EVENEMENTS       |       SPRITE        |
- * |___________|___________|_____________________________|_____________________|
- * |           | "normal"  | La graine plantée           |   tas de terre      |
- * | "normal"  | "yielded" | Il a plu ou plante arrosée  | Une jeune pousse    |
- * |           |"harvested"| ----------------------------|---------------------|
- * |           |  "felled" | ----------------------------|---------------------|
- * |___________|___________|_____________________________|_____________________|
- * |           | "normal"  | La graine plantée           |                     |
- * | "watered" | "yielded" | Il a plu ou plante arrosée  |  PAREIL QUE NORMAL  |
- * |           |"harvested"| ----------------------------|    AVEC LA TERRE    |
- * |           |  "felled" | ----------------------------|       MOUILLEE      |
- * |___________|___________|_____________________________|_____________________| 
- * |           | "normal"  | La graine plantée           |   tas de terre      |
- * | "naked"   | "yielded" | Il a plu ou plante arrosée  |tas de terre mouillé |
- * |           |"harvested"| ----------------------------|---------------------|
- * |           |  "felled" | ----------------------------|---------------------|
- * |___________|___________|_____________________________|_____________________| 
- *
- *  ___________________________________________________________________________
- * |                         STAGE 1 :  SPROUTING                              |
- * |_______________________ _____________________________ _____________________|
- * | State1    |  State2   |     ACTION/EVENEMENTS       |       SPRITE        |
- * |___________|___________|_____________________________|_____________________|
- * |           | "normal"  | La graine plantée           |   tas de terre      |
- * | "normal"  | "yielded" | Il a plu ou plante arrosée  |tas de terre mouillé |
- * |           |"harvested"| ----------------------------|---------------------|
- * |           |  "felled" | ----------------------------|---------------------|
- * |___________|___________|_____________________________|_____________________|
- * |           | "normal"  | La graine plantée           |   tas de terre      |
- * | "watered" | "yielded" | Il a plu ou plante arrosée  |tas de terre mouillé |
- * |           |"harvested"| ----------------------------|---------------------|
- * |           |  "felled" | ----------------------------|---------------------|
- * |___________|___________|_____________________________|_____________________| 
- * |           | "normal"  | La graine plantée           |   tas de terre      |
- * | "naked"   | "yielded" | Il a plu ou plante arrosée  |tas de terre mouillé |
- * |           |"harvested"| ----------------------------|---------------------|
- * |           |  "felled" | ----------------------------|---------------------|
- * |___________|___________|_____________________________|_____________________| 
- * 
- * 
- * # Gestion de1 l'Hydratation
- * Chaque pl
- * # L'Avancement de la Croissance
- * 
- *  
- * Les plantations ont 3 propriétés qui definissent leur état :
- * **._stage** 
- * Defini l'etat d'avancement de la pousse en general
- * Cette propriété peut prendre les valeur suivantes:
- * 
-his.setImage(img, 5);
-reak;
-"felled": // coupé 
- * 
  * @historique
  * 
  */
@@ -346,15 +219,12 @@ class Game_Plantation{
             this._grow = 0;
         }
     }
-
-
-
     updateVisual(){
         if(this.isOnCurrentMap()){
             this.refreshVisual();
         }
     }
-    refreshVisual(){                                     //console.log(charData); SCMlog("=> Plant Update visual " + charData.name, false, false);
+    refreshVisual(){
         const event = this.event();
         if(event){
             const charData = this.stageData.character;
@@ -386,171 +256,170 @@ class Game_Plantation{
     }
 
     //usage
-    use(){
-        if(this.isBlank()){
-            this.plantSeed();
-        }else if(this.isDied()){
-            this.weed();
-        }else{
-            this.useAtStep()
-        }
-    }
+    // use(){
+    //     if(this.isBlank()){
+    //         this.plantSeed();
+    //     }else if(this.isDied()){
+    //         this.weed();
+    //     }else{
+    //         this.useAtStep()
+    //     }
+    // }
+    // //plant
+    // plantSeed(){
+    //     //$guiManager.hud('hudTime').deactiveBtnTouch('timeSpeed');
+    //     $gameParty.leader().startActivity(7);
+    //     this.makeSeedChoice();
+    // }
+    // prepareChoice(){
+    //     $gameMessage.clear();
+    //     $gameMessage._popTarget = null;
+    //     $gameMessage.setPositionType(2);
+    //     $gameMessage.setChoicePositionType(1);
+    //     $gameMessage.setBackground(0);
 
-    //plant
-    plantSeed(){
-        //$guiManager.hud('hudTime').deactiveBtnTouch('timeSpeed');
-        $gameParty.leader().startActivity(7);
-        this.makeSeedChoice();
-    }
-    prepareChoice(){
-        $gameMessage.clear();
-        $gameMessage._popTarget = null;
-        $gameMessage.setPositionType(2);
-        $gameMessage.setChoicePositionType(1);
-        $gameMessage.setBackground(0);
+    //     this._callBackItem = [];
+    // }
+    // makeSeedChoice(){
+    //     this.prepareChoice()
+    //     let choices = [], choiceTxt = "";
 
-        this._callBackItem = [];
-    }
-    makeSeedChoice(){
-        this.prepareChoice()
-        let choices = [], choiceTxt = "";
+    //     $dataSeeds.forEach(seed=>{
+    //         if($gameParty.hasItem($dataItems[seed.itemId])){
+    //             let item = $dataItems[seed.itemId];
 
-        $dataSeeds.forEach(seed=>{
-            if($gameParty.hasItem($dataItems[seed.itemId])){
-                let item = $dataItems[seed.itemId];
+    //             choiceTxt = `\\i[${item.iconIndex}] ${Voc.data("itemNames")[item.name]}`;
+    //             choices.push(choiceTxt);
+    //             this._callBackItem.push(seed.id);
+    //         }
+    //     });
 
-                choiceTxt = `\\i[${item.iconIndex}] ${Voc.data("itemNames")[item.name]}`;
-                choices.push(choiceTxt);
-                this._callBackItem.push(seed.id);
-            }
-        });
+    //     $gameMessage.setChoices(choices, 0, -1);
+    //     let that = this;
+    //     $gameMessage.setChoiceCallback(function(n){
+    //         if(that._callBackItem[n])
+    //             that.choicesSeedCallback(that._callBackItem[n]);
+    //     });
+    // }
+    // choicesSeedCallback(seedId){
+    //     this._seedId = Number(seedId);
+    //     this._stepId = 1;
+    //     $gameParty.leader().startActivity(8);
+    //     let seedItem = $dataItems[$dataSeeds[seedId].itemId];
+    //     $gameParty.gainItem(seedItem, -1);
+    //     this.update();
+    //     $gameMap.event(this._eventKey[1]).refresh()
+    // }
 
-        $gameMessage.setChoices(choices, 0, -1);
-        let that = this;
-        $gameMessage.setChoiceCallback(function(n){
-            if(that._callBackItem[n])
-                that.choicesSeedCallback(that._callBackItem[n]);
-        });
-    }
-    choicesSeedCallback(seedId){                                                SCMlog("\u{1F333} => Seed Selected " + seedId, false, false);    console.log(this)
-        this._seedId = Number(seedId);
-        this._stepId = 1;
-        $gameParty.leader().startActivity(8);
-        let seedItem = $dataItems[$dataSeeds[seedId].itemId];
-        $gameParty.gainItem(seedItem, -1);
-        this.update();
-        $gameMap.event(this._eventKey[1]).refresh()
-    }
-
-    //maintenance
-    useAtStep(){                                                                console.log("use")
-        $gameParty.leader().startActivity(7);
-        this.makeGatherChoice();
-    }
-    makeGatherChoice(){
+    // //maintenance
+    // useAtStep(){
+    //     $gameParty.leader().startActivity(7);
+    //     this.makeGatherChoice();
+    // }
+    // makeGatherChoice(){
         
-        let choices = [];
-        let gatherChoices = [];
-        let choicesTxt = [];
-        let actor = $gameParty.leader();
+    //     let choices = [];
+    //     let gatherChoices = [];
+    //     let choicesTxt = [];
+    //     let actor = $gameParty.leader();
 
-        this.prepareChoice();
-        this._callBackItem = [];
+    //     this.prepareChoice();
+    //     this._callBackItem = [];
 
-        if(actor.haveHydraTool())
-            choices.push(this.hydraToolChoice());
+    //     if(actor.haveHydraTool())
+    //         choices.push(this.hydraToolChoice());
 
-        if(actor.haveFertilizer())
-            choices.push(this.fertilizerChoice());
+    //     if(actor.haveFertilizer())
+    //         choices.push(this.fertilizerChoice());
 
-        this._gathers.forEach((gather, index)=>{
-            console.log(gather);
-            if(actor.canGather(gather)){    console.log(gather)
-                gatherChoices.push(gather);
-            }
-        })
+    //     this._gathers.forEach((gather, index)=>{
+    //         console.log(gather);
+    //         if(actor.canGather(gather)){    console.log(gather)
+    //             gatherChoices.push(gather);
+    //         }
+    //     })
 
-        if(gatherChoices.length > 0)
-            choices.push(this.gatherChoice(gatherChoices));
+    //     if(gatherChoices.length > 0)
+    //         choices.push(this.gatherChoice(gatherChoices));
 
-        $gamePlantations._activeId = this._plantId;
+    //     $gamePlantations._activeId = this._plantId;
 
-        if(choices.length >0){
-            choices.forEach((choice, index)=>{
-                choicesTxt[index] = (choice.txt);
-                this._callBackItem[index] = (choice.callback);
-            });
+    //     if(choices.length >0){
+    //         choices.forEach((choice, index)=>{
+    //             choicesTxt[index] = (choice.txt);
+    //             this._callBackItem[index] = (choice.callback);
+    //         });
 
 
-            $gameMessage.setChoices(choicesTxt, 0, -1);
-            let that = this;
-            $gameMessage.setChoiceCallback(function(n){
-                if(that._callBackItem[n])
-                    that.choicesGatherCallback(that._callBackItem[n]);
-            });
-        }else{
-            actor.stopActivity();
-        }
-    }
-    hydraToolChoice(){
-        let actor   = $gameParty.leader(),
-            tool    = actor.equips()[0],
-            iconId  = tool.iconIndex;
-        return {
-            "txt":Voc("actWaterPlant").format([iconId]),
-            "callback":{action:"waterize"} 
-        };
-    }
-    fertilizerChoice(){
-        return {
-            "txt":Voc("actFertilizePlant"),
-            "callback":{action:"fertilize"}
-        };
-    }
-    gatherChoice(gatherChoice){
-        let choice = {},
-            itemsList = [];
-        if($gameParty.leader().equips[0])
-            choice.txt = `\\i[${$gameParty.leader().equips[0].iconIndex}] `;
-        else
-            choice.txt = `\\i[${Voc("handIconIndex")}] `;
-        choice.txt += Voc("actCollecter");
+    //         $gameMessage.setChoices(choicesTxt, 0, -1);
+    //         let that = this;
+    //         $gameMessage.setChoiceCallback(function(n){
+    //             if(that._callBackItem[n])
+    //                 that.choicesGatherCallback(that._callBackItem[n]);
+    //         });
+    //     }else{
+    //         actor.stopActivity();
+    //     }
+    // }
+    // hydraToolChoice(){
+    //     let actor   = $gameParty.leader(),
+    //         tool    = actor.equips()[0],
+    //         iconId  = tool.iconIndex;
+    //     return {
+    //         "txt":Voc("actWaterPlant").format([iconId]),
+    //         "callback":{action:"waterize"} 
+    //     };
+    // }
+    // fertilizerChoice(){
+    //     return {
+    //         "txt":Voc("actFertilizePlant"),
+    //         "callback":{action:"fertilize"}
+    //     };
+    // }
+    // gatherChoice(gatherChoice){
+    //     let choice = {},
+    //         itemsList = [];
+    //     if($gameParty.leader().equips[0])
+    //         choice.txt = `\\i[${$gameParty.leader().equips[0].iconIndex}] `;
+    //     else
+    //         choice.txt = `\\i[${Voc("handIconIndex")}] `;
+    //     choice.txt += Voc("actCollecter");
 
-        gatherChoice.forEach(gather=>{
-            itemsList.push(gather.id);
-            let item = $dataItems[gather.itemId];
-            choice.txt += ` \\i[${item.iconIndex}]${Voc.data("itemNames")[item.name]}`;
-        })
-        choice.txt += ".";
-        choice.callback = {
-            action: "gather",
-            itemIds:itemsList
-        }
+    //     gatherChoice.forEach(gather=>{
+    //         itemsList.push(gather.id);
+    //         let item = $dataItems[gather.itemId];
+    //         choice.txt += ` \\i[${item.iconIndex}]${Voc.data("itemNames")[item.name]}`;
+    //     })
+    //     choice.txt += ".";
+    //     choice.callback = {
+    //         action: "gather",
+    //         itemIds:itemsList
+    //     }
 
-        return choice;
-    }
-    choicesGatherCallback(data){                                                SCMlog("\u{1F333} => Gather Selected " + data.action, false, false);
-        let actor = $gameParty.leader();
-        switch(data.action){
-            case "waterize":
-                actor.startActivity(9);
-                this.refreshVisual();
-                break;
-            case "gather":
-                this.gatherItems(data.itemIds);
-                break;
-            default:
-                console.log(data);
-                break;
-        }                                      
-    }
-    gatherItems(itemList){
-        $gamePlantations._itemsGather = itemList; 
-        $gameParty.leader().startActivity(11);
-    }
-    gainHydra(value){
-        this._hydra = (this._hydra + value).clamp(0,4);
-    }
+    //     return choice;
+    // }
+    // choicesGatherCallback(data){
+    //     let actor = $gameParty.leader();
+    //     switch(data.action){
+    //         case "waterize":
+    //             actor.startActivity(9);
+    //             this.refreshVisual();
+    //             break;
+    //         case "gather":
+    //             this.gatherItems(data.itemIds);
+    //             break;
+    //         default:
+    //             console.log(data);
+    //             break;
+    //     }                                      
+    // }
+    // gatherItems(itemList){
+    //     $gamePlantations._itemsGather = itemList; 
+    //     $gameParty.leader().startActivity(11);
+    // }
+    // gainHydra(value){
+    //     this._hydra = (this._hydra + value).clamp(0,4);
+    // }
 }
 
 // --- Enregistrement du plugin ---
