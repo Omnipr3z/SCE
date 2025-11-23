@@ -1,6 +1,6 @@
 # SimCraft Engine (SCE)
 ![Simcraft Engine](https://img.shields.io/badge/Engine-Simcraft-blue)  
-![Version](https://img.shields.io/badge/Version-1.2.0-orange)  
+![Version](https://img.shields.io/badge/Version-1.2.1-orange)  
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
 # Licence
@@ -27,7 +27,6 @@ En plus des termes de la licence CC BY-NC-SA 4.0, l’utilisation de ce code est
      - Le nom **"Sim Craft Engine"** dans les crédits.
      - Un lien vers le dépôt officiel : [https://github.com/Omnipr3z/SCE](https://github.com/Omnipr3z/SCE).
 
-Aussi, certains scripts mentionnés ci-dessous sont dérivés du **code source de RPG Maker MZ**.
 Ces scripts sont conçus pour fonctionner avec le moteur RPG Maker MZ et restent soumis à la **licence propriétaire de Gotcha Gotcha Games / Degica**.
 
 Par conséquent, **l'utilisation de ces scripts nécessite que vous possédiez une copie légale de RPG Maker MZ**.
@@ -37,19 +36,25 @@ Veuillez consulter le [EULA officiel de RPG Maker MZ](https://www.rpgmakerweb.co
 
 [![Licence RPG Maker MZ](https://img.shields.io/badge/Licence-RPG_Maker_MZ_EULA-red)](https://www.rpgmakerweb.com/eula)  
 
-Si vous utiliser le code de Simcraft partager une démo de votre projet serait très apprécié.
+Si vous utiliser le code de Simcraft partager une démo de votre projet serait un plus très apprécié.
 
-# SIMCRAFT ENGINE
+# QU'EST-Ce QUE SIMCRAFT ENGINE
 
-SimCraft est un sous-engine maison qui pousse RPG Maker bien plus loin. 🔥
+SimCraft est un sous-engine maison qui pousse RPG Maker bien plus loin. Il n'est pas à proprement parler un engine au sens litteral du terme mais plutôt un ensemble de plugins qui fonctionnent sur une architecture commune pour être aussi transversaux que modulaire. 🔥
 
 🛠️ SimCraft apporte :
 - 🌍 Temps & météo dynamique (jour/nuit, saisons, lunaisons)
+- Effets visuels sur les characters (Equipement visible, anims et ombre dynamique, sequences action)
 - 📆 Calendrier & événements impactant le monde et les PNJs
+- Systeme de talents
 - 💰 Économie et commerce évolutifs (offre/demande, rareté, production)
+- Système de récolte et de mining
 - 🏡 Gestion d’infrastructures & diplomatie entre clans et factions
-- 🎭 Talents, compétences & équipements visibles sur le sprite
+- Système d'Artisanat et de construction
+- 🎭 Talents, compétences avec experience et niveaux
 - 🩺 Besoins type Sims (faim, soif, fatigue, hygiène, maladies, soins)
+- Systeme de relation et de dialogue
+- Systeme de voyage/mapmonde avec gestion de ressources et du temps de trajet
 - 🔄 Plugins auto-chargés & DebugTool avancé
 
 Je suis en pleine refonte de SimCraft pour le rendre compatible avec MZ, donc peu de contenu dispo sur Git pour l’instant, mais ça arrive vite.
