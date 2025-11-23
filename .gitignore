@@ -5,6 +5,8 @@
 # --- Fichiers et dossiers de projet RPG Maker à ignorer ---
 # Dossier de brouillon et backup
 backup/
+PHD3V_SITE/
+
 project/js/plugins/SC_WIP/
 
 # Dossier de sauvegarde
