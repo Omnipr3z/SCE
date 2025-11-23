@@ -59,7 +59,6 @@ Ce projet combine plusieurs standalone. Choisissez la documentation qui vous int
 # Documentation
 
 - **Tree & Ordre de chargement**
-  - [Ordre de Chargement](DOC/Order.md)
   - [Arborescence des repertoires](DOC/Arbo.md)
   - [Ordre des Plugins](DOC/PluginsOrder.md)
 - **Guides & Core**
