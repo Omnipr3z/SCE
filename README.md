@@ -142,6 +142,8 @@ La feuille de route complète du projet est désormais disponible dans un docume
  </span>
 <br><br>
 
+https://www.deviantart.com/omnipr3z
+
 # Credits
 
  * icones réseaux sociaux des documentations https://icon-sets.iconify.design/
