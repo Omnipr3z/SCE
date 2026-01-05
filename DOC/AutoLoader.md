@@ -28,7 +28,7 @@ L'adoption de ce Cœur applicatif vous apporte des avantages immédiats :
 *   **Architecture de Plugins Modulaire** : Chaque fichier devient un module autonome, facile à gérer et à partager.
 *   **Gestion Automatique des Dépendances** : Le moteur vérifie que les plugins sont chargés dans le bon ordre et vous alerte en cas de problème.
 *   **Chargement Déclaratif de Données** : Chargez vos fichiers `.json` personnalisés simplement en les déclarant dans les métadonnées de votre plugin. Plus besoin de toucher au `DataManager`.
-*   **Création Déclarative d'Instances** : Créez des objets de jeu globaux (ex: `$gameCalendar`) ou surchargez des classes statiques du moteur (`DataManager`) de manière propre et automatique.
+*   **Création Déclarative d'Instances** : Créez des objets de jeu globaux (ex: `$gameDate`) ou surchargez des classes statiques du moteur (`DataManager`) de manière propre et automatique.
 *   **Système de Sauvegarde Modulaire** : Rendez n'importe quel objet de jeu persistant en ajoutant une simple ligne `autoSave: true` et en implémentant deux méthodes.
 *   **Debug Centralisé** : Le `Debug_Tools` fournit des logs clairs et groupés pour chaque étape du cycle de vie du moteur (chargement, instanciation, sauvegarde...).
 

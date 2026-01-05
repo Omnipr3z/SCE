@@ -44,7 +44,7 @@ Si `_breath` tombe sous un certain seuil (`breathOutThreshold`), l'acteur est fo
 
 Le système intercepte une commande de saut (`jump`) et :
 1.  Vérifie si l'acteur a assez de souffle (`canJump`).
-2.  Calcule la distance du saut (`calculateJumpDistance`) en se basant sur les seuils d'élan (`jumpImpulseThresholds`) définis dans la configuration.
+2.  Calcule la distance du saut (`calculateJumpDistance`) en se basant sur les seuils d'élan (`jumpImpulseThresholds`) définis dans la configuration, **et en appliquant les multiplicateurs liés aux statistiques (AGI) et aux traits d'équipement.**
 3.  Exécute le saut et consomme le souffle (`onJump`).
 
 ### Activités Continues
@@ -94,6 +94,7 @@ if (healthManager) {
 **Exemple pour faire se laver l'acteur 1 :**
 ```javascript
 const healthManager = $actorHealthManagers.manager(1);
+/* ou $actorsMainManagers.actor(1).health en utilisant le hub mainManager */
 if (healthManager) {
     healthManager.wash({
         cleanIncrease: 5 // Récupère 5% de propreté par minute
@@ -104,6 +105,24 @@ if (healthManager) {
 ### Paramétrage
 
 Tous les aspects numériques du système (coûts, gains, seuils, etc.) sont modifiables directement dans l'éditeur de plugins, sous les paramètres du plugin **`SC_HealthConfig`**.
+
+## 5. Personnalisation via Traits (Notetags)
+
+Le système prend en compte les statistiques de l'acteur (AGI) et les traits (Notetags) présents sur l'acteur, sa classe, ses armes, armures et états.
+
+### Balises Disponibles
+
+*   **`<sc_jump_rate: x>`** : Modifie la distance de saut.
+    *   Ex: `<sc_jump_rate: 0.5>` (+50% de distance).
+    *   Ex: `<sc_jump_rate: -0.2>` (-20% de distance).
+*   **`<sc_stamina_cost: x>`** : Modifie la consommation d'endurance (Forme/Souffle).
+    *   Ex: `<sc_stamina_cost: -0.1>` (Coût réduit de 10%).
+*   **`<sc_breath_regen: x>`** : Modifie la vitesse de récupération du souffle.
+    *   Ex: `<sc_breath_regen: 0.2>` (+20% de régénération).
+*   **`<sc_impulse_gain: x>`** : Modifie la vitesse de gain d'impulsion.
+    *   Ex: `<sc_impulse_gain: 0.5>` (+50% de gain).
+
+Ces balises peuvent être combinées avec des formules basées sur les statistiques (configurables dans `SC_Mechanics_TraitsPatch.js`) pour créer un système de progression RPG complet.
 
 ---
 

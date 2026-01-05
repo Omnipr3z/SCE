@@ -39,6 +39,7 @@
 
         refresh() {
             this._actor = $gamePlayer.actor();
+            this._mainManager = $actorsMainManagers.actor(this._actor ? this._actor.actorId() : -1);
             if (!this._actor) return;
 
             this._healthManager = $actorHealthManagers.manager(this._actor.actorId());
@@ -72,13 +73,16 @@
             this.drawText(daypart, 6, y, this.contentsWidth() - 12, "center");
 
             y += lineHeight;
-            const weatherTxt = `WEATHER ${$dataTimeSystem.seasons_global[$gameDate.getSeasonIndex()].toLowerCase()}: ${$gameWeather.type} ${$gameWeather.intensity} (${$gameWeather.isForced?"F":"A"})
+            const weatherTxt = `WEATHER ${$dataTimeSystem.seasons_global[$gameDate.getSeasonIndex()].toLowerCase()}: ${$gameWeather.type} ${Math.round($gameWeather.intensity*100)/100} (${$gameWeather.isForced?"F":"A"})
                 ${$gameWeather.overlayName?$gameWeather.overlayName + '(' + $gameWeather.scrollX + '/' + $gameWeather.scrollY + ')':''} nxtUpt:${15 - $gameDate.timestamp + $gameWeather._lastLogicUpdateTime} frames`;
             const weatherArray = weatherTxt.split("\n").map(line => line.trim());
             for (let i = 0; i < weatherArray.length; i++) {
                 this.drawText(weatherArray[i], 6, y, this.contentsWidth() - 12, "center");
                 y += lineHeight;
-            }        
+            }
+
+            const actionText = this._mainManager.animator.getRealActionName();
+            this.drawText(actionText, 6, y, this.contentsWidth() - 12, "center");    
         }
 
         drawStat(name, value, y, width, color1, color2) {

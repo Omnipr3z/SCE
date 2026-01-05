@@ -75,13 +75,25 @@ class ActorsAnimsManagers {
      */
     getManagerFor(character) {
         if (!character) return null;
-        // Utilise l'ID de l'acteur s'il existe, sinon une clé unique pour les autres personnages.
-        const characterId = character.actor ? character.actor().actorId() : $gameParty.leader().actorId();
-        
-        if (!this._actorManagers.has(characterId)) {
-            this._actorManagers.set(characterId, new ActorAnimManager(character));
+
+        let actorId = null;
+        // Case for Game_Player and Game_Follower which have an actor() method.
+        if (typeof character.actor === "function") {
+            const actor = character.actor();
+            if (actor) {
+                actorId = actor.actorId();
+            }
+        // Case for Game_Event instances that have been decorated with an .actor property.
+        } else if (character.actor) { 
+            actorId = character.actor.actorId();
         }
-        return this._actorManagers.get(characterId);
+
+        if (!actorId) {
+            return null;
+        }
+        
+        // Delegate creation and retrieval to getManagerById
+        return this.getManagerById(actorId);
     }
     getManagerById(actorId) {
         if (!actorId) return null;

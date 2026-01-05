@@ -47,7 +47,7 @@ class ActorMainManager {
      * @returns {ActorAnimManager|null}
      */
     get animator() {
-        return $gameActorsAnims.getManagerForActorId(this._id);
+        return $gameActorsAnims.getManagerById(this._id);
     }
 
     /**

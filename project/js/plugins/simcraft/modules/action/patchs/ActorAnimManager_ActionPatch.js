@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Patch pour ajouter la gestion des actions à ActorAnimManager.
+ * @plugindesc !SC [v1.0.1] Patch pour ajouter la gestion des actions à ActorAnimManager.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_ActorAnimManager
@@ -28,6 +28,9 @@
  *
  * Il surcharge la logique de mise à jour pour donner la priorité aux actions
  * sur les animations d'état (marche, idle, etc.).
+ * 
+ * ▸ Historique :
+ *  v1.0.0 - 2025-12-22 : Création initiale du patch.
  */
 
 
@@ -99,11 +102,14 @@ ActorAnimManager.prototype._playActionInternal = function(actionName, waitCallba
     this._currentState = 'action'; // Met à jour l'état principal
     this._waitCallback = waitCallback;
 
-    // Assure que l'animation de pas est active pour voir le changement
-    this._character.setWalkAnime(true);
-    this._character.setStepAnime(false);
+    const character = this.mainManager.character;
+    if (character) {
+        // Assure que l'animation de pas est active pour voir le changement
+        character.setWalkAnime(true);
+        character.setStepAnime(false);
+    }
 
-    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Démarre l'action "${actionName}".`, true);
+    $debugTool.log(`[ActorAnimManager] Acteur ${this.mainManager.actor.actorId()}: Démarre l'action "${actionName}".`, true);
     // Applique immédiatement la première frame
     this.updateActionFrame();
 };
@@ -131,7 +137,7 @@ ActorAnimManager.prototype.stopAction = function() {
         this.setWalkAnim();
     }
     
-    $debugTool.log(`[ActorAnimManager] Acteur ${this._getActorId()}: Arrête l'action "${actionName}". Retour à "${returnToIdle ? 'idle' : 'walk'}".`,true);
+    $debugTool.log(`[ActorAnimManager] Acteur ${this.mainManager.actor.actorId()}: Arrête l'action "${actionName}". Retour à "${returnToIdle ? 'idle' : 'walk'}".`,true);
 };
 
 /**
@@ -165,6 +171,9 @@ ActorAnimManager.prototype.updateAction = function() {
 ActorAnimManager.prototype.updateActionFrame = function() {
     if (!this._isActionPlaying) return;
 
+    const character = this.mainManager.character;
+    if (!character) return;
+
     const action = this._currentAction;
     const pattern = action.frames[this._actionFrameIndex];
 
@@ -173,15 +182,15 @@ ActorAnimManager.prototype.updateActionFrame = function() {
     //
     // Applique le pattern (la colonne)
     if(pattern !== undefined && pattern !== null)
-        this._character.setPattern(pattern);
+        character.setPattern(pattern);
 
     $debugTool.log(
-        `[ActorAnimManager] Acteur ${this._getActorId()}: Action "${action.actionName}"
+        `[ActorAnimManager] Acteur ${this.mainManager.actor.actorId()}: Action "${action.actionName}"
         - Frame ${this._actionFrameIndex}
         (Sheet Index: ${action.sheetIndex},
         Pattern: ${pattern}).
-        Character Pattern set to: ${this._character.pattern()}
-        Real Character Pattern set to: ${this._character._pattern}`, true);
+        Character Pattern set to: ${character.pattern()}
+        Real Character Pattern set to: ${character._pattern}`, true);
 };
 /**
  * Returns the name of the currently playing action.
@@ -191,12 +200,27 @@ ActorAnimManager.prototype.getCurrentActionName = function() {
     return this._currentAction ? this._currentAction.actionName : null;
 };
 
+ActorAnimManager.prototype.getRealActionName = function() {
+    let actionTxt = 'null';
+    if(this.mainManager && this.mainManager.character){
+         if(this.mainManager.character.isJumping()){
+            actionTxt = 'jump';
+        }else if(this.mainManager.character.isDashing()){
+            actionTxt = 'dash';
+        }else if(this.mainManager.character.isMoving()){
+            actionTxt = 'walk';
+        }else{
+            actionTxt = 'wait';
+        }
+    }
+    return actionTxt = this._currentAction ? this._currentAction.actionName : actionTxt;
+};
 
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_ActorAnimManager_ActionPatch",
-    version: "1.0.0",
+    version: "1.0.1",
     icon: "💪",
     author: AUTHOR,
     license: LICENCE,

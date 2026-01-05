@@ -56,6 +56,7 @@ class TouchInputManager {
         TouchInput._rightButtonPressed = false;
         TouchInput._rightPressedTime = 0;
         TouchInput._rightTriggered = false;
+        TouchInput._rightEvents = { triggered: false };
     }
 
     /**
@@ -64,6 +65,10 @@ class TouchInputManager {
      */
     update() {
         _TouchInput_update.call(TouchInput, ...arguments); // Appel de la méthode update originale de TouchInput
+
+        // Mise à jour de l'état triggered pour le clic droit (bufferisé comme le clic gauche)
+        TouchInput._rightTriggered = !!TouchInput._rightEvents.triggered;
+        TouchInput._rightEvents.triggered = false;
 
         // Gestion du timing pour le bouton droit
         if (TouchInput.isRightPressed()) {
@@ -82,6 +87,7 @@ class TouchInputManager {
         TouchInput._rightButtonPressed = false;
         TouchInput._rightPressedTime = 0;
         TouchInput._rightTriggered = false;
+        TouchInput._rightEvents = { triggered: false };
     }
 
     /**
@@ -157,7 +163,8 @@ class TouchInputManager {
 TouchInput._onRightButtonDown = function(event) {
     // On met toujours à jour nos propres états pour que isRightPressed/Triggered fonctionnent
     this._rightButtonPressed = true;
-    this._rightTriggered = true; // Sera remis à false par TouchInput.update()
+    this._rightEvents = this._rightEvents || { triggered: false };
+    this._rightEvents.triggered = true;
     // On appelle la méthode originale (qui gère l'annulation) uniquement si notre condition est remplie.
     if (this.isCancelOnRightClick()) {
         _TouchInput_onRightButtonDown.call(this, event);

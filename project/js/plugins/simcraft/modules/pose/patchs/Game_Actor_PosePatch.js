@@ -12,7 +12,7 @@
  */
 /*:fr
  * @target MZ
- * @plugindesc !SC [v1.0.0] Patch pour la gestion des Poses de personnages.
+ * @plugindesc !SC [v1.0.3] Patch pour la gestion des Poses de personnages.
  * @author By '0mnipr3z' ©2024 licensed under CC BY-NC-SA 4.0
  * @url https://github.com/Omnipr3z/SCE
  * @base SC_SystemLoader
@@ -30,6 +30,9 @@
  *
  * ▸ Historique :
  *   v1.0.0 - 2024-08-03 : Création initiale du patch.
+ *   v1.0.1 - 2024-08-03 : Correction alias initMembers et crash ActorAnimManager.
+ *   v1.0.2 - 2024-08-03 : Correction appel mainManager (getter).
+ *   v1.0.3 - 2024-08-03 : Correction récupération instance acteur (propriété vs fonction).
  */
 
 //=============================================================================
@@ -38,7 +41,7 @@
 
 const _Game_Actor_initMembers2 = Game_Actor.prototype.initMembers;
 Game_Actor.prototype.initMembers = function() {
-    _Game_Actor_initMembers.call(this);
+    _Game_Actor_initMembers2.call(this);
     this._currentPose = 'default'; // La pose par défaut de chaque acteur.
 };
 
@@ -73,7 +76,19 @@ Game_Actor.prototype.getPose = function() {
  * @returns {number} L'index du spritesheet.
  */
 ActorAnimManager.prototype.getIndexForState = function(animState) {
-    const actor = this._character === $gamePlayer? $gameParty.leader() : this._character.actor();
+    const manager = this.mainManager;
+    let actor = null;
+
+    if (manager) {
+        if (typeof manager.getPose === 'function') {
+            actor = manager;
+        } else if (manager.actor) {
+            actor = (typeof manager.actor === 'function') ? manager.actor() : manager.actor;
+        }
+    }
+
+    if (!actor && this._actorId) actor = $gameActors.actor(this._actorId);
+
     if (!actor) {
         return 0; // Fallback de sécurité
     }
@@ -131,7 +146,7 @@ ActorAnimManager.prototype.setJumpAnim = function() {
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_Game_Actor_PosePatch",
-    version: "1.0.0",
+    version: "1.0.3",
     icon: "🧘",
     author: AUTHOR,
     license: LICENCE,

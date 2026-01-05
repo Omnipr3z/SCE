@@ -23,7 +23,7 @@
  *        ██    ██         ██     
  *  ███████      ██████    ███████
  * 
- * Ce module fournit l'objet $gameCalendar qui gère le temps de jeu.
+ * Ce module fournit l'objet $gameDate qui gère le temps de jeu.
  * Il est basé sur un timestamp en minutes et contrôle le cycle jour/nuit,
  * les saisons, et la date complète selon un calendrier personnalisable.
  * 

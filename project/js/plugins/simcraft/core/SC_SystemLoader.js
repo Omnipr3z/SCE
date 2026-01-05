@@ -53,13 +53,13 @@ class System_Loader {
 
     checkPlugin(plugin) {
         let allDependenciesOk = true;
-
-        plugin.dependencies.forEach((requiredDependency) => {
-            if (!this._pluginsList[requiredDependency]) {
-                $debugTool.drawDependencyError(plugin, requiredDependency);
-                allDependenciesOk = false;
-            }
-        }, this);
+        if(plugin.dependencies)
+            plugin.dependencies.forEach((requiredDependency) => {
+                if (!this._pluginsList[requiredDependency]) {
+                    $debugTool.drawDependencyError(plugin, requiredDependency);
+                    allDependenciesOk = false;
+                }
+            }, this);
 
         if (allDependenciesOk) {
             this._pluginsList[plugin.name] = plugin;

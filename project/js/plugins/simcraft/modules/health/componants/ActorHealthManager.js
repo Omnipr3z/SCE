@@ -55,10 +55,10 @@ class ActorHealthManager {
     }
 
     /**
-     * @returns {Game_Actor} The associated Game_Actor instance.
+     * @returns {ActorMainManager} The main manager instance for this actor.
      */
-    actor() {
-        return $gameActors.actor(this._actorId);
+    get mainManager() {
+        return $actorsMainManagers.actor(this._actorId);
     }
 
     //--- Getters
@@ -92,13 +92,13 @@ class ActorHealthManager {
         this._hydra = this._hydra.clamp(0, 100);
     }
     isEndSleepMode() {
-        const manager = $gameActorsAnims.getManagerFor(this.actor());
+        const manager = this.mainManager.animator;
         if (!manager) return true; // Can't be sleeping if no anim manager
         return manager.getCurrentActionName() !== "sleep"
             || this._form >= this._healthChange.formMaxThreshold;
     }
     isEndWashMode() {
-        const manager = $gameActorsAnims.getManagerFor(this.actor());
+        const manager = this.mainManager.animator;
         if (!manager) return true; // Can't be washing if no anim manager
         return manager.getCurrentActionName() !== "wash"
             || this._clean >= this._healthChange.cleanMaxThreshold;
@@ -124,7 +124,7 @@ class ActorHealthManager {
         }else{
             this._healthChange = null;
             // this._healthActivityTimer is already 0 or less
-            const manager = $gameActorsAnims.getManagerFor(this.actor());
+            const manager = this.mainManager.animator;
             if (manager) {
                 manager.stopAction()
             }
@@ -132,7 +132,8 @@ class ActorHealthManager {
     }
     updateHr() {
         this._alim -= SC.HealthConfig.alimDecreaseRate;
-        this._form -= SC.HealthConfig.formDecreaseRate;
+        const staminaRate = this.getStaminaCostRate ? this.getStaminaCostRate() : 1.0;
+        this._form -= SC.HealthConfig.formDecreaseRate * staminaRate;
         this._clean -= SC.HealthConfig.cleanDecreaseRate;
         this._hydra -= SC.HealthConfig.hydraDecreaseRate;
         this._alim = this._alim.clamp(0, 100);
@@ -140,16 +141,16 @@ class ActorHealthManager {
         this._clean = this._clean.clamp(0, 100);
         this._hydra = this._hydra.clamp(0, 100);
         if(this._alim <= 0){
-            this.actor().addState(SC.HealthConfig.hungryStateId);
+            this.mainManager.actor.addState(SC.HealthConfig.hungryStateId);
         }
         if(this._form <= 0){
-            this.actor().addState(SC.HealthConfig.deformStateId);
+            this.mainManager.actor.addState(SC.HealthConfig.deformStateId);
         }
         if(this._clean <= 0){
-            this.actor().addState(SC.HealthConfig.dirtyStateId);
+            this.mainManager.actor.addState(SC.HealthConfig.dirtyStateId);
         }
         if(this._hydra <= 0){
-            this.actor().addState(SC.HealthConfig.thirstyStateId);
+            this.mainManager.actor.addState(SC.HealthConfig.thirstyStateId);
         }
     }
     mapUpdate() {
@@ -164,23 +165,20 @@ class ActorHealthManager {
      * Updates the breath stat based on the character's movement on the map.
      */
     updateBreath() {
-        // Find the character on the map corresponding to this actor.
-        // For now, we only handle the player character.
-        const playerActor = $gamePlayer.actor();
-        if (!playerActor || playerActor.actorId() !== this._actorId) {
+        const character = this.mainManager.character;
+        if (!character) {
             return;
         }
-        const character = $gamePlayer;
 
-        const isCurrentlyBreathing = this.isBreathing(character);
+        const isCurrentlyBreathing = this.isBreathing();
 
         if (character.isDashing()) {
             this.updateBreathDashing();
             if (this._breath <= 0) {
-                this.startBreathing(character);
+                this.startBreathing();
             }
         } else if (this.isOutOfBreath() && !isCurrentlyBreathing) {
-            this.startBreathing(character);
+            this.startBreathing();
         } else if (isCurrentlyBreathing) {
             this.recoverBreathWhileStatic(); // Recovering while the "breathing" animation plays
         } else if (character.isMoving()) {
@@ -190,7 +188,7 @@ class ActorHealthManager {
         }
 
         if (this.isBreathRecovered() && isCurrentlyBreathing) {
-            this.stopBreathing(character);
+            this.stopBreathing();
         }
 
         this._breath = this._breath.clamp(0, 100);
@@ -198,46 +196,52 @@ class ActorHealthManager {
 
     updateBreathDashing() {
         // Decrease breath quickly when dashing
-        this._breath -= SC.HealthConfig.breathDashDecreaseRate;
-        this._impulse++;
+        const staminaRate = this.getStaminaCostRate ? this.getStaminaCostRate() : 1.0;
+        this._breath -= SC.HealthConfig.breathDashDecreaseRate * staminaRate;
+        const impulseRate = this.getImpulseGainRate ? this.getImpulseGainRate() : 1.0;
+        this._impulse += 1 * impulseRate;
     }
 
     updateBreathMoving() {
         // Slowly recover breath when walking
-        this._breath += SC.HealthConfig.breathWalkRecoverRate;
+        const regenRate = this.getBreathRegenRate ? this.getBreathRegenRate() : 1.0;
+        this._breath += SC.HealthConfig.breathWalkRecoverRate * regenRate;
         this._impulse = 0;
     }
 
     recoverBreathWhileStatic() {
         // Recover breath faster when not moving
-        this._breath += SC.HealthConfig.breathStaticRecoverRate;
+        const regenRate = this.getBreathRegenRate ? this.getBreathRegenRate() : 1.0;
+        this._breath += SC.HealthConfig.breathStaticRecoverRate * regenRate;
         this._impulse = 0;
     }
 
     isOutOfBreath() {
         return this._breath <= SC.HealthConfig.breathOutThreshold;
     }
-    startBreathing(character) {
-        const animManager = $gameActorsAnims.getManagerFor(character);
+    startBreathing() {
+        const animManager = this.mainManager.animator;
         if (!animManager) return;
 
         const actionName = "breathing";
         if (!animManager.validateImmobilizingAction(actionName)) return;
 
         if (animManager.getCurrentActionName() !== actionName) {
-            character.playAction("breathing");
+            this.mainManager.character.playAction("breathing");
         }
         this._impulse = 0;
     }
 
-    stopBreathing(character) {
-        character.stopAction();
+    stopBreathing() {
+        if (this.mainManager.character) {
+            this.mainManager.character.stopAction();
+        }
         this._impulse = 0;
     }
 
-    isBreathing(character) {
-        const manager = $gameActorsAnims.getManagerFor(character);
-        if (!character || !manager) {
+    isBreathing() {
+        const manager = this.mainManager.animator;
+        if (!this.mainManager.character || !manager) {
             return false;
         }
         return manager.getCurrentActionName() === "breathing";
@@ -283,7 +287,7 @@ class ActorHealthManager {
             this._healthActivityTimer = item.meta.activityDuration || 0;
             const actionName = item.meta.actionName || "useItem";
 
-            const manager = $gameActorsAnims.getManagerFor(this.actor());
+            const manager = this.mainManager.animator;
             if (manager) {
                 if (!manager.validateImmobilizingAction(actionName))  return;
 
@@ -352,7 +356,12 @@ class ActorHealthManager {
             }
         }
 
-        return distance.clamp(SC.HealthConfig.jumpBaseDistance, SC.HealthConfig.jumpMaxDistance);
+        // Applique le multiplicateur de distance (AGI + Traits)
+        const char = this.mainManager.character;
+        const multiplier = (char && char.getJumpDistanceMultiplier) ? char.getJumpDistanceMultiplier() : 1.0;
+        const finalDistance = Math.round(distance * multiplier);
+
+        return finalDistance.clamp(SC.HealthConfig.jumpBaseDistance, SC.HealthConfig.jumpMaxDistance);
     }
 
     /**
@@ -382,4 +391,3 @@ SC._temp.pluginRegister = {
     save: null
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);
-

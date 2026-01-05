@@ -55,16 +55,16 @@ class CharacterVisualManager {
      * @returns {Bitmap|null} Le bitmap composite, ou null si l'acteur n'est pas valide.
      */
     getCharacterBitmap(actorId) {
-        const actor = $gameActors.actor(actorId);
-        if (!actor) {
+        const mainManager = $actorsMainManagers.actor(actorId);
+        if (!mainManager || !mainManager.actor) {
             return null;
         }
 
-        const cacheKey = this._generateCacheKey(actor);
+        const cacheKey = this._generateCacheKey(mainManager);
         if (this._cache.has(cacheKey)) {
             return this._cache.get(cacheKey).bitmap;
         } else {
-            return this._createAndCacheBitmap(actor, cacheKey);
+            return this._createAndCacheBitmap(mainManager, cacheKey);
         }
     }
     /**
@@ -73,11 +73,11 @@ class CharacterVisualManager {
      * @returns {object|null} L'objet de cache ou null.
      */
     getCacheEntryByActorId(actorId) {
-        const actor = $gameActors.actor(actorId);
-        if (!actor) {
+        const mainManager = $actorsMainManagers.actor(actorId);
+        if (!mainManager || !mainManager.actor) {
             return null;
         }
-        const cacheKey = this._generateCacheKey(actor);
+        const cacheKey = this._generateCacheKey(mainManager);
         return this._cache.get(cacheKey) || null;
     }
     _matchVisualEquipBckLayer(item){
@@ -117,12 +117,13 @@ class CharacterVisualManager {
     }
     /**
      * Crée une entrée dans le cache pour un acteur et lance la composition.
-     * @param {Game_Actor} actor L'acteur pour lequel créer le bitmap.
+     * @param {ActorMainManager} mainManager Le manager principal de l'acteur.
      * @param {string} cacheKey La clé de cache pour cet acteur.
      * @returns {Bitmap} Le bitmap de destination (initialement vide).
      * @private
      */
-    _createAndCacheBitmap(actor, cacheKey) {
+    _createAndCacheBitmap(mainManager, cacheKey) {
+        const actor = mainManager.actor;
         $debugTool.log(`CharacterVisualManager: Cache miss for key "${cacheKey}". Creating new composite.`, true);
         
         // 1. Initialisation du compositeur
@@ -207,11 +208,12 @@ class CharacterVisualManager {
 
     /**
      * Génère une clé de cache unique basée sur l'état visuel de l'acteur.
-     * @param {Game_Actor} actor L'acteur.
+     * @param {ActorMainManager} mainManager Le manager principal de l'acteur.
      * @returns {string} La clé de cache.
      * @private
      */
-    _generateCacheKey(actor) {
+    _generateCacheKey(mainManager) {
+        const actor = mainManager.actor;
         // La clé est composée du nom du sprite de base de l'acteur et des IDs de tous ses équipements.
         // Si un seul de ces éléments change, la clé change, et le cache est invalidé.
         const baseName = actor.characterName();
