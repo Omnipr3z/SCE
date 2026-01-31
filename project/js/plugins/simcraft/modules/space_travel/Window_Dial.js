@@ -8,11 +8,17 @@ class Window_Dial extends Window_ScBase {
     }
     _createBackSprite () {
         super._createBackSprite();
-        this._hudBGSprite = new Sprite(this.loadSpaceshipBitmap("ui_BG"));
+        const bitmap = this.loadSpaceshipBitmap("ui_BG");
+        this._hudBGSprite = new Sprite(bitmap);
         this._hudBGSprite.x = 0;
         this._hudBGSprite.y = 0;
         this.addChild(this._hudBGSprite);
-
+        bitmap.addLoadListener(() => {
+            if (this.width > 0 && this.height > 0) {
+                this._hudBGSprite.scale.x = this.width / bitmap.width;
+                this._hudBGSprite.scale.y = this.height / bitmap.height;
+            }
+        });
 
     }
     resetFontSettings() {
@@ -32,9 +38,9 @@ class Window_Dial extends Window_ScBase {
         return [
             {
                 "txt":"ArcheoTech",
-                "value":150,
-                "max":1000,
-                "order":["left", "right"],
+                "value":15,
+                "max":100,
+                "order":"right",
                 "colors":[
                     ColorManager.hpGaugeColor1(),
                     ColorManager.hpGaugeColor2(),
@@ -43,9 +49,9 @@ class Window_Dial extends Window_ScBase {
             },
             {
                 "txt":"Supplies",
-                "value":150,
-                "max":1000,
-                "order":["left", "right"],
+                "value":45,
+                "max":100,
+                "order":"right",
                 "colors":[
                     ColorManager.mpGaugeColor1(),
                     ColorManager.mpGaugeColor2(),
@@ -54,9 +60,9 @@ class Window_Dial extends Window_ScBase {
             },
             {
                 "txt":"Command pts",
-                "value":150,
-                "max":1000,
-                "order":["right", "left"],
+                "value":100,
+                "max":100,
+                "order":"left",
                 "colors":[
                     ColorManager.tpGaugeColor1(),
                     ColorManager.tpGaugeColor2(),
@@ -65,9 +71,9 @@ class Window_Dial extends Window_ScBase {
             },
             {
                 "txt":"Requisition",
-                "value":150,
-                "max":1000,
-                "order":["right", "left"],
+                "value":10,
+                "max":100,
+                "order":"left",
                 "colors":[
                     ColorManager.ctGaugeColor1(),
                     ColorManager.ctGaugeColor2(),
@@ -80,16 +86,28 @@ class Window_Dial extends Window_ScBase {
         this.contents.clear();
         this.updateRsrces();
         this.updatePlanet();
+        if (this._hudBGSprite && this._hudBGSprite.bitmap && this._hudBGSprite.bitmap.isReady()) {
+            this._hudBGSprite.scale.x = this.width / this._hudBGSprite.bitmap.width;
+            this._hudBGSprite.scale.y = this.height / this._hudBGSprite.bitmap.height;
+        }
     }
     hasPlanet(){
         return this._planetId !== null
             && this._oldPlanetId != this._planetId
             && this._planetId >= 0;
     }
+    planetRect(){
+        const x = this.width * 0.55;
+        const y = this.height * 0.12;
+        const w = this.width * 0.32;
+        const h = this.height * 0.8;
+
+        return  new Rectangle(x, y, w, h);
+    }
     updatePlanet(){
         if(this.hasPlanet()){
             const planet = $gameSector.currentSystem().planet(this._planetId);
-            const rect = new Rectangle(490, 64, 140, 140);
+            const rect = this.planetRect();
             const bitmap = this.loadSpaceshipBitmap(planet.bitmapName);            
             
             if(!this._planetSprite) {
@@ -103,61 +121,64 @@ class Window_Dial extends Window_ScBase {
             bitmap.addLoadListener(() => {
                 if (this._planetSprite) {
                     this._planetSprite.visible = true;
-                    const newScale = this.getScale(rect.width, bitmap.width);
+                    const newScale = this.getScale(rect.width, bitmap.width, 0.6);
                     this._planetSprite.scale.x = newScale;
                     this._planetSprite.scale.y = newScale;
     
                     this._planetSprite.anchor.x = 0.5;
                     this._planetSprite.anchor.y = 0.5;
                     
-                    this._planetSprite.x = rect.x + rect.width/2 + 10;
-                    this._planetSprite.y = rect.y + rect.height/2 +  10;
+                    this._planetSprite.x = rect.x + rect.width/2 + 8;
+                    this._planetSprite.y = rect.y + rect.height/2 + 8;
                 }
                 
                 this.styleTitle();
-                this.drawText(planet.name, rect.x, rect.y - 38, rect.width,"center")
+                this.drawText(planet.name, rect.x, rect.y, rect.width,"center")
             });
 
         }else if (this._planetSprite){
             this._planetSprite.visible = false;
         }
     }
-    getScale(trgtW, oriWidth){
-        if (trgtW == oriWidth){
+    getScale(trgtW, oriWidth, scale=1){
+
+        if (trgtW * scale == oriWidth){
             return 1;
         }
-        return trgtW / oriWidth;
+        return (trgtW * scale) / oriWidth;
     }
     updateRsrces(){
          this.rsrcData.forEach((item, index) => {
             this.resetFontSettings();
+
             const rect = this.itemRect(index);
+            
             let orderPad = 0;
             let reduceW = 0;
             let padX = 0;
-            let padX2 = 0;
+            let padX2 = 4;
 
 
-            if(item.order[0] == "left"){
-                orderPad = 8;
+            if(item.order == "right"){
+                orderPad = -8;
                 reduceW =  36;
-                padX2 = 4;
+                padX2 = 8;
             }else{
-                orderPad = (rect.width / 2) + 16;
+                orderPad = 16;
                 padX =  24;
             }
 
-            this.styleCaptainName();
-            this.drawText(item.txt, rect.x, rect.y - 10, rect.width, item.order[0]);
+            this.styleRsrcesName();
+            this.drawText(item.txt, rect.x, rect.y - 10, rect.width, "center");
 
             this.styleSubName();
-            this.drawText(`/${item.max}`, rect.x + padX, rect.y + 8, rect.width, item.order[1]);
+            this.drawText(`/${item.max}`, rect.x + padX, rect.y + 8, rect.width, item.order);
 
             this.contents.textColor     = item.colors[2];
-            this.drawText(`${item.value}`, rect.x + padX2, rect.y + 8, rect.width - reduceW, item.order[1]);
+            this.drawText(`${item.value.toString().padZero(3)}`, rect.x + padX2, rect.y + 8, rect.width - reduceW, item.order);
 
             this.drawGauge(
-                rect.x +  orderPad,
+                rect.x +  (rect.width/3) + orderPad,
                 rect.y + 20,
                 rect.width/3,
                 item.value / item.max,
@@ -169,12 +190,12 @@ class Window_Dial extends Window_ScBase {
         })
     }
     itemRect(index) {
-        const x1 = 80;
-        const y1 = 36;
-        const x2 = x1 + 140;
-        const y2 = y1 + 44;
-        const w = 120;
-        const h = 48;
+        const x1 = 0.048 * this.width;
+        const y1 = 0.124 * this.height;
+        const x2 = x1 + 0.23 * this.width;
+        const y2 = y1 + 0.164 * this.height;
+        const w = 0.20 * this.width;
+        const h = 0.088 * this.height;
 
         switch(index){
             case 0:

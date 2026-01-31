@@ -6,6 +6,7 @@ class Window_SectorInfos extends Window_ScBase{
         this._sectorFocusY = 75;
         this._xTarget = 75;
         this._yTarget = 75;
+        this.visible = false;
 
     }
     

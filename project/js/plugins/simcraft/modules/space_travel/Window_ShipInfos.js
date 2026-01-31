@@ -3,19 +3,32 @@ class Window_ShipInfo extends Window_ScBase {
         super(rect);
         this._ship = null;
         this._shipSprite = new Sprite();
+
         this._shipSprite.anchor.x = 0.5;
         this._shipSprite.anchor.y = 0.5;
-        this._shipSprite.scale.x = 0.1;
-        this._shipSprite.scale.y = 0.1;
-        this._shipOriginX = 140;
+        this._shipSprite.scale.x = this.scaleRateW * 0.1;
+        this._shipSprite.scale.y = this.scaleRateH * 0.1;
+        this._shipOriginX = this.spaceShipX();
+
         this._moveTick =  0;
         this._move = this._shipOriginX;
         this.opacity = 0;
-        this.visible = false;
+        //this.visible = false;
         this._moveDirection = 0;
         
         this.addChild(this._shipSprite);
-
+    }
+    get scaleRateW() {
+        return Graphics.width / 1280;
+    }
+    get scaleRateH() {
+        return Graphics.height / 720;
+    }
+    spaceShipX(){
+        return 92  * this.scaleRateW;
+    }
+    spaceShipY(){
+        return 100 * this.scaleRateH;
     }
     loadSpaceshipBitmap(filename){
         return ImageManager.loadBitmap("img/GUI/ship/", filename);
@@ -25,11 +38,18 @@ class Window_ShipInfo extends Window_ScBase {
     }
     _createBackSprite () {
         super._createBackSprite();
-        this._hudBGSprite = new Sprite(this.loadSpaceshipBitmap("ShipInfos_BG"));
-        this._hudBGSprite.x = 0;
-        this._hudBGSprite.y = 0;
+        this._hudBGSprite = new Sprite();
         this.addChild(this._hudBGSprite);
-        
+
+        const bitmap = this.loadSpaceshipBitmap("ShipInfos_BG");
+        bitmap.addLoadListener(() => {
+            this._hudBGSprite.bitmap = bitmap;
+            this._hudBGSprite.x = 0;
+            this._hudBGSprite.y = 0;
+            this._hudBGSprite.scale.x = this.width  / this._hudBGSprite.bitmap.width;
+            this._hudBGSprite.scale.y = this._hudBGSprite.scale.x;
+        });
+
         this._motorSprite = new Sprite(this.loadShipMotorBitmap("1"));
         this.addChild(this._motorSprite);
 
@@ -43,11 +63,13 @@ class Window_ShipInfo extends Window_ScBase {
         this._ship = ship;
         this.refresh();
     }
+    linePad(lines = 1) {
+        return 24 * lines;
+    }
 
     refresh() {
         if (!this._ship) return;
         this.contents.clear();
-
         const ship = this._ship;
         
         this.drawShipName();
@@ -56,12 +78,80 @@ class Window_ShipInfo extends Window_ScBase {
         this.drawShipData();
         this.drawShipData2();
         this.drawMotorData();
-        
-
-        
     }
-    linePad(lines = 1) {
-        return 24 * lines;
+    drawShipName() {
+        this.styleTitle();
+        this.drawText(this._ship.name, 0, 6, this.contents.width, 'left');
+    }
+    drawShipImage() {
+        this._shipSprite.bitmap = this.loadSpaceshipBitmap(this._ship.bitmapName);
+         this.spaceshipMove();
+    }
+    captainFaceRect(){
+        const size = 80 * this.scaleRateW;
+        const x = this.contentsWidth() - size - (12 * this.scaleRateW);
+        const y = 38 * this.scaleRateH;
+
+        return new Rectangle(x, y, size, size);
+    }
+    captainFrameRect(){
+        const faceRect = this.captainFaceRect();
+
+        const x = faceRect.x - (13 * this.scaleRateW);
+        const y = faceRect.y - (28 * this.scaleRateW);
+
+        const width = faceRect.width + (25 * this.scaleRateW);
+        const height = faceRect.height + (45 * this.scaleRateW);
+
+
+        return new Rectangle(x, y, width, height);
+    }
+    drawCaptainFace(captain){
+        const faceRect = this.captainFaceRect();
+
+        this.drawFace(
+            captain.faceName(),
+            captain.faceIndex(),
+            faceRect.x,
+            faceRect.y,
+            144, 144,
+            faceRect.width, faceRect.height
+        );
+        this.drawCaptainFrame();
+    }
+    drawCaptainFrame(){
+        const bitmaphud = ImageManager.loadBitmap("img/faces/", "hud");
+        const frameRect = this.captainFrameRect();
+
+        this.contents.blt(bitmaphud,
+            0, 0,
+            bitmaphud.width, bitmaphud.height,
+            frameRect.x,
+            frameRect.y,
+            frameRect.width,
+            frameRect.height
+        );
+    }
+    drawCaptain(){
+        const captain = this._ship.captain;
+
+
+        //face
+        this.drawCaptainFace(captain);
+
+        //name
+        this.drawCaptainName(captain);
+    }
+    drawCaptainName(captain){
+        const captainClassname = captain.currentClass().name;
+        const nameTxt = `${captain.nickname()} ${captain.name().toUpperCase()}`;
+        const faceRect = this.captainFaceRect();
+        
+        this.styleClassname();
+        this.drawText(captainClassname, faceRect.x - 16, faceRect.y - 30, faceRect.width +32, "center")
+        
+        this.styleCaptainName();
+        this.drawText(nameTxt, faceRect.x - 16, faceRect.y + faceRect.height - 6, faceRect.width + 32, "center")
     }
     drawMotorData() {
         
@@ -134,35 +224,6 @@ class Window_ShipInfo extends Window_ScBase {
         this.drawText(ship.statusTxt,  rect.x,     rect.y + this.linePad(),    rect.width, 'right');
         this.drawText(ship.speedTxt,  rect.x,     rect.y + this.linePad(2),    rect.width, 'right');
     }
-    drawShipImage() {
-        this._shipSprite.bitmap = this.loadSpaceshipBitmap(this._ship.bitmapName);
-         this.spaceshipMove();
-    }
-    drawShipName() {
-        this.styleTitle();
-        this.drawText(this._ship.name, 0, 6, 310, 'center');
-    }
-    drawCaptain(){
-        const captain = this._ship.captain;
-
-        //face
-        const sizeFace = 80;
-        const xFace = this.contentsWidth() - sizeFace - 40;
-        const yFace = 70;
-
-        this.drawFace(captain.faceName(), captain.faceIndex(), xFace, yFace, 144, 144, sizeFace, sizeFace);
-
-        
-        //name
-        const captainClassname = captain.currentClass().name;
-        const nameTxt = `${captain.nickname()} ${captain.name().toUpperCase()}`;
-        
-        this.styleClassname();
-        this.drawText(captainClassname, xFace - 16, yFace - 30, sizeFace +32, "center" )
-        
-        this.styleCaptainName();
-        this.drawText(nameTxt, xFace - 16, yFace + sizeFace - 6, sizeFace + 32, "center" )
-    }
     spaceshipMove () {
 
         if(this._moveTick-- <= 0 && this._ship.isMoving()){
@@ -184,7 +245,7 @@ class Window_ShipInfo extends Window_ScBase {
             this._move -= Math.round(Math.random());
         }
         this._shipSprite.x = this._move;
-        this._shipSprite.y = 130 + Math.round(Math.random());
+        this._shipSprite.y = this.spaceShipY() + Math.round(Math.random());
     }
     update() {
         super.update();

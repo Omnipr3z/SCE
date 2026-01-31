@@ -83,6 +83,11 @@
 
             const actionText = this._mainManager.animator.getRealActionName();
             this.drawText(actionText, 6, y, this.contentsWidth() - 12, "center");    
+
+            if( $dataMap && $dataMap.meta && $dataMap.meta.inner){
+                y += lineHeight;
+                this.drawText("outside", 6, y, this.contentsWidth() - 12, "center");    
+            }
         }
 
         drawStat(name, value, y, width, color1, color2) {

@@ -3,10 +3,10 @@
 ## Tâches Prioritaires
 
 1.  **[ ] Révision des Ressources et Licences**
-    -   **[ ]** Remplacer les sprites basés sur "hine" par un nouveau pack basé sur "LCP Universal" (licence MIT).
-    -   **[ ]** Remplacer les ressources de la cinématique d'exemple (inspirées de 40k) par un contenu plus générique.
+    -   **[!!!]** Remplacer les sprites basés sur "hine" par un nouveau pack basé sur "LCP Universal" (licence MIT).
+    -   **[!!!]** Remplacer les ressources de la cinématique d'exemple (inspirées de 40k) par un contenu plus générique.
     -   **[ ]** Créer une scène de crédits dynamique qui récupère les données du `SystemLoader` et d'un fichier de configuration pour les contributeurs.
-    -   **[ ]** Mettre à jour le `README.md` en conséquence.
+    -   **[?]** Mettre à jour le `README.md` en conséquence.
 
 2.  **[ ] Amélioration du Système d'Animation**
     -   **[X]** **Séquenceur d'actions :** Ajouter une file d'attente (`_animQueue`) pour enchaîner dynamiquement plusieurs animations. Créer une méthode et une configuration pour définir et lancer des séquences complètes.
@@ -17,12 +17,17 @@
     -   **[ ]** **Masquage dynamique :** Permettre à un équipement (casque, chapeau) de masquer certaines couches (ex: les cheveux) via un notetag pour éviter les superpositions disgracieuses.
     -   **[ ]** **Adaptation aux Facesets :** Étendre le système de Paper-Doll pour qu'il s'applique également aux `facesets` dans les dialogues, en utilisant `Bitmap_Composite`.
 
+4.  **[ ] Standardisation de l'auto-scale reloustion des fenetre et positionning des éléments graphiques**
+    -   **[ ]** **Adaptation de l'autoScale sur Scene_SpaceTravel :** Corriger l'adaptation des fenetre de `Scene_SpaceTravel` adapté sur des proportion de `Graphics._width/_height` au lieu de la `wRef/hRef`.
+    -   **[ ]** **Supprimer le Fix temporaire :** Supprimer l'exception du scale auto dans `GraphicsAdjust_MultiPatch.js` pour la Scene Space Travel.
+    -   **[ ]** **Utilisation du positionnement proportionnel du contenu des windows :** Utiliser les proratats comme dans les windows de `Scene_SpaceTravel` pour positionner les éléments graphiques dynamiquement.
+
 ## Améliorations et Nouveaux Systèmes
 
 4.  **[ ] Création d'un `ActorMainManager`**
     -   **[X]** Développer un "hub" central pour lier `actorId` -> `Game_Event` -> `Sprite_Character`.
-    -   **[ ]** Intégrer l'accès au `Game_Actor` et aux managers de composants (Anim, Health...).
-    -   **[ ]** **Refactorisation :** Modifier les composants existants (`ActorHealthManager`, etc.) pour qu'ils utilisent `ActorMainManager` afin de récupérer les informations sur les personnages et autres managers, supprimant ainsi les accès directs et le couplage fort.
+    -   **[x]** Intégrer l'accès au `Game_Actor` et aux managers de composants (Anim, Health...).
+    -   **[TEST]** **Refactorisation :** Modifier les composants existants (`ActorHealthManager`, etc.) pour qu'ils utilisent `ActorMainManager` afin de récupérer les informations sur les personnages et autres managers, supprimant ainsi les accès directs et le couplage fort.
     -   Ce manager servira à orchestrer des actions complexes qui affectent plusieurs aspects d'un acteur simultanément.
 
 5.  **[ ] Création d'un `ActorHealthManager` (Système de survie)**
@@ -38,36 +43,36 @@
     -   **[X]** Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre.
 
 7.  **[ ] Implémentation du Système de Temps Dynamique**
-    -   **[ ]** Gestion du temps dynamique.
-    -   **[ ]** Mise à jour automatique sur la `Scene_Map`.
-    -   **[ ]** Gestion du changement de mode de défilement.
-    -   **[ ]** Application aux éléments graphiques de la map (ex: accélération des autotiles d'eau, gel en cas de pause).
-    -   **[ ]** Prise en charge des sauts et ellipses de temps.
+    -   **[x]** Gestion du temps dynamique.
+    -   **[x]** Mise à jour automatique sur la `Scene_Map`.
+    -   **[x]** Gestion du changement de mode de défilement.
+    -   **[WIP]** Application aux éléments graphiques de la map (ex: accélération des autotiles d'eau, gel en cas de pause).
+    -   **[x]** Prise en charge des sauts et ellipses de temps. (action sequencé en plus)
 
-8.  **[ ] Amélioration du `CharacterShadow`**
+8.  **[x] Amélioration du `CharacterShadow`**
     -   **[X]** Ajouter un paramètre de plugin `offsetY` pour permettre un réglage fin de la position verticale de l'ombre.
 
 ## Tâches Techniques et de Fond
 
 9.  **[ ] Optimisation du Chargement des Bitmaps**
-    -   Rechercher et implémenter une solution pour fiabiliser le chargement des images et éviter les problèmes de "pop-in" ou d'images non chargées, notamment sur les configurations moins puissantes ou lors de la perte de focus de la fenêtre.
-    -   Pistes : Surcharger `ImageManager` avec un système de `Promise` ou d'`EventListener` pour mieux suivre l'état du chargement.
+    -   **[ ]** Rechercher et implémenter une solution pour fiabiliser le chargement des images et éviter les problèmes de "pop-in" ou d'images non chargées, notamment sur les configurations moins puissantes ou lors de la perte de focus de la fenêtre.
+    -   **[ ]** Pistes : Surcharger `ImageManager` avec un système de `Promise` ou d'`EventListener` pour mieux suivre l'état du chargement.
 
 10. **[ ] Finalisation de la Gestion de la Résolution**
-    -   Gérer la différence entre la taille de la "box" de l'interface et la taille réelle de l'écran, un comportement spécifique à RMMZ.
-    -   Mettre en place la stratégie pour le mode "fenêtre sans bordures" en production (via `package.json`), en documentant clairement que cela ne fonctionne pas lors des tests depuis l'éditeur.
+    -   **[ ]** Gérer la différence entre la taille de la "box" de l'interface et la taille réelle de l'écran, un comportement spécifique à RMMZ.
+    -   **[x]** Mettre en place la stratégie pour le mode "fenêtre sans bordures" en production (via `package.json`), en documentant clairement que cela ne fonctionne pas lors des tests depuis l'éditeur.
 
 ## Révisions Architecturales et Standards
 
 11. **[ ] Vérification du Parsing des Configurations**
-    -   S'assurer que tous les paramètres de plugin sont correctement parsés et castés (Number, Boolean, Array) lors de leur lecture depuis `PluginManager`, avec des valeurs par défaut robustes pour éviter les `NaN` ou `undefined`.
+    -   **[ ]** S'assurer que tous les paramètres de plugin sont correctement parsés et castés (Number, Boolean, Array) lors de leur lecture depuis `PluginManager`, avec des valeurs par défaut robustes pour éviter les `NaN` ou `undefined`.
 
 12. **[ ] Optimisation de la Récupération des Notetags**
-    -   Refactoriser la lecture des notetags pour qu'elle soit effectuée une seule fois au chargement des données (`$data*`). Les métadonnées extraites seront stockées directement dans les objets de jeu correspondants (`$gameActors`, `$gameItems`, etc.) pour un accès instantané et performant pendant le jeu, évitant ainsi le parsing répétitif.
+    -   **[ ]** Refactoriser la lecture des notetags pour qu'elle soit effectuée une seule fois au chargement des données (`$data*`). Les métadonnées extraites seront stockées directement dans les objets de jeu correspondants (`$gameActors`, `$gameItems`, etc.) pour un accès instantané et performant pendant le jeu, évitant ainsi le parsing répétitif.
 
 13. **[ ] Standardisation de l'Architecture et du Nommage**
     -   **[ ]** **Implémentation des Espaces de Noms (Namespacing) :** Refactoriser le code pour utiliser un espace de noms global unique (ex: `SC` ou `SimCraft`) au lieu d'exposer les classes directement sur l'objet `window`. Cela améliorera l'organisation, la lisibilité et préviendra les conflits potentiels.
-    -   **[ ]** **Révision des Standards de Nommage :** Définir et appliquer des conventions de nommage cohérentes pour les classes, les fichiers, les variables et les fonctions à travers tout le moteur pour assurer une meilleure lisibilité et maintenabilité.
+    -   **[ ]** **Révision des Standards de Nommage :** Définir et appliquer des conventions de nommage cohérentes pour les classes, les fichiers, les variables et les fonctions à travers tout le moteur pour assurer une meilleure lisibilité et maintenabilité. (SPECIFIAUEMENT POUR LES PATCHES !)
 
 
 

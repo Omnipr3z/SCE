@@ -300,17 +300,9 @@ class ActorHealthManager {
     canSleep(bedData) { return this._form < 70; }
     sleep(bedData) {
         if(this.canSleep(bedData)){
-            this.useHealthItem({
-                meta: {
-                    alimIncrease: bedData.alimIncrease || 0,
-                    formIncrease: bedData.formIncrease || 1,
-                    cleanIncrease: bedData.cleanIncrease || 0,
-                    hydraIncrease: bedData.hydraIncrease || 0,
-                    formMaxThreshold: bedData.formMaxThreshold || 100,
-                    activityDuration: 'sleepMode',
-                    actionName: 'sleep'
-                }
-            });
+            if (this.mainManager.activity) {
+                this.mainManager.activity.startActivity('sleep', bedData);
+            }
         }
     }
 
@@ -320,14 +312,9 @@ class ActorHealthManager {
     }
     wash(washData = {}) {
         if (this.canWash()) {
-            this.useHealthItem({
-                meta: {
-                    cleanIncrease: washData.cleanIncrease || 1,
-                    cleanMaxThreshold: washData.cleanMaxThreshold || 100,
-                    activityDuration: 'washMode',
-                    actionName: 'wash'
-                }
-            });
+            if (this.mainManager.activity) {
+                this.mainManager.activity.startActivity('wash', washData);
+            }
         }
     }
 

@@ -21,6 +21,14 @@ class Window_ScBase extends Window_Base {
         this.contents.outlineWidth  = 4;
     }
     
+    styleRsrcesName() { 
+        this.contents.fontFace      = 'GameFont';
+        this.contents.fontSize      = 12;
+        this.contents.textColor     = ColorManager.textColor(0);
+        this.contents.outlineColor  = ColorManager.textColor(15);
+        this.contents.outlineWidth  = 1;
+    }
+    
     styleSubName() { 
         this.contents.fontFace      = 'BaseFont';
         this.contents.fontSize      = 12;

@@ -81,7 +81,13 @@ class ActorMainManager {
         return $actorHealthManagers.manager(this._id);
     }
 
-
+    /**
+     * Raccourci pour accéder au manager d'activités.
+     * @returns {ActorActivityManager|null}
+     */
+    get activity() {
+        return $actorsActivitiesManagers.manager(this._id);
+    }
 
 
 }

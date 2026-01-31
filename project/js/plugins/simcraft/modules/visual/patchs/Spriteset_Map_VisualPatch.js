@@ -61,6 +61,7 @@ Spriteset_Map.prototype.createCharacters = function() {
 
     for (const sprite of this._characterSprites) {
         this._tilemap.addChild(sprite);
+        
     }
 };
 Spriteset_Map.prototype.createVehiculeSprite = function(event) {
@@ -82,7 +83,9 @@ Spriteset_Map.prototype.createFollowerSprite = function(follower) {
  */
 Spriteset_Map.prototype.createPlayerSprite = function() {
     const PlayerSpriteClass = $gameParty.leader() && $gameParty.leader().isVisual() ? Sprite_VisualCharacter : Sprite_Character;
-    this._characterSprites.push(new PlayerSpriteClass($gamePlayer));
+    const _sprite = new PlayerSpriteClass($gamePlayer);
+    console.log(_sprite);
+    this._characterSprites.push(_sprite);
 }
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};

@@ -97,6 +97,10 @@ class Game_Weather {
     change(type, intensity, duration) {
         const config = SC.weather.config[type];
         if (!config) return;
+        if($dataMap.meta.inner){
+            $gameScreen.changeWeather("none",0, 2);
+            return;
+        }
 
         this._type = type;
         this._targetIntensity = intensity;

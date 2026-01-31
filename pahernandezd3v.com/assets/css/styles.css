@@ -1,0 +1,599 @@
+
+@font-face {font-family: 'GamerD3v';src: url('fonts/gamer.ttf') format('truetype');font-weight: normal;font-style: normal;}
+@font-face {font-family: 'RMMZ';src: url('fonts/mplus-1m-regular.woff') format('woff');font-weight: normal;font-style: normal;}
+:root {
+    --color-link:       darkgoldenrod;
+    --color-bg:         #C7DBE4;
+    --color-title:      darkred;
+    --color-subtitle:   #ffcc00;
+    --color-main-bg:    #121212;
+    --simcraft-A:       #0066ff;
+    --simcraft-B:       #0609dd;
+    --simcraft-C:       rgba(0, 119, 255, 0.8);
+    --simcraft-D:       rgba(5, 17, 121, 0.5);
+    --color-error-bg:   rgba(241, 178, 178, 0.7);
+
+
+
+}
+
+body {
+    font-family: 'RMMZ', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-main-bg);
+    color: white;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+}
+
+.main_header {
+    background-image: url("../img/banner.png");
+    background-color: var(--color-bg);
+    color:var(--color-title);
+    padding: 20px;
+}
+
+.main_header  h1 {
+    margin: 0;
+    font-size: 6em;
+    font-family: 'GamerD3v', sans-serif;
+}
+
+.main_header_box{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+}
+.main_logo{
+    flex:1
+}
+.main_logo img{
+    height: 164px;
+}
+.main_title{
+    flex:5;
+}
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: var(--color-link);
+    text-decoration: none;
+    font-weight: bold;
+}
+.main_toolbox{
+    padding: 1em;
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    align-items: l;
+    justify-content: center;
+
+
+}
+.toolbox_logo{
+    width:200px;
+
+}
+section {
+    padding: 50px 0;
+}
+.main_home{
+    display:flex;
+
+}
+.rightbox, .leftbox{
+    padding: 1em;
+}
+.leftbox{
+    flex:1;
+}
+/*YOUTUBE BOX*/
+.youtube-box {
+    position: relative;
+    width: 640px;
+    height:360px;
+    min-width: 640px;
+    min-height:360px;
+    margin: auto;
+    margin-bottom: 2em;
+    border: 4px solid #ffcc00;
+    box-shadow: 0px 0px 8px rgba(255, 165, 0, 0.8);
+    overflow: hidden;
+}
+.rightbox{
+    flex:1;
+    background-image: url("../img/screw.png");
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.rightbox ul{
+    list-style-type: none;
+}
+.carousel-box{
+    margin-top: 2em;
+}
+.call-to-action{
+    display: flex;
+    flex-wrap: nowrap;
+}
+.inral-logo{
+    flex:1;
+    width:20vw;
+}
+.inral-txt{
+    flex:2;
+    padding: 1em;
+}
+h2 {
+    color: var(--color-subtitle);
+}
+h2 img{
+    height:64px;
+}
+ul.social-links {
+    list-style: none;
+    padding: 0;
+}
+
+ul.social-links li {
+    display: inline;
+    margin: 10px;
+}
+
+ul.social-links li a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+footer {
+    background-color: #1a1a1a;
+    padding: 20px;
+}
+@keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.9; }
+    100% { opacity: 1; }
+}
+
+.pixel-hud {
+    display: inline-block;
+    padding: 15px;
+    background: linear-gradient(180deg, var(--simcraft-A) 0%, var(--simcraft-B) 100%);
+    color: black;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    border: 4px solid var(--simcraft-A);
+    box-shadow: 0px 0px 8px var(--simcraft-C), inset 0px 0px 6px var(--simcraft-D);
+    text-align: center;
+    position: relative;
+    animation: flicker 1.5s infinite alternate;
+    image-rendering: pixelated;
+}
+
+/* Effet pixelisé sur les bordures */
+.pixel-hud::before, .pixel-hud::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--simcraft-A);
+}
+
+.pixel-hud::before {
+    top: -6px;
+    left: -6px;
+}
+
+.pixel-hud::after {
+    bottom: -6px;
+    right: -6px;
+}
+@keyframes button-glow-blue {
+    0% { box-shadow: 0px 0px 6px rgba(0, 200, 255, 0.8); }
+    50% { box-shadow: 0px 0px 12px rgba(0, 200, 255, 1); }
+    100% { box-shadow: 0px 0px 6px rgba(0, 200, 255, 0.8); }
+}
+
+.pixel-btn-blue {
+    min-width:200px;
+    margin-bottom: 1em;
+    display: inline-block;
+    padding: 10px 20px;
+    background: linear-gradient(180deg, #00ccff 0%, #0088ff 100%);
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    border: 3px solid #00ccff;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0px 0px 8px rgba(0, 200, 255, 0.8), inset 0px 0px 4px rgba(0, 100, 255, 0.5);
+    text-align: center;
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+    animation: button-glow-blue 1.5s infinite alternate;
+    image-rendering: pixelated;
+}
+
+/* Effet de pression quand on clique */
+.pixel-btn-blue:active {
+    transform: scale(0.95);
+    box-shadow: 0px 0px 4px rgba(0, 100, 255, 0.8), inset 0px 0px 8px rgba(0, 50, 255, 0.8);
+}
+
+/* Hover */
+.pixel-btn-blue:hover {
+    background: linear-gradient(180deg, #44ddff 0%, #0099ff 100%);
+    box-shadow: 0px 0px 12px rgba(0, 200, 255, 1);
+}
+
+/* Effet pixelisé sur les coins */
+.pixel-btn-blue::before, .pixel-btn-blue::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #00ccff;
+}
+
+.pixel-btn-blue::before {
+    top: -6px;
+    left: -6px;
+}
+
+.pixel-btn-blue::after {
+    bottom: -6px;
+    right: -6px;
+}
+@keyframes glow {
+    0% { box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5); }
+    50% { box-shadow: 0px 0px 12px rgba(255, 255, 255, 1); }
+    100% { box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.5); }
+}
+
+.social-links {
+    margin-top: 2em;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    list-style: none;
+    padding: 20px;
+}
+
+.social-links li {
+    display: inline-block;
+}
+
+.social-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 24px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    animation: glow 1.5s infinite alternate;
+    image-rendering: pixelated;
+}
+
+/* Icônes spécifiques à chaque réseau */
+.social-links .patreon { background-color: #FF424D; color: white; }
+.social-links .discord { background-color: #5865F2; color: white; }
+.social-links .youtube { background-color: #FF0000; color: white; }
+.social-links .twitch { background-color: #9146FF; color: white; }
+.social-links .instagram { background: linear-gradient(45deg, #F58529, #DD2A7B, #8134AF); color: white; }
+.social-links .itch { background-color: #FA5C5C; color: white; }
+.social-links .github { background-color: #171515; color: white; }
+
+/* Effet de hover */
+.social-links a:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 12px rgba(255, 255, 255, 1);
+}
+
+/* Icônes */
+.social-links a i {
+    font-size: 28px;
+}
+
+
+/* CAROUSEL */
+.carousel {
+    position: relative;
+    width: 640px;
+    height:360px;
+    min-width: 640px;
+    min-height:360px;
+    margin: auto;
+    border: 4px solid #ffcc00;
+    box-shadow: 0px 0px 8px rgba(255, 165, 0, 0.8);
+    overflow: hidden;
+}
+
+.carousel-container {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    position: relative;
+    display: none;
+}
+
+.carousel-slide.active {
+    display: block;
+}
+
+.carousel-slide img {
+    width: 100%;
+    height:100%;
+}
+
+/* Zone du texte */
+.carousel-caption {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    width: 90%;
+    text-align: center;
+    font-family: "Press Start 2P", sans-serif;
+    text-transform: uppercase;
+    border-radius: 4px;
+    box-shadow: 0px 0px 8px rgba(255, 200, 0, 0.8);
+}
+
+/* Boutons de navigation */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 200, 0, 0.8);
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+.carousel-btn:hover {
+    background: rgba(255, 255, 0, 1);
+}
+
+/* Indicateurs */
+.carousel-indicators {
+    text-align: center;
+    padding: 10px;
+}
+
+.dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin: 5px;
+    background: #ffcc00;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: #ffaa00;
+}
+/*Modal*/
+/* Modal pleine écran */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenu de la modal */
+.modal-content {
+    position: relative;
+    width: 350px;
+    padding:0;
+    background: linear-gradient(180deg, #ffcc00 0%, #ff8800 100%);
+    border: 4px solid #ffcc00;
+    box-shadow: 0px 0px 8px rgba(255, 165, 0, 0.8);
+    text-align: center;
+    font-family: "Press Start 2P", sans-serif;
+    text-transform: uppercase;
+    image-rendering: pixelated;
+}
+.modal-color{
+    margin:0;
+    padding: 20px;
+    padding-top: 3em;
+    width:315px;
+    height:auto;
+    background-image: url("../img/screw-modal.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.error-form{
+    color:var(--color-title);
+    background-color: var(--color-error-bg);
+    font-family: 'RMMZ', sans-serif;
+}
+.login-error {
+    color: #ff3333;
+    font-weight: bold;
+}
+.login-success {
+    color: #00ff00;
+    font-weight: bold;
+}
+/* Bouton de fermeture */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: black;
+}
+
+/* Styles des inputs */
+.pixel-input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 3px solid #ffcc00;
+    background: black;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+#preloader{
+    position: absolute;
+    top:0px;
+    left:0px;
+    width: 5000px;
+    height: 5000px;
+    background-color: black;
+}
+/*DOCUMENTATION*/
+.doc-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin:2em;
+}
+.doc-sidebar {
+    width: 100%;
+    flex-basis: 250px;
+    flex-grow: 1;
+    background: linear-gradient(180deg, var(--simcraft-A) 0%, var(--simcraft-B) 100%);
+    border: 4px solid var(--simcraft-A);
+    box-shadow:
+        0px 0px 8px var(--simcraft-C),
+        inset 0px 0px 6px var(--simcraft-D);
+    animation: flicker 1.5s infinite alternate;
+    image-rendering: pixelated;
+}
+.doc-sidebar-inner {
+    position: sticky;
+    top: 2rem;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-align: center;
+}
+.doc-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.doc-sidebar a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 0.9rem;
+    box-shadow:
+        0px 0px 8px rgba(0, 200, 255, 0.8),
+        inset 0px 0px 4px rgba(0, 100, 255, 0.5);
+    text-align: center;
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.doc-sidebar a.active,
+.doc-sidebar a:hover {
+    font-weight: bold;
+}
+.doc-sidebar a.active{
+    background: linear-gradient(180deg, #00ccff 0%, #0088ff 100%);
+}
+.doc-sidebar a:hover{
+    background: linear-gradient(180deg, #44ddff 0%, #0099ff 80%);
+    animation: button-glow-blue 1.5s infinite alternate;
+    image-rendering: pixelated;
+}
+.doc-content {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-width: 60%;
+    padding: 2em;
+    background-color: rgba(113, 1, 1, 0.2);
+    display: flex;
+    flex-direction: row;
+}
+.doc-header {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-left: 5em;
+    padding-bottom: 1rem;
+}
+.doc-page{
+    /* background-color: rgba(82, 59, 28, 0.4); */
+    
+}
+
+.doc-main-inner {
+    flex:2;
+    padding: 2em 4em;
+}
+.doc-main-rightbox {
+    flex:1;
+    background-image: url("../img/screw.png");
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 1em;
+}
+/* Boutons pixelisés
+.pixel-btn-blue {
+    display: inline-block;
+    padding: 10px 20px;
+    background: linear-gradient(180deg, #00ccff 0%, #0088ff 100%);
+    color: white;
+    font-family: "Press Start 2P", sans-serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    border: 3px solid #00ccff;
+    cursor: pointer;
+    box-shadow: 0px 0px 8px rgba(0, 200, 255, 0.8);
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.pixel-btn-blue:hover {
+    background: linear-gradient(180deg, #44ddff 0%, #0099ff 100%);
+} */

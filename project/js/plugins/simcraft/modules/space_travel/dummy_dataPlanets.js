@@ -50,7 +50,7 @@ const $dataPlanets = [
         ]
     },
     {   "id":5, "name":"Wanghek",
-        "type":"Hostile Jungl World",
+        "type":"Hostile Jungle World",
         "x":350, "y":240, "zoom":0.12,
         "bitmapName":"planet_3",
         "moves":[

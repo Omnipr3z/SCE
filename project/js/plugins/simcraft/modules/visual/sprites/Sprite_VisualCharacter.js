@@ -53,7 +53,7 @@ class Sprite_VisualCharacter extends Sprite_Character {
     initialize(character) {
         super.initialize(character);
         this._shadowSprite = null;
-    }
+    } 
 
     update() {
         super.update();

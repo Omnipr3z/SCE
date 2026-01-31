@@ -39,7 +39,8 @@ Spriteset_Map.prototype.createActorEventSprite = function(event) {
         this._characterSprites.push(new Sprite_VisualCharacter(event));
         $debugTool.log(`-> Utilisation de Sprite_VisualCharacter pour l'acteur ID=${event._actorId}`, true);
     } else {    
-        _Spriteset_Map_createActorEventSprite.call(this, event);}
+        _Spriteset_Map_createActorEventSprite.call(this, event);
+    }
 }
 
 // --- Enregistrement du plugin ---

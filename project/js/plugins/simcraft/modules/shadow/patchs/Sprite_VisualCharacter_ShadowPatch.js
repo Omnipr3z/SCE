@@ -52,6 +52,7 @@ Spriteset_Map.prototype.createPlayerSprite = function() {
     if ($gameParty.leader() && $gameParty.leader().isVisual() && SC.ShadowConfig && SC.ShadowConfig.useShadow) {
         const characterSprite = new Sprite_VisualCharacter($gamePlayer);
         const shadowSprite = new Sprite_CharacterShadow();
+        shadowSprite.z = 0; // S'assure que l'ombre est en dessous du personnage
         characterSprite.setShadow(shadowSprite);
         this._tilemap.addChild(shadowSprite); // Ajoute l'ombre en premier
         this._characterSprites.push(characterSprite);

@@ -7,8 +7,13 @@ class Scene_SpaceTravel extends Scene_Base {
         this._timer = 0;
         this.SHIP_SPEED = 0.3; // Vitesse de déplacement du vaisseau
         this._infoWindow = null;
+        this._oldScrollSpeedMode = $gameDate.getScrollSpeedMode();
         $gameDate.setScrollSpeedMode(4);
         this._selectedPlanet = -1;
+        this._mapOffsetX = 0;
+        this._mapOffsetY = 0;
+        this._rightPannelActive = "shipInfos";
+    
     }
     get planets(){
         return $gameSector.currentSystem().planets();
@@ -22,15 +27,94 @@ class Scene_SpaceTravel extends Scene_Base {
     get playerSpaceship(){
         return $gameSpaceships.playerShip();
     }
-    rightPannelRect(){
-        return new Rectangle(1280, 0, Graphics.boxWidth - 1280, 720);
-    }
+    //UTILS
+    //getters context
     isBusy(){
         return false;
     }
+    //getters positionning
+    bottomPannelHeight(){
+        return 720 / 3;
+    }
+    gridCaseWidth(){
+        return 1280 / 4; 
+    }
+
+    rateW(){ return Graphics._width /1280};
+    rateH(){ return Graphics._height /720};
+    
+    bottomPanelRealSize(){
+        return  this.bottomPannelHeight() * this.rateH();
+    }
+    rightPanelRealSize (){
+        return this.gridCaseWidth() * this.rateW();
+    }
+    isOnMapArea(x, y) {
+        const coldZone = 4;
+        return x > coldZone
+            && x <= 1280 - coldZone
+            && y > coldZone
+            && y <= Graphics._height - this.bottomPanelRealSize()  - coldZone;
+    }
+    rightPannelRect(){
+        const w = this.gridCaseWidth();
+        const h = 1280 - this.bottomPannelHeight();
+        const x = 1280 - w;
+        const y = 0;
+        return new Rectangle(x, y, w, h);
+    }
+    eventWindowRect(){
+        const w = this.gridCaseWidth();
+        const h = this.bottomPannelHeight();
+        const x = 0;
+        const y = 720 - h;
+        
+        return new Rectangle(x, y, w, h);
+    }
+    messageWindowRect(){
+        const w = this.gridCaseWidth() * 2;
+        const h = this.bottomPannelHeight();
+        const x = this.gridCaseWidth();
+        const y = 720 - h;
+        
+        return new Rectangle(x, y, w, h);
+    }
+    cmdWindowRect() {
+        const w = this.gridCaseWidth();
+        const h = this.bottomPannelHeight();
+
+        const x = this.gridCaseWidth() * 3;
+        const y = 720 - h;
+
+        return new Rectangle(x, y, w, h);
+    }
+    //logs
+    log(style, info){
+        this._eventWindow.addNews({style: style, txt: info});
+    }
+    logMove(shipName, x, y){
+        this.log('basicInfos', `The ${shipName} has new target location: ${x}-${y}`);
+    }
+    logEnterOrbit(shipName, planetName){
+        this.log('basicInfos', `The ${shipName} is entering orbit around ${planetName}.`);
+    }
+    logArrivedTo(ship){
+        this.log('infos', `The ${ship.name} reached the target position.`);
+    }
+    //positionning System Map
+    getMapDistance(ship, target) {
+        const dx = ship.x - target.x;
+        const dy = ship.y - target.y;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance;
+    }
+    //others
     loadSpaceshipBitmap(filename){
         return ImageManager.loadBitmap("img/GUI/ship/", filename);
     }
+    
+    //CREATE
     create() {
         super.create();
         this.createBackground();
@@ -38,65 +122,8 @@ class Scene_SpaceTravel extends Scene_Base {
         this.createLayout();
         this.createWindowLayer();
     }
-    createWindowLayer() {
-        super.createWindowLayer();
-        this.createHuds();
-    }
-    createHuds() {
-        this.createInfoWindow();
-        this.createEventWindow();
-        this.createMessageWindow();
-        this.createCalendarWindow();
-        this.createCmdWindow();
-        this.createSectorWindow();
-    }
-    createCmdWindow()  {
-        const rect = new Rectangle(1280, 720, this._infoWindow.width, this._eventWindow.height);
-        this._cmdWindow = new Window_Cmd(rect);
-        this.addWindow(this._cmdWindow);
-    } 
-    createCalendarWindow() {
-        const rect = new Rectangle(0, 0, 1200, 80);
-        this._calendarWindow = new Window_Calendar(rect);
-        this.addWindow(this._calendarWindow);
-    }
-    createMessageWindow() {
-        const x = this._eventWindow.width,
-                y = 720,
-                w = Graphics.boxWidth - this._eventWindow.width - this._infoWindow.width,
-                h = this._eventWindow.height;
 
-        const rect = new Rectangle(x, y, w, h);
-
-        this._dialWindow = new Window_Dial(rect);
-        this.addWindow(this._dialWindow);
-    }
-    createInfoWindow() {
-        const rect = this.rightPannelRect();
-
-        this._infoWindow = new Window_ShipInfo(rect);
-        this._infoWindow.setShip(this.spaceships[0]);
-        this.addWindow(this._infoWindow);
-    }
-    createSectorWindow(){
-        const rect = this.rightPannelRect();
-
-        this._sectorWindow = new Window_SectorInfos(rect);
-        this.addWindow(this._sectorWindow);
-    }
-    createEventWindow() {
-        const rect = new Rectangle(0, 720, 500, Graphics.boxHeight - 720);
-
-        this._eventWindow = new Window_EventInfo(rect);
-        this.addWindow(this._eventWindow);
-    }
-    createLayout(){
-        this._layoutSprite = new Sprite();
-        this._layoutSprite.bitmap = this.loadSpaceshipBitmap("travelScreenLayout");
-        this._layoutSprite.opacity = 180;
-        this.addChild(this._layoutSprite);
-
-    }
+    // Create System Map Sprites
     createBackground(){
         this._bgSprite = new Sprite();
         this._bgSprite.bitmap = this.loadSpaceshipBitmap("travelScreenBg");
@@ -163,13 +190,76 @@ class Scene_SpaceTravel extends Scene_Base {
             this.addChild(this._spaceshipSprites[index]);
         });
     }
+    createLayout(){
+        this._layoutSprite = new Sprite();
+        this._layoutSprite.bitmap = this.loadSpaceshipBitmap("travelScreenLayout");
+        this._layoutSprite.opacity = 180;
+        this.addChild(this._layoutSprite);
 
+    }
+    
+    // WINDOWS
+    createWindowLayer() {
+        super.createWindowLayer();
+        this.createHuds();
+    }
+    createHuds() {
+        this.createInfoWindow();
+        this.createEventWindow();
+        this.createMessageWindow();
+        this.createCalendarWindow();
+        this.createCmdWindow();
+        this.createSectorWindow();
+    }
+    //Info Window - Fenetre des infos du vaisseau
+    createInfoWindow() {
+        const rect = this.rightPannelRect();
 
+        this._infoWindow = new Window_ShipInfo(rect);
+        this._infoWindow.setShip(this.spaceships[0]);
+        this.addWindow(this._infoWindow);
+    }
+    //Event Window - Fenetre du log des evenements
+    createEventWindow() {
+        const rect = this.eventWindowRect();
+
+        this._eventWindow = new Window_EventInfo(rect);
+        this.addWindow(this._eventWindow);
+    }
+    //Message Window - Fenetre des du contenu actif
+    createMessageWindow() {;
+        const rect = this.messageWindowRect();
+
+        this._dialWindow = new Window_Dial(rect);
+        this.addWindow(this._dialWindow);
+    }
+    //CMD Window - Fenetre des commandes contextuelles
+    createCmdWindow()  {
+        const rect = this.cmdWindowRect();
+        this._cmdWindow = new Window_Cmd(rect);
+        this.addWindow(this._cmdWindow);
+    }
+    //Calendar Window
+    createCalendarWindow() {
+        const rect = new Rectangle(0, 0, this.gridCaseWidth() * 3, 80);
+        this._calendarWindow = new Window_Calendar(rect);
+        this.addWindow(this._calendarWindow);
+    }
+    //Sector Window
+    createSectorWindow(){
+        const rect = this.rightPannelRect();
+
+        this._sectorWindow = new Window_SectorInfos(rect);
+        this.addWindow(this._sectorWindow);
+    }
+
+    //UPDATE
     update() {
         super.update();
         if(!this.isBusy()){
             this.updateInput();
             this.updateTimer();
+            this.updateMapOffset();
             this.updatePlanets();
             this.updateAlerts();
             this.updateSpaceships();
@@ -179,10 +269,9 @@ class Scene_SpaceTravel extends Scene_Base {
             this._dialWindow.setPlanet(this._selectedPlanet);
             this._dialWindow.refresh();
             this._sectorWindow.refresh();
-
         }
     }
-
+    //Input
     updateInput() {
         const ship = this.playerSpaceship;
         if (!ship) return;
@@ -190,15 +279,56 @@ class Scene_SpaceTravel extends Scene_Base {
 
             let planetClicked = false;
             // Itérer en sens inverse pour vérifier les sprites du dessus en premier
-            for (let i = this._planetSprites.length - 1; i >= 0; i--) {
+            if(!this.checkPlanetClick(ship)){
+                this.checkPlayerTravelClick(ship);
+            }
+        }
+        
+        if(Input.isLongPressed("shift") || TouchInput.isLongPressed()){
+            if(!ship.isHyperdrive() && ship.canActivateHyperdrive())
+                ship.activeHyperdrive();
+        }else if(ship.isHyperdrive())
+            ship.deactivateHyperdrive();
+
+        if(Input.isTriggered('cancel')){
+            
+            $gameDate.setScrollSpeedMode(this._oldScrollSpeedMode);
+            SceneManager.pop();
+        }
+    }
+    checkPlayerTravelClick(ship){
+        if (this.isOnMapArea(TouchInput.x, TouchInput.y)) {
+            this._selectedPlanet = -1;
+            const mapXTouch = TouchInput.x - this._mapOffsetX;
+            const mapYTouch = TouchInput.y - this._mapOffsetY;
+
+            if(ship.targetX  != mapXTouch
+                || ship.targetY != mapYTouch){
+                this.logMove(ship.name, mapXTouch, mapYTouch);
+                ship.setTarget(mapXTouch, mapYTouch);
+            }
+        }
+    }
+    checkPlanetClick(ship){
+        let planetClicked = false;
+
+        for (let i = this._planetSprites.length - 1; i >= 0; i--) {
 
                 const planetSprite = this._planetSprites[i];
                 const planetData = this.planets[i];
                 
                 // Vérification simple de la boîte de délimitation
-                const x = planetSprite.x - (planetSprite.width * planetSprite.anchor.x * planetSprite.scale.x);
-                const y = planetSprite.y - (planetSprite.height * planetSprite.anchor.y * planetSprite.scale.y);
-                const rect = new Rectangle(x, y, planetSprite.width * planetSprite.scale.x, planetSprite.height * planetSprite.scale.y);
+                const x = planetSprite.x
+                    - (planetSprite.width * planetSprite.anchor.x * planetSprite.scale.x);
+                const y = planetSprite.y
+                    - (planetSprite.height * planetSprite.anchor.y * planetSprite.scale.y);
+
+                const rect = new Rectangle(
+                    x,
+                    y,
+                    planetSprite.width * planetSprite.scale.x,
+                    planetSprite.height * planetSprite.scale.y
+                );
 
                 if (rect.contains(TouchInput.x, TouchInput.y)) {
                     if(this._selectedPlanet == i){
@@ -214,25 +344,133 @@ class Scene_SpaceTravel extends Scene_Base {
                     break; // Arrêter après avoir trouvé la première planète
                 }
             }
+            return planetClicked;
+    }
 
-            if (!planetClicked && TouchInput.x >= 0 && TouchInput.x <= 1280 && TouchInput.y >= 0 && TouchInput.y <= 720   ) {
-                    this._selectedPlanet = -1;
-                    if(ship.targetX != TouchInput.x || ship.targetY != TouchInput.y){
-                        //this._eventWindow.addNews({style:'basicInfos', txt:`The ${ship.name} has new target location: ${TouchInput.x}-${TouchInput.y}`});
-                        ship.setTarget(TouchInput.x, TouchInput.y);
-                    }
+
+    // SYSTEM MAP
+    updateMapOffset(){
+        if(this.playerSpaceship){
+            const ship = this.playerSpaceship;
+            let targetX = 0;
+            let targetY = 0;
+            
+            targetY = Math.max(
+                -ship.y + 310,
+                -this.bottomPanelRealSize() + (Graphics._height - 720)
+            );
+
+            if (this._rightPannelActive != "none") {
+                targetX = Math.max(-ship.x + 640, -this.rightPanelRealSize() + (Graphics._width - 1280));
+            }
+
+            targetX = Math.min(targetX, 0);
+            targetY = Math.min(targetY, 0);
+
+
+            if(targetX != this._mapOffsetX || targetY != this._mapOffsetY) {
+                this._mapOffsetX = targetX;
+                this._mapOffsetY = targetY;
+                this.updateSystemMapLayers();
             }
         }
-        
-        if(Input.isLongPressed("shift") || TouchInput.isLongPressed()){
-            if(!ship.isHyperdrive() && ship.canActivateHyperdrive())
-                ship.activeHyperdrive();
-        }else if(ship.isHyperdrive())
-            ship.deactivateHyperdrive();
-
-        if(Input.isTriggered('quit'))
-            SceneManager.pop();
     }
+    updateSystemMapLayers(){
+        this._bgSprite.x =      this._mapOffsetX;
+        this._bgSprite.y =      this._mapOffsetY;
+
+        this._bg2Sprite.x =     this._mapOffsetX;
+        this._bg2Sprite.y =     this._mapOffsetY;
+
+        this._layoutSprite.x =  this._mapOffsetX;
+        this._layoutSprite.y =  this._mapOffsetY;
+    }
+    // Met à jour les positions des planètes
+    updatePlanets() {
+        this._planetSprites.forEach((sprite, index) => {
+            const planet = this.planets[index];
+
+            if(planet.moves instanceof Array){
+                planet.moves.forEach(move => {
+                    switch(move.type) {
+                        case "rotation":
+                            this.updatePlanetRotation(sprite, move);
+                            break;
+                        case "scale":
+                            this.updatePlanetScale(sprite, move);
+                            break;
+                        case "opacity":
+                            this.updatePlanetOpacity(sprite, move);
+                            break;
+                        case "orbit":
+                            this.updatePlanetOrbit(planet, move);
+                            break;
+                        case "scaleOnY":
+                            this.updatePlanetScaleOnY(sprite, planet, move);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+            sprite.x = planet.x + this._mapOffsetX;
+            sprite.y = planet.y + this._mapOffsetY;
+        });
+    }
+    updatePlanetRotation(sprite, move){
+        sprite.rotation = (sprite.rotation + move.value 
+                * $gameDate.getScrollSpeedMode()
+            )
+            % (Math.PI * 2);
+    }
+    updatePlanetScale(sprite, move){
+        if(!sprite.scaleDir && sprite.scale.x < move.value){
+            sprite.scale.x += move.speed || 0.01;
+            sprite.scale.y += move.speed || 0.01;
+            if(sprite.scale.x > move.value){
+                sprite.scaleDir = true; // Inverse la direction
+            }
+        }else if(sprite.scale.x > sprite.zoomOriginal){
+            sprite.scale.x -= move.speed || 0.01;
+            sprite.scale.y -= move.speed || 0.01;
+        }else if(sprite.scale.x <= sprite.zoomOriginal){
+                sprite.scaleDir = false; // Inverse la direction
+        }
+    }
+    updatePlanetOpacity(sprite, move){
+        if(!sprite.opacityFadeOut && sprite.opacity <= move.max){
+            sprite.opacity += move.speed || 1;
+            if(sprite.opacity >=  move.max){
+                sprite.opacityFadeOut = true; // Inverse la direction
+            }
+        }else if(sprite.opacity > move.min){
+            sprite.opacity -= move.speed || 1;
+        }else if(sprite.opacity <= move.min){
+                sprite.opacityFadeOut = false; // Inverse la direction
+        }
+    }
+    updatePlanetOrbit(planet, move){
+        const pi2 = Math.PI * 2;
+        const speed = move.speed || 0.01 * $gameDate.getScrollSpeedMode();
+        
+        if(!planet.active){
+            planet.orbitAngle = Math.random() * pi2;
+            planet.activate();
+        }else{
+            planet.orbitAngle = (planet.orbitAngle + speed) % pi2;
+        }
+        const angle = planet.orbitAngle;
+
+        planet._x = move.centerX + Math.cos(angle) * move.radiusX;
+        planet._y = move.centerY + Math.sin(angle) * move.radiusY;
+    }
+    updatePlanetScaleOnY(sprite, planet, move){
+        const change = (move.value - sprite.zoomOriginal) * (planet.y /720);
+
+        sprite.scale.y = sprite.zoomOriginal + change;
+        sprite.scale.x = sprite.zoomOriginal + change;
+    }
+    // Met à jour les alerte
     updateAlerts(){
         this._alertSprites.forEach((sprite, index) => {
             const alert = this.alerts[index];
@@ -258,137 +496,104 @@ class Scene_SpaceTravel extends Scene_Base {
     updateAlertsPos(sprite, alert){
         switch(alert.pos.type){
             case "follow":
-            const planet = this._planetSprites[alert.pos.planetId];
-            sprite.x = planet.x;
-            sprite.y = planet.y;
+            const planetSprite = this._planetSprites[alert.pos.planetId];
+            sprite.x = planetSprite.x;
+            sprite.y = planetSprite.y;
             break;
             case "static":
-            sprite.x = alert.pos.x;
-            sprite.y = alert.pos.y;
+            sprite.x = alert.pos.x + this._mapOffsetX;
+            sprite.y = alert.pos.y + this._mapOffsetY;
             break;
             default:
                 break;
         }
     }
-    updatePlanets() {
-        this._planetSprites.forEach((sprite, index) => {
-            const planet = this.planets[index];
-            if(planet.moves instanceof Array){
-                planet.moves.forEach(move => {
-                    switch(move.type) {
-                        case   "rotation":
-                            sprite.rotation = (sprite.rotation + move.value  * $gameDate.getScrollSpeedMode()) % (Math.PI * 2);
-                            break;
-                        case   "scale":
-                            if(!sprite.scaleDir && sprite.scale.x < move.value){
-                                sprite.scale.x += move.speed || 0.01;
-                                sprite.scale.y += move.speed || 0.01;
-                                if(sprite.scale.x > move.value){
-                                    sprite.scaleDir = true; // Inverse la direction
-                                }
-                            }else if(sprite.scale.x > sprite.zoomOriginal){
-                                sprite.scale.x -= move.speed || 0.01;
-                                sprite.scale.y -= move.speed || 0.01;
-                            }else if(sprite.scale.x <= sprite.zoomOriginal){
-                                    sprite.scaleDir = false; // Inverse la direction
-                            }
-                            break;
-                        case   "opacity":
-                            if(!sprite.opacityFadeOut && sprite.opacity <= move.max){
-                                sprite.opacity += move.speed || 1;
-                                if(sprite.opacity >=  move.max){
-                                    sprite.opacityFadeOut = true; // Inverse la direction
-                                }
-                            }else if(sprite.opacity > move.min){
-                                sprite.opacity -= move.speed || 1;
-                            }else if(sprite.opacity <= move.min){
-                                    sprite.opacityFadeOut = false; // Inverse la direction
-                            }
-                            break;
-                        case "orbit":
-                            if(!sprite.orbitAngle)
-                                sprite.orbitAngle = planet.active? planet.orbitAngle: (Math.random() * Math.PI * 2);
-                            sprite.orbitAngle = (sprite.orbitAngle + (move.speed || 0.01) * $gameDate.getScrollSpeedMode()) % (Math.PI * 2);
-                            const rad = sprite.orbitAngle;
-                            sprite.x = move.centerX + Math.cos(rad) * move.radiusX;
-                            sprite.y = move.centerY + Math.sin(rad) * move.radiusY;
-                            planet.orbitAngle = sprite.orbitAngle;
-                            planet.activate();
-                            break;
-                        case "scaleOnY":
-                            const change = (move.value - sprite.zoomOriginal) * (sprite.y /720);
-
-                            sprite.scale.y = sprite.zoomOriginal + change;
-                            sprite.scale.x = sprite.zoomOriginal + change;
-                            break;
-                        default:
-                            break;
-                    }
-
-                });
-            }
-        });
-    }
+    //spaceship positionning
     updateSpaceships() {
         this._spaceshipSprites.forEach((sprite, index) => {
             const ship = this.spaceships[index];
             if (ship) {
                 const oldX = ship.x;
                 const orbitingId = ship.orbitingPlanetId;
-                const SHIP_SPEED = ship.speed /8 * $gameDate.getScrollSpeedMode();
-                if (orbitingId !== null) {
-                    // Logique d'orbite
-                    const planetSprite = this._planetSprites[orbitingId];
-                    if (planetSprite) {
-                        const dx = ship.x - planetSprite.x;
-                        const dy = ship.y - planetSprite.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
+                const speed = ship.speed /8 * $gameDate.getScrollSpeedMode();
 
-                        if (distance > SHIP_SPEED) {
-                            // Approche de la planète
-                            ship.consumeFuel(0.01); 
-                            ship.x = ship.x.approach(planetSprite.x, SHIP_SPEED);
-                            ship.y = ship.y.approach(planetSprite.y, SHIP_SPEED);
-                            
-                        } else {
-                            // Arrivé : se verrouille sur la position de la planète
-                            ship.x = planetSprite.x;
-                            ship.y = planetSprite.y;
-                            if(ship.status != "Orbiting")
-                                this._eventWindow.addNews({style:'infos', txt:`The ${ship.name} approaching ${$gameSector.currentSystem().planet(orbitingId).name} orbit.`});
-                            ship.status = "Orbiting";
-                        }
-                    }
+                // Déplacement vers la planète en orbite
+                if (orbitingId !== null) {
+                    const planet = this.planets[orbitingId];
+                    this.updateSpaceshipOrbiting(ship, planet, speed);
+
+                // Déplacement vers la cible
                 } else if(ship.x != ship.targetX || ship.y != ship.targetY){
-                    
-                    ship.consumeFuel(0.01);
-                    // Logique de mouvement libre
-                    ship.x = ship.x.approach(ship.targetX, SHIP_SPEED);
-                    ship.y = ship.y.approach(ship.targetY, SHIP_SPEED);
+                    this.moveShipToTarget(ship, speed);
+
+                // Statique
                 }else if(ship.status != "Static"){
-                    this._eventWindow.addNews({style:'infos', txt:`The ${ship.name} reached the target position.`});
+                    this.logArrivedTo(ship);
                     ship.status = "Static";
                 }
                 
-                // Met à jour la position du sprite
-                sprite.x = ship.x;
-                sprite.y = ship.y;
-
-                // Flip sprite based on direction
-                if (ship.x > oldX) { // Moving right
-                    sprite.scale.x = -Math.abs(sprite.scale.x);
-                } else if (ship.x < oldX) { // Moving left
-                    sprite.scale.x = Math.abs(sprite.scale.x);
-                }
-            }
-            if(Math.abs(sprite.scale.x) !=  0.2){
-                const newScale = Math.abs(sprite.scale.x).approach( 0.03, 0.002);
-                const direction = sprite.scale.x >= 0 ? 1 : -1;
-                sprite.scale.x = newScale * direction;
-                sprite.scale.y = newScale;
+                this.updateSpaceshipSprite(sprite, ship, oldX);
             }
         });
     }
+    updateSpaceshipOrbiting(ship, planet, speed) {
+        if (planet) {
+            const distance = this.getMapDistance(ship, planet);
+            
+            if (distance > speed) {
+                this.approachTarget(ship, planet, speed);
+            } else {
+                this.shipStaticOrbit(ship, planet);
+            }
+        }
+    }
+    approachTarget(ship, target, speed) {
+        // Approche de la cible
+        ship.consumeFuel(0.01); 
+        ship.x = ship.x.approach(target.x, speed);
+        ship.y = ship.y.approach(target.y, speed);
+    }
+    shipStaticOrbit(ship, planet) {
+        // Arrivé : se verrouille sur la position de la planète
+        ship.x = planet.x;
+        ship.y = planet.y;
+        
+        if(ship.status != "Orbiting")
+            this.logEnterOrbit(ship.name, this.planets[ship.orbitingPlanetId].name);
+
+        ship.status = "Orbiting";
+    }
+    moveShipToTarget(ship, speed) {
+        ship.consumeFuel(0.01);
+        ship.x = ship.x.approach(ship.targetX, speed);
+        ship.y = ship.y.approach(ship.targetY, speed);
+    }
+    //UPDATE SPRITE
+    updateSpaceshipSprite(sprite, ship, oldX) {
+        // Met à jour la position du sprite
+        sprite.x = ship.x + this._mapOffsetX;
+        sprite.y = ship.y + this._mapOffsetY;
+
+        this.updateSpriteDir(sprite, oldX, ship);
+        this.updateSpaceshipScale(sprite);
+    }
+    updateSpriteDir(sprite, oldX, ship){
+        // Flip sprite based on direction
+        if (ship.x > oldX) { // Moving right
+            sprite.scale.x = -Math.abs(sprite.scale.x);
+        } else if (ship.x < oldX) { // Moving left
+            sprite.scale.x = Math.abs(sprite.scale.x);
+        }
+    }
+    updateSpaceshipScale(sprite) {
+        if(Math.abs(sprite.scale.x) !=  0.2){
+            const newScale = Math.abs(sprite.scale.x).approach( 0.03, 0.002);
+            const direction = sprite.scale.x >= 0 ? 1 : -1;
+            sprite.scale.x = newScale * direction;
+            sprite.scale.y = newScale;
+        }
+    }
+    //others
     updateTimer() {
         this._timer++;
         if(this._timer > 100){ // Après 5 secondes, retour à la console
@@ -398,7 +603,7 @@ class Scene_SpaceTravel extends Scene_Base {
         
     }
     updateCalendar(){
-        $gameDate.passTick()
+        $gameDate.passTick();
     }
 
 };

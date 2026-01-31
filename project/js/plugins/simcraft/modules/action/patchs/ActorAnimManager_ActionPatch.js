@@ -136,6 +136,7 @@ ActorAnimManager.prototype.stopAction = function() {
     } else {
         this.setWalkAnim();
     }
+    this.mainManager.character.setPattern(1);
     
     $debugTool.log(`[ActorAnimManager] Acteur ${this.mainManager.actor.actorId()}: Arrête l'action "${actionName}". Retour à "${returnToIdle ? 'idle' : 'walk'}".`,true);
 };

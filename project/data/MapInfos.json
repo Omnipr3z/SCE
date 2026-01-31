@@ -1,4 +1,8 @@
 [
 null,
-{"id":1,"expanded":false,"name":"MAP001","order":1,"parentId":0,"scrollX":819,"scrollY":493.5}
+{"id":1,"expanded":false,"name":"MAP001","order":1,"parentId":0,"scrollX":811,"scrollY":475},
+{"id":2,"expanded":false,"name":"START","order":2,"parentId":0,"scrollX":1216.5,"scrollY":712.5,"quick":false},
+{"id":3,"expanded":true,"name":"SPACESHIP 1","order":3,"parentId":0,"scrollX":811,"scrollY":473.5,"quick":false},
+{"id":4,"expanded":true,"name":"Command Bridge","order":4,"parentId":3,"scrollX":1104,"scrollY":724,"quick":false},
+{"id":5,"expanded":true,"name":"Main Bridge","order":5,"parentId":3,"scrollX":1622,"scrollY":1248,"quick":false}
 ]

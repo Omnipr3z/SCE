@@ -53,6 +53,10 @@ Scene_Map.prototype.createWeatherOverlay = function() {
  */
 Scene_Map.prototype.updateWeatherOverlay = function() {
     if (!this._weatherOverlaySprite || !$gameWeather) return;
+    if ($dataMap && $dataMap.meta && !$dataMap.meta.inner){
+        this.removeWeatherSprite();
+        return;
+    }
 
     const overlayName = $gameWeather.overlayName;
 
@@ -65,21 +69,26 @@ Scene_Map.prototype.updateWeatherOverlay = function() {
     // Update visual properties
     this._weatherOverlaySprite.opacity = ($gameWeather.intensity * 100).clamp(0, 255);
     
+    
+
     if (this._weatherOverlaySprite.bitmap) {
         this._weatherOverlaySprite.origin.x += $gameWeather.scrollX;
         this._weatherOverlaySprite.origin.y += $gameWeather.scrollY;
     }
 };
-
-// --- Aliasing Scene_Map.terminate ---
-// Ensure sprites are released from memory
-const _alias_Scene_Map_terminate = Scene_Map.prototype.terminate;
-Scene_Map.prototype.terminate = function() {
+Scene_Map.prototype.removeWeatherSprite = function(){
     if (this._weatherOverlaySprite) {
         this.removeChild(this._weatherOverlaySprite);
         this._weatherOverlaySprite.destroy();
         this._weatherOverlaySprite = null;
     }
+}
+
+// --- Aliasing Scene_Map.terminate ---
+// Ensure sprites are released from memory
+const _alias_Scene_Map_terminate = Scene_Map.prototype.terminate;
+Scene_Map.prototype.terminate = function() {
+    this.removeWeatherSprite();
     _alias_Scene_Map_terminate.call(this);
 };
 
