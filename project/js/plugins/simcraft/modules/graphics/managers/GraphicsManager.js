@@ -28,7 +28,6 @@
  *
  * ▸ Historique :
  *   v1.0.1 - 2024-08-01 : Implémentation de la surcharge rigide de Graphics.resize
- *                        et neutralisation de Scene_Boot.adjustWindow.
  *   v1.0.0 - 2024-07-31 : Création initiale du module.
  */
 const _Graphics_initialize = Graphics.initialize;
@@ -57,15 +56,6 @@ class Graphics_SC {
         Graphics._updateAllElements();
         
     }; 
-};
-
-const _Scene_Boot_adjustWindow = Scene_Boot.prototype.adjustWindow;
-Scene_Boot.prototype.adjustWindow = function() {
-    const config = SC.GraphicsConfig;
-    if (config.defaultMode !== 'Fullscreen') {
-        _Scene_Boot_adjustWindow.call(this, ...arguments);
-    }
-    // Si le mode par défaut est 'Fullscreen', on ne fait rien pour éviter d'annuler le plein écran.
 };
 
 // --- Enregistrement du plugin ---

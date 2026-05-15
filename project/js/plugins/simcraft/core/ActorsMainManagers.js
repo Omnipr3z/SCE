@@ -26,7 +26,16 @@
  * ActorMainManager. Il fournit un point d'accès centralisé pour
  * récupérer le "hub" de n'importe quel acteur via son ID.
  * 
- * Il sera instancié en tant que $characterMainManager.
+ * Il sera instancié en tant que $actorsMM.
+ * 
+ * ________________________________________________________________________
+ *      Methodes principales:
+ * ________________________________________________________________________
+ * 
+ * $actorsMM.actor(actorId)
+ * Récupère ou crée à la demande le manager principal pour un acteur donné.
+ * param {number} actorId L'ID de l'acteur.
+ * returns {ActorMainManager|null}
  * 
  * historique:
  * - v1.0.0 - 2024-06-12 : Version initiale. 
@@ -72,7 +81,7 @@ SC._temp.pluginRegister = {
     createObj: {
         autoCreate: true,
         classProto: ActorsMainManagers,
-        instName: "$actorsMainManagers"
+        instName: "$actorsMM"
     },
     autoSave: false
 };

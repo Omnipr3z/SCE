@@ -55,7 +55,7 @@ class CharacterVisualManager {
      * @returns {Bitmap|null} Le bitmap composite, ou null si l'acteur n'est pas valide.
      */
     getCharacterBitmap(actorId) {
-        const mainManager = $actorsMainManagers.actor(actorId);
+        const mainManager = $actorsMM.actor(actorId);
         if (!mainManager || !mainManager.actor) {
             return null;
         }
@@ -73,7 +73,7 @@ class CharacterVisualManager {
      * @returns {object|null} L'objet de cache ou null.
      */
     getCacheEntryByActorId(actorId) {
-        const mainManager = $actorsMainManagers.actor(actorId);
+        const mainManager = $actorsMM.actor(actorId);
         if (!mainManager || !mainManager.actor) {
             return null;
         }
@@ -145,13 +145,14 @@ class CharacterVisualManager {
         // --- Phase 2: Couche de Base ---
         // On ajoute le corps du personnage (la base) et potentiellement son visage
         const baseSprite = actor.characterName();
+
         if (baseSprite) {
             // Le z-index de la base est `backLayerCount`, ce qui la place juste au-dessus de toutes les couches arrière.
             composer.addLayer(baseSprite, backLayerCount);
             backLayerCount++;
             // On vérifie si une couche de visage doit être ajoutée.
             if(this._shouldDisplayFaceLayer(actor)) {
-                const faceSprite = actor.characterName() + "_face";
+                const faceSprite = actor.name() + "_face";
                 // Le visage est ajouté juste au-dessus de la couche de base.
                 backLayerCount++;
                 composer.addLayer(faceSprite, backLayerCount + backLayerCount);
@@ -180,7 +181,7 @@ class CharacterVisualManager {
         // Si, après avoir parcouru tous les équipements, les cheveux n'ont toujours pas été ajoutés,
         // on fait une dernière vérification. C'est un filet de sécurité si la condition dans la boucle n'a jamais été remplie.
         if(this._needHair(actor)){
-            composer.addLayer(actor.characterName() + "_hair", SC.VisualConfig.hairLayerZIndex  + backLayerCount);
+            composer.addLayer(actor.name() + "_hair", SC.VisualConfig.hairLayerZIndex  + backLayerCount);
         }
 
         // 4. Lancement du chargement

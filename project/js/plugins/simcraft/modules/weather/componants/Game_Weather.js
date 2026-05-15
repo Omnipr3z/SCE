@@ -213,6 +213,18 @@ class Game_Weather {
         // Fallback to the last item
         return list[list.length - 1].type;
     }
+    makeSavefileData(){
+        return {
+            type: this._type,
+            intensity: this._intensity,
+            isForced: this._isForced,
+            overlayName: this._overlayName,
+            scrollX: this._scrollX,
+            scrollY: this._scrollY,
+            lastLogicUpdateTime: this._lastLogicUpdateTime,
+            climate: this._climate
+        };
+    }
 }
 
 SC._temp = SC._temp || {};

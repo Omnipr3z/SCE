@@ -5,7 +5,7 @@
 class WashActivity extends ActivityBase {
     
     static canUse(actorId) {
-        const main = $actorsMainManagers.actor(actorId);
+        const main = $actorsMM.actor(actorId);
         if (!main || !main.health) return false;
         return main.health.getClean() < 100;
     }

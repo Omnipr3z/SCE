@@ -80,20 +80,7 @@ Game_CharacterBase.prototype.pattern = function() {
     }
     return this._pattern < 3 ? this._pattern : 1;
 };
-// Game_CharacterBase.prototype.setImage = function(
-//     characterName,
-//     characterIndex
-// ) {
-//         this._tileId = 0;
-//         this._characterName = characterName;
-//        this._visualIndex = this._visualIndex || 0; 
-//     if (this._visualIndex !== null && this._visualIndex >= 0) {
-//         this._characterIndex = this._visualIndex;
-//     }else{
-//         this._characterIndex = characterIndex;
-//     }
-//     this._isObjectCharacter = ImageManager.isObjectCharacter(characterName);
-// };
+
 // --- Enregistrement du plugin ---
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {

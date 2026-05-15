@@ -52,13 +52,14 @@ class ActorHealthManager {
         this._impulse = 0;  // Impulse / Sudden exertion level
         this._lastTimeStamp = -1; // Last timestamp for minute-based updates
         this._minCounter = 0; // Minute counter for tracking time-based updates
+        this._healthChange = {};
     }
 
     /**
      * @returns {ActorMainManager} The main manager instance for this actor.
      */
     get mainManager() {
-        return $actorsMainManagers.actor(this._actorId);
+        return $actorsMM.actor(this._actorId);
     }
 
     //--- Getters
@@ -82,64 +83,39 @@ class ActorHealthManager {
     }
 
     updateHealthChanges() {
-        this._alim += this._healthChange.alim || 0;
-        this._form += this._healthChange.form || 0;
-        this._clean += this._healthChange.clean || 0;
-        this._hydra += this._healthChange.hydra || 0;
-        this._alim = this._alim.clamp(0, 100);
-        this._form = this._form.clamp(0, 100);
-        this._clean = this._clean.clamp(0, 100);
-        this._hydra = this._hydra.clamp(0, 100);
-    }
-    isEndSleepMode() {
-        const manager = this.mainManager.animator;
-        if (!manager) return true; // Can't be sleeping if no anim manager
-        return manager.getCurrentActionName() !== "sleep"
-            || this._form >= this._healthChange.formMaxThreshold;
-    }
-    isEndWashMode() {
-        const manager = this.mainManager.animator;
-        if (!manager) return true; // Can't be washing if no anim manager
-        return manager.getCurrentActionName() !== "wash"
-            || this._clean >= this._healthChange.cleanMaxThreshold;
-    }
-    checkContinuousActivityEnd() {
-        if (this._healthActivityTimer === "sleepMode" && this.isEndSleepMode()) {
-            this._healthActivityTimer = 0; // End activity
-        } else if (this._healthActivityTimer === "washMode" && this.isEndWashMode()) {
-            this._healthActivityTimer = 0;
-        }
-    }
-    isContinuousActivity() {
-        return this._healthActivityTimer === "sleepMode" || this._healthActivityTimer === "washMode";
+        this._alim  +=  this._healthChange.alim  || 0;
+        this._form  +=  this._healthChange.form  || 0;
+        this._clean +=  this._healthChange.clean || 0;
+        this._hydra +=  this._healthChange.hydra || 0;
+        this._alim  =   this._alim.clamp(0, 100);
+        this._form  =   this._form.clamp(0, 100);
+        this._clean =   this._clean.clamp(0, 100);
+        this._hydra =   this._hydra.clamp(0, 100);
     }
     updateHealthActivity() {
-        if(!this._healthChange) return;
-        if(this.isContinuousActivity()) {
-            this.updateHealthChanges();
-            this.checkContinuousActivityEnd();
-        }else if(this._healthActivityTimer > 0){
+        if(this._healthActivityTimer > 0){
             this.updateHealthChanges();
             this._healthActivityTimer--;
         }else{
-            this._healthChange = null;
-            // this._healthActivityTimer is already 0 or less
-            const manager = this.mainManager.animator;
-            if (manager) {
-                manager.stopAction()
-            }
+            this._healthChange = {};
+            this._healthActivityTimer = 30;
         }
     }
     updateHr() {
         this._alim -= SC.HealthConfig.alimDecreaseRate;
-        const staminaRate = this.getStaminaCostRate ? this.getStaminaCostRate() : 1.0;
-        this._form -= SC.HealthConfig.formDecreaseRate * staminaRate;
-        this._clean -= SC.HealthConfig.cleanDecreaseRate;
-        this._hydra -= SC.HealthConfig.hydraDecreaseRate;
-        this._alim = this._alim.clamp(0, 100);
-        this._form = this._form.clamp(0, 100);
-        this._clean = this._clean.clamp(0, 100);
-        this._hydra = this._hydra.clamp(0, 100);
+        if(!this.mainManager.activity._currentActivity && false){
+            const staminaRate = this.getStaminaCostRate ? this.getStaminaCostRate() : 1.0;
+            this._form -= SC.HealthConfig.formDecreaseRate * staminaRate;
+            this._clean -= SC.HealthConfig.cleanDecreaseRate;
+            this._hydra -= SC.HealthConfig.hydraDecreaseRate;
+            this._alim = this._alim.clamp(0, 100);
+            this._form = this._form.clamp(0, 100);
+            this._clean = this._clean.clamp(0, 100);
+            this._hydra = this._hydra.clamp(0, 100);
+        }
+        this.updateHealthDeceaseStates()
+    }
+    updateHealthDeceaseStates(){
         if(this._alim <= 0){
             this.mainManager.actor.addState(SC.HealthConfig.hungryStateId);
         }
@@ -258,64 +234,13 @@ class ActorHealthManager {
     getHealthScore() {
         // TBD: Logic to calculate the score based on all stats.
         const factors = [
-            this._alim / 100,
-            this._form / 100,
-            this._clean / 100,
-            this._hydra / 100
+            this._alim,
+            this._form,
+            this._clean,
+            this._hydra
         ];
         const average = factors.reduce((a, b) => a + b, 0) / factors.length;
-        return average;
-    }
-
-    //--- Actions
-    canConsumeItem(item) {
-        if(!item) return false;
-        return true;
-    }
-    useHealthItem(item) {
-        if(this.canConsumeItem(item)){
-            if(!item.meta)
-                DataManager.extractMetadata(item);
-
-            this._healthChange= {
-                alim: item.meta.alimIncrease || 0, // un nombre négatif peut reduire la valeur
-                form: item.meta.formIncrease || 0,
-                clean: item.meta.cleanIncrease || 0,
-                hydra: item.meta.hydraIncrease || 0,
-                activityDuration: item.meta.activityDuration || 0
-            }
-            this._healthActivityTimer = item.meta.activityDuration || 0;
-            const actionName = item.meta.actionName || "useItem";
-
-            const manager = this.mainManager.animator;
-            if (manager) {
-                if (!manager.validateImmobilizingAction(actionName))  return;
-
-                manager.stopAction();
-                manager.playAction(actionName);
-            }
-        }
-    }
-
-    canSleep(bedData) { return this._form < 70; }
-    sleep(bedData) {
-        if(this.canSleep(bedData)){
-            if (this.mainManager.activity) {
-                this.mainManager.activity.startActivity('sleep', bedData);
-            }
-        }
-    }
-
-    canWash() {
-        // Can wash if not perfectly clean and no other activity is running
-        return this._clean < 100 && !this._healthChange;
-    }
-    wash(washData = {}) {
-        if (this.canWash()) {
-            if (this.mainManager.activity) {
-                this.mainManager.activity.startActivity('wash', washData);
-            }
-        }
+        return Math.round(average);
     }
 
     /**
@@ -359,6 +284,21 @@ class ActorHealthManager {
         this._breath -= SC.HealthConfig.jumpMinBreathCost;
         this._impulse = 0;
     }
+
+    // testEat(){
+    //     $actorsMM.actor($gameParty.leader().actorId()).health.useHealthItem(
+    //         {
+    //             meta: {
+    //                 alimIncrease: 1,
+    //                 formIncrease: 0,
+    //                 cleanIncrease: 0,
+    //                 hydraIncrease: 0,
+    //                 activityDuration: 80,
+    //                 actionName: 'combat_idle'
+    //             }
+    //         }
+    //     )
+    // }
     
 }
 

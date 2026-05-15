@@ -1,0 +1,19 @@
+<div id="main">
+    <div id="toolbar">
+        <button onclick="togglePlay()" class="btn-primary">Pause / Reprise</button>
+        <button onclick="restartSeq()">Restart Step</button>
+        
+        <span style="color: #444;">|</span>
+        
+        <button onclick="startPlayAll()" style="background: #8e44ad;">▶ Play All</button>
+        <button onclick="resetAll()" style="background: #c0392b;">☢ Reset All</button>
+        
+        <span id="status">IDLE</span>
+        <div style="flex: 1;"></div>
+        <div style="font-size: 11px; color: #888; padding-right: 10px;">SCE Engine v1.1.3 Preview</div>
+    </div>
+    
+    <div id="canvas-wrap">
+        <canvas id="view" width="1280" height="720"></canvas>
+    </div>
+</div>

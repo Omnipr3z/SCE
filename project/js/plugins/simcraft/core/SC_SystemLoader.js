@@ -26,7 +26,6 @@
  *   - Gère la surcharge des classes statiques via le paramètre `surchargeClass`.
  * 
  * ▸ Historique :
- *   v0.4.0 - 2024-07-30 : Correction de la surcharge en l'ancrant à Scene_Boot.create. Séparation de la logique d'instanciation.
  *   v0.3.0 - Ajout de la gestion de création d'instances et de surcharge de classes.
  *   v0.2.1 - Chargement automatique de base + vérification de dépendances.
  */
@@ -123,18 +122,5 @@ class System_Loader {
 }
 const $simcraftLoader = new System_Loader();
 
-// --- Point d'entrée pour la surcharge ---
-// On s'accroche à Scene_Boot.create, qui est appelé avant DataManager.loadDatabase.
-// C'est le moment idéal pour surcharger les classes statiques.
 
-const _Scene_Boot_create = Scene_Boot.prototype.create;
-Scene_Boot.prototype.create = function() {
-    $simcraftLoader.surchargeStaticClasses(); // On surcharge AVANT l'appel original
-    _Scene_Boot_create.call(this, ...arguments);
-    $debugTool.closeAllGroups(); // On ferme tous les groupes ouverts à la fin du boot.
 
-    // Demande le plein écran si configuré, après que tout soit initialisé.
-    if (SC.GraphicsConfig && SC.GraphicsConfig.defaultMode === 'Fullscreen') {
-        Graphics._requestFullScreen();
-    }
-};

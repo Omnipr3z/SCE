@@ -22,7 +22,8 @@
  * 
  * Ce composant sert de "hub" pour un acteur spécifique, fournissant un
  * point d'accès unifié à tous les autres managers et systèmes qui lui
- * sont rattachés (animation, santé, etc.).
+ * sont rattachés (animation, santé, character, dialogue, etc.).
+ * 
  */
 
 class ActorMainManager {
@@ -68,7 +69,7 @@ class ActorMainManager {
         }
 
         // Cherche si un événement sur la carte représente cet acteur (pour le futur module ActorEvents)
-        const event = $gameMap.events().find(e => e._actorEventId && e._actorEventId === this._id);
+        const event = $gameMap.events().find(e => e._actorId  && e._actorId === this._id);
         if (event) {
             return event;
         }
@@ -89,12 +90,23 @@ class ActorMainManager {
         return $actorsActivitiesManagers.manager(this._id);
     }
 
+    /**
+     * Raccourci pour accéder au manager de talent
+     * @return {ActorTalentManager}*/
+    get talents(){
+        return $actorsTalentsManager.actorTalents(this._id);
+    }
+
+    /**
+     * Raccourci pour accéder au manager de dialogue
+     * @return {ActorDialsManager}*/
+    get dial(){
+        return $actorsDialsManager.actor(this._id);
+    }
 
 }
 
 // --- Enregistrement du plugin ---
-// Ce plugin ne crée pas d'objet global, mais il doit être enregistré
-// pour que d'autres plugins puissent déclarer une dépendance envers lui.
 SC._temp = SC._temp || {};
 SC._temp.pluginRegister = {
     name: "SC_ActorMainManager",
@@ -103,6 +115,6 @@ SC._temp.pluginRegister = {
     author: AUTHOR,
     license: LICENCE,
     dependencies: ["SC_SystemLoader"],
-    createObj: { autoCreate: false } // C'est une classe, pas une instance globale.
+    createObj: { autoCreate: false }
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);

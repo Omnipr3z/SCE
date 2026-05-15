@@ -253,7 +253,7 @@ class DataManager_SC {
     // Nouvelle méthode
     loadMapScData(mapId) {
         if (mapId > 0) {
-            const filename = "Map%1.json".format(mapId.padZero(3));
+            const filename = "Maps/Map%1.json".format(mapId.padZero(3));
             this.loadScDataFile("$dataScMap", filename);
         } else {
             window.$dataScMap = null;

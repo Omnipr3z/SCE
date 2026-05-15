@@ -80,21 +80,16 @@
  * @type file
  * @dir img/cinematics/Hud/
  *
- * @param skipButtonX
- * @text Position X du bouton "Skip"
+ * @param skipButtonPosition
+ * @text Position du bouton "Skip" ("Top/Bottom" + "Right/Left" exemple "TopRight")
  * @parent skipDefaultMode
- * @type number
- * @default 750
+ * @type string
+ * @default BottomLeft
  *
- * @param skipButtonY
- * @text Position Y du bouton "Skip"
- * @parent skipDefaultMode
- * @type number
- * @default 550
- *
- * @param cinematicFiles
- *
- * @param cinematicFiles
+ * @param okButtonPosition
+ * @text Position du bouton "Ok" ("Top/Bottom" + "Right/Left" exemple "TopRight")
+ * @type string
+ * @default BottomRight
  *
  * @param cinematicFiles
  * @text Fichiers de Cinématiques
@@ -120,9 +115,9 @@ SC.CinematicConfig = SC.CinematicConfig || {};
         enabled: params.skipDefaultEnabled === 'true',
         mode: params.skipDefaultMode || "saveExisting",
         buttonBitmap: params.skipDefaultBitmap || "Skip",
-        buttonX: parseInt(params.skipButtonX) || 750,
-        buttonY: parseInt(params.skipButtonY) || 550
+        btnPos: params.skipButtonPosition || "bottomLeft"
     };
+    SC.CinematicConfig.OkBtnPos = params.okButtonPosition || "bottomRight";
     
     const files = JSON.parse(params.cinematicFiles || "[]");
 

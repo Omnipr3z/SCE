@@ -115,41 +115,60 @@ class Scene_Cinematic extends Scene_Base {
         this._endNextScene = sourceData.endNext;
         this._endSequency = this._cinematicData.length - 1;
         this._gameInfosNeeded = sourceData.gameInfos || false;
-        if(sourceData.skipMode){
-            this._setupSkipMode(sourceData.skipMode);
-        }else{
-            this._setupSkipMode(config.skipDefaultMode);
-        }
+        this._skipMode = sourceData.skipMode? sourceData.skipMode : config.skipDefaultMode;
+        this._okBtnPosData =  sourceData.okBtnPos || config.OkBtnPos;
     
     }
     _setupSkipMode(skipData) {
         this._skipMode = skipData || {};
     }
-    setupBtnPosition(){
-        // Positionnement du bouton "Press OK" (layer 11)
-        // On assume que 188px est un offset fixe depuis le bord droit dans la résolution de référence (1280x720).
-        const pressOkRefX = SC.GraphicsConfig.uiReferenceResolution.width - 188;
-        const pressOkRefY = 10; // 10px depuis le bord haut dans la résolution de référence.
-        const pressOkRefW = this._pressOkButton.bitmap ? this._pressOkButton.bitmap.width : 0;
-        const pressOkRefH = this._pressOkButton.bitmap ? this._pressOkButton.bitmap.height : 0;
-        const scaledPressOkRect = SC.calculateScaledRect(pressOkRefX, pressOkRefY, pressOkRefW, pressOkRefH);
+    setBtnPos(positionName, sprite){
+        const margin = 20;
+        const demiH = sprite.bitmap.height/2;
+        const demiW = sprite.bitmap.width/2;
+        const bottom = this.graphicsHeight - sprite.bitmap.height - margin;
+        const right = this.graphicsWidth - sprite.bitmap.width - margin ;
+        const top = margin;
+        const left = margin;
 
-        this._pressOkButton.x = scaledPressOkRect.x;
-        this._pressOkButton.y = scaledPressOkRect.y;
-
-        // Positionnement du bouton "Skip" dédié
-        if (this._skipButton) {
-            // Utilise les paramètres configurés dans SC_CinematicConfig.js
-            const skipRefX = SC.CinematicConfig.skipDefaultMode.buttonX;
-            const skipRefY = SC.CinematicConfig.skipDefaultMode.buttonY;
-            const skipRefW = this._skipButton.bitmap ? this._skipButton.bitmap.width : 0;
-            const skipRefH = this._skipButton.bitmap ? this._skipButton.bitmap.height : 0;
-            const scaledSkipRect = SC.calculateScaledRect(skipRefX, skipRefY, skipRefW, skipRefH);
-
-            this._skipButton.x = scaledSkipRect.x;
-            this._skipButton.y = scaledSkipRect.y;
+        switch(positionName.toLowerCase()){
+            case "topright":
+                sprite.x = right;
+                sprite.y = bottom;
+                break;
+            case "bottomright":
+                sprite.x = right;
+                sprite.y = bottom;
+                break;
+            case "topleft":
+                sprite.x = left;
+                sprite.y = top;
+                break;
+            case "bottomleft":
+                sprite.x = left;
+                sprite.y = bottom;
+                break;
+            default:
+                if(sprite == this._pressOkButton){
+                    sprite.x = right;
+                    sprite.y = bottom;
+                }else{
+                    sprite.x = left;
+                    sprite.y = bottom;
+                }
+                break;
         }
-
+        if(this._pressOkButton){
+            sprite.anchor.x = 1;
+        }else {
+            sprite.anchor.x = 2;
+        }
+        sprite.anchor.y = 1;
+    }
+    setupBtnsPos() {
+        this.setBtnPos(this._okBtnPosData, this._pressOkButton);
+        if(this._skipButton)
+            this.setBtnPos(this._skipMode.btnPos, this._skipButton);
     }
     loadPicture(filename){
         return ImageManager.loadBitmap(`img/cinematics/${this._cinematicName}/`, filename);
@@ -192,8 +211,8 @@ class Scene_Cinematic extends Scene_Base {
 
         // Récupère le nom de la cinématique depuis la variable temporaire globale.
         let cinematicToLoad = SC._temp.requestedCinematic;
-        // Efface la variable temporaire pour éviter qu'elle ne soit réutilisée.
-        SC._temp.requestedCinematic = null;
+        
+        $debugTool.log(cinematicToLoad)
 
         // Si aucune cinématique n'a été demandée, on charge la première de la config par défaut.
         if (!cinematicToLoad && SC.CinematicConfig && SC.CinematicConfig.dataFiles.length > 0) {
@@ -228,7 +247,7 @@ class Scene_Cinematic extends Scene_Base {
         this.createStoryWindow();
         this.createTitleGameInfosWindows();
         this.createButtons(); // Crée les sprites de boutons dédiés
-        this.setupBtnPosition();
+        this.setupBtnsPos();
         this.updateNextSequency();
     }
     createBackground() {
@@ -503,7 +522,7 @@ class Scene_Cinematic extends Scene_Base {
             let value = props[key];
             if (key === 'bitmap') {
                 layer.bitmap = this.loadPicture(value);
-            } else if (key.endsWith('Goal') || key === 'duration') {
+            } else if (key.endsWith('Goal') || key === 'duration' || key.endsWith('Speed')) {
                 // Les propriétés cibles sont passées à la méthode applyProperties du sprite.
                 layer.applyProperties({ [key]: this.evalValue(value) });
             } else {
@@ -515,6 +534,7 @@ class Scene_Cinematic extends Scene_Base {
 
     // ===== ENDING =====
     endScene(){
+        SC._temp.requestedCinematic = null;
         AudioManager.stopMe();
         this._layers.forEach((layer)=>layer.opacity = 0);
     

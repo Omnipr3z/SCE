@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SCE - Cinematic Editor (Local Mode)</title>
+    <style>
+        :root { --bg: #1a1a1a; --panel: #252525; --text: #d4d4d4; --accent: #e67e22; --border: #333; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar & Lists */
+        #sidebar { width: 280px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .list-header { padding: 15px; background: #111; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #sequence-list { flex: 1; overflow-y: auto; }
+        .seq-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .seq-item:hover { background: #333; }
+        .seq-item.active { border-left: 4px solid var(--accent); background: #333; font-weight: bold; }
+        
+        /* Main View */
+        #main { flex: 1; display: flex; flex-direction: column; }
+        #toolbar { padding: 10px; background: #111; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+        #canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: #000; overflow: hidden; }
+        canvas { background: #0a0a0a; box-shadow: 0 0 30px rgba(0,0,0,0.8); image-rendering: pixelated; }
+
+        /* Inspector */
+        #inspector { width: 340px; background: var(--panel); border-left: 1px solid var(--border); padding: 15px; overflow-y: auto; font-size: 13px; }
+        .prop-group { margin-bottom: 15px; background: #2d2d2d; padding: 10px; border-radius: 4px; }
+        label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; background: #111; border: 1px solid #444; color: #fff; padding: 6px; border-radius: 3px; box-sizing: border-box; }
+        
+        /* Buttons */
+        button { background: #444; border: none; color: white; padding: 6px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        button:hover { background: #555; }
+        .btn-primary { background: var(--accent); }
+        .btn-success { background: #27ae60; }
+        
+        .layer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 10px 0; }
+        .layer-btn { padding: 6px; text-align: center; background: #111; border: 1px solid #444; cursor: pointer; font-size: 11px; }
+        .layer-btn.active { border-color: var(--accent); color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div id="sidebar">
+    <div class="list-header">
+        <span>SÉQUENCES</span>
+        <button onclick="addSequence()" class="btn-primary">+</button>
+    </div>
+    <div id="sequence-list"></div>
+    <div style="padding:10px; background:#111;">
+        <button onclick="document.getElementById('importFile').click()" style="width:100%">📂 Importer un JSON</button>
+        <input type="file" id="importFile" hidden accept=".json" onchange="importJSON(this)">
+    </div>
+</div>
+
+<div id="main">
+    <div id="toolbar">
+        <button onclick="player.toggle()">Play / Pause</button>
+        <button onclick="player.reset()">Restart Sequence</button>
+        <span id="status" style="margin-left:auto; font-family:monospace; color:var(--accent);">IDLE</span>
+        <button onclick="exportJSON()" class="btn-success">💾 Exporter JSON</button>
+    </div>
+    <div id="canvas-wrap">
+        <canvas id="view" width="1280" height="720"></canvas>
+    </div>
+</div>
+
+<div id="inspector">
+    <div id="ins-content"><h3>Sélectionnez une séquence</h3></div>
+</div>
+
+<script>
+/**
+ * SCE CORE EMULATION
+ */
+Number.prototype.approach = function(goal, speed) {
+    if (this < goal) return Math.min(this + speed, goal);
+    if (this > goal) return Math.max(this - speed, goal);
+    return goal;
+};
+
+const Graphics = { width: 1280, height: 720 };
+
+// Moteur de rendu simplifié pour la preview
+class LayerPreview {
+    constructor(id) {
+        this.id = id;
+        this.reset();
+    }
+    reset() {
+        this.bitmap = "";
+        this.x = 640; this.y = 360;
+        this.opacity = 0; this.scale = 1; this.rotation = 0;
+        this.xG = 640; this.yG = 360; this.opG = 0; this.zG = 1; this.rotG = 0;
+        this.mSpd = 8; this.fSpd = 3; this.zSpd = 0.05; this.rSpd = 0.6;
+    }
+    update() {
+        this.x = this.x.approach(this.xG, this.mSpd);
+        this.y = this.y.approach(this.yG, this.mSpd);
+        this.opacity = this.opacity.approach(this.opG, this.fSpd);
+        this.scale = this.scale.approach(this.zG, this.zSpd);
+        this.rotation = this.rotation.approach(this.rotG, this.rSpd * (Math.PI/180));
+    }
+    draw(ctx) {
+        if (this.opacity <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = this.opacity / 255;
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.scale(this.scale, this.scale);
+        
+        // Placeholder visuel
+        ctx.fillStyle = `hsl(${(this.id * 30) % 360}, 60%, 50%)`;
+        ctx.fillRect(-60, -60, 120, 120);
+        ctx.strokeStyle = "white"; ctx.lineWidth = 2; ctx.strokeRect(-60, -60, 120, 120);
+        ctx.fillStyle = "white"; ctx.font = "bold 14px Arial"; ctx.textAlign = "center";
+        ctx.fillText(this.bitmap || `Layer ${this.id}`, 0, 5);
+        ctx.restore();
+    }
+}
+
+/**
+ * APP LOGIC
+ */
+let cinematic = { name: "local_proj", sequencies: [] };
+let selectedSeq = -1;
+let selectedLayer = 0;
+const layers = Array.from({length: 13}, (_, i) => new LayerPreview(i));
+const canvas = document.getElementById('view');
+const ctx = canvas.getContext('2d');
+
+const player = {
+    active: false,
+    toggle() { 
+        this.active = !this.active; 
+        document.getElementById('status').innerText = this.active ? "RUNNING" : "PAUSED";
+        if(this.active) this.loop();
+    },
+    reset() {
+        if(selectedSeq === -1) return;
+        this.apply(cinematic.sequencies[selectedSeq]);
+    },
+    apply(data) {
+        if(!data.layers) return;
+        for(let id in data.layers) {
+            const l = layers[id]; if(!l) continue;
+            const d = data.layers[id];
+            if(d.bitmap) l.bitmap = d.bitmap;
+            if(d.opacity !== undefined) l.opacity = d.opacity;
+            if(d.opacityGoal !== undefined) l.opG = d.opacityGoal;
+            if(d.xGoal !== undefined) l.xG = evalVal(d.xGoal);
+            if(d.yGoal !== undefined) l.yG = evalVal(d.yGoal);
+            if(d.zoomGoal !== undefined) l.zG = d.zoomGoal;
+            if(d.fadeSpeed !== undefined) l.fSpd = d.fadeSpeed;
+            if(d.moveSpeed !== undefined) l.mSpd = d.moveSpeed;
+        }
+    },
+    loop() {
+        if(!this.active) return;
+        ctx.clearRect(0,0,1280,720);
+        layers.forEach(l => { l.update(); l.draw(ctx); });
+        requestAnimationFrame(() => this.loop());
+    }
+};
+
+function evalVal(v) {
+    if(typeof v === 'string') {
+        if(v.includes("Graphics.boxWidth")) return 1280;
+        if(v.includes("Graphics.boxHeight")) return 720;
+        if(v.includes("/")) return 640; // Fallback simple
+    }
+    return parseFloat(v) || 0;
+}
+
+/**
+ * UI & EXPORT
+ */
+function addSequence() {
+    cinematic.sequencies.push({
+        layers: {},
+        storyWindow: { txt: ["Nouvelle Séquence"], style: "Title" },
+        needPressOk: true
+    });
+    refreshList();
+    selectSeq(cinematic.sequencies.length - 1);
+}
+
+
+function updateData(path, val) {
+    const keys = path.split('.');
+    let obj = cinematic.sequencies[selectedSeq];
+    for(let i=0; i<keys.length-1; i++) {
+        if(!obj[keys[i]]) obj[keys[i]] = {};
+        obj = obj[keys[i]];
+    }
+    obj[keys[keys.length-1]] = val;
+    player.apply(cinematic.sequencies[selectedSeq]);
+}
+
+function exportJSON() {
+    const blob = new Blob([JSON.stringify(cinematic, null, 4)], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = cinematic.name + ".json";
+    a.click();
+}
+
+function importJSON(input) {
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const content = JSON.parse(e.target.result);
+            // On gère si c'est un tableau de séquences ou un objet structuré
+            if(Array.isArray(content)) {
+                cinematic.sequencies = content;
+            } else if(content.sequencies) {
+                cinematic = content;
+            }
+            refreshList();
+            if(cinematic.sequencies.length > 0) selectSeq(0);
+        } catch(err) { alert("Erreur de lecture JSON"); }
+    };
+    reader.readAsText(file);
+}
+
+
+/**
+ * Rafraîchit la liste avec une gestion sécurisée des données manquantes
+ */
+function refreshList() {
+    const cont = document.getElementById('sequence-list');
+    cont.innerHTML = cinematic.sequencies.map((s, i) => {
+        // On cherche un texte à afficher, sinon on met un label par défaut
+        const previewText = (s.storyWindow && s.storyWindow.txt && s.storyWindow.txt[0]) 
+                            ? s.storyWindow.txt[0].substring(0, 20) 
+                            : "(Action Seule / Layers)";
+                            
+        return `
+            <div class="seq-item ${i === selectedSeq ? 'active' : ''}" onclick="selectSeq(${i})">
+                <strong>Séquence ${i}</strong><br/>
+                <small style="color:#888">${previewText}...</small>
+            </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Sélectionne une séquence et nettoie le canvas si besoin
+ */
+function selectSeq(i) {
+    selectedSeq = i;
+    refreshList();
+    renderInspector();
+    
+    const seqData = cinematic.sequencies[i];
+    if (seqData) {
+        player.apply(seqData);
+    }
+    
+    // Forcer un dessin immédiat pour voir les changements même en pause
+    if (!player.active) {
+        ctx.clearRect(0, 0, 1280, 720);
+        layers.forEach(l => l.draw(ctx));
+    }
+}
+
+/**
+ * Inspecteur avec création automatique des objets manquants lors de l'édition
+ */
+function renderInspector() {
+    const cont = document.getElementById('ins-content');
+    if (selectedSeq === -1 || !cinematic.sequencies[selectedSeq]) return;
+
+    const seq = cinematic.sequencies[selectedSeq];
+    
+    // On s'assure que les structures de base existent pour l'affichage
+    const storyTxt = (seq.storyWindow && seq.storyWindow.txt) ? seq.storyWindow.txt.join('\n') : "";
+    const ld = (seq.layers && seq.layers[selectedLayer]) ? seq.layers[selectedLayer] : {};
+    
+    cont.innerHTML = `
+        <h3>Séquence #${selectedSeq}</h3>
+        <div class="prop-group">
+            <label>Texte Story (un par ligne)</label>
+            <textarea rows="3" placeholder="Pas de texte pour cette séquence" 
+                onchange="updateData('storyWindow.txt', this.value.split('\\n'))">${storyTxt}</textarea>
+        </div>
+        
+        <label>Layer Actif (0-12)</label>
+        <div class="layer-grid">
+            ${Array.from({length:12}, (_,i)=> `
+                <div class="layer-btn ${i==selectedLayer?'active':''}" onclick="selectedLayer=${i};renderInspector()">${i}</div>
+            `).join('')}
+        </div>
+
+        <div class="prop-group">
+            <label>Bitmap (Nom de l'image)</label>
+            <input type="text" value="${ld.bitmap||''}" placeholder="Ex: Galaxy" 
+                onchange="updateData('layers.${selectedLayer}.bitmap', this.value)">
+            
+            <div style="display:flex; gap:5px; margin-top:10px">
+                <div style="flex:1">
+                    <label>X Goal</label>
+                    <input type="text" value="${ld.xGoal||'640'}" onchange="updateData('layers.${selectedLayer}.xGoal', this.value)">
+                </div>
+                <div style="flex:1">
+                    <label>Y Goal</label>
+                    <input type="text" value="${ld.yGoal||'360'}" onchange="updateData('layers.${selectedLayer}.yGoal', this.value)">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:5px; margin-top:10px">
+                <div style="flex:1">
+                    <label>Opacité Goal</label>
+                    <input type="number" value="${ld.opacityGoal ?? 255}" onchange="updateData('layers.${selectedLayer}.opacityGoal', parseInt(this.value))">
+                </div>
+                <div style="flex:1">
+                    <label>Zoom Goal</label>
+                    <input type="number" step="0.1" value="${ld.zoomGoal ?? 1}" onchange="updateData('layers.${selectedLayer}.zoomGoal', parseFloat(this.value))">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Init
+addSequence();
+player.loop();
+</script>
+
+</body>
+</html>

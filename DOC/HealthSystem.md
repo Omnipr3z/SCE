@@ -94,7 +94,7 @@ if (healthManager) {
 **Exemple pour faire se laver l'acteur 1 :**
 ```javascript
 const healthManager = $actorHealthManagers.manager(1);
-/* ou $actorsMainManagers.actor(1).health en utilisant le hub mainManager */
+/* ou $actorsMM.actor(1).health en utilisant le hub mainManager */
 if (healthManager) {
     healthManager.wash({
         cleanIncrease: 5 // Récupère 5% de propreté par minute

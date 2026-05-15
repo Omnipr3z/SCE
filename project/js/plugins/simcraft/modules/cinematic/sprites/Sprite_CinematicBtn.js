@@ -32,7 +32,29 @@
 class Sprite_CinematicBtn extends Sprite_CinematicLayer {
     initialize() {
         super.initialize();
-        this._isBlinking = false;
+    }
+
+    initMembers() {
+        this.imgName = '';
+        this.scale.x = 1;
+        this.scale.y = 1;
+        this.opacity = 0;
+        this.rotation = 0;
+
+        this._currentFrame = 0;
+        this._lastFrame = 0;
+        this._frameTick = 0;
+
+        this._opacityGoal = 0;
+        this._zoomGoal = 1;
+        this._rotationGoal = 0;
+        this._duration = 0;
+
+        this._fadeSpeed = 3;
+        this._moveSpeed = 0.05;
+        this._rotationSpeed = 0.6;
+        this._zoomSpeed = 0.005;
+        this._frameDuration = 4;
     }
 
     /**
@@ -47,12 +69,15 @@ class Sprite_CinematicBtn extends Sprite_CinematicLayer {
         }
     }
 
-    update() {
-        super.update();
+    updateOpacity(){
         if (this._isBlinking) {
-            // Logique de clignotement simple.
             this.opacity = (this.opacity > 150) ? 20 : 255;
+        }else{
+            this.opacity = this.opacity.approach(0, 3);
         }
+    }
+    updateMovement() {
+        // Les boutons restent fixes, pas de mouvement.
     }
 }
 

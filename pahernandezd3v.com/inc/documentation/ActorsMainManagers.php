@@ -3,7 +3,7 @@
 
 <h2>Description</h2>
 <p>Le <code>ActorsMainManagers</code> est un gestionnaire global qui sert de conteneur pour toutes les instances de <code>ActorMainManager</code>. Il fournit un point d'accès centralisé pour récupérer le "hub" de n'importe quel acteur via son ID de base de données.</p>
-<p>Ce module est automatiquement instancié au démarrage du jeu en tant que variable globale <code>$actorsMainManagers</code>.</p>
+<p>Ce module est automatiquement instancié au démarrage du jeu en tant que variable globale <code>$actorsMM</code>.</p>
 
 <h2>Rôle</h2>
 <p>L'objectif principal de ce gestionnaire est d'offrir une méthode simple et unifiée pour accéder aux données et aux gestionnaires spécifiques d'un acteur (comme sa feuille de personnage, ses actions, son visuel, etc.) à partir de n'importe où dans le code.</p>
@@ -18,7 +18,7 @@
 
 <h2>Exemple d'utilisation</h2>
 <pre><code class="language-javascript">// Récupérer le gestionnaire principal pour l'acteur avec l'ID 1
-const actor1Manager = $actorsMainManagers.actor(1);
+const actor1Manager = $actorsMM.actor(1);
 
 if (actor1Manager) {
     // Accéder à une propriété ou un sous-gestionnaire

@@ -24,10 +24,11 @@ class ActivityBase {
         this._actorId = actorId;
         this._params = params;
         this._finished = false;
+        this.onStart();
     }
 
     get mainManager() {
-        return $actorsMainManagers.actor(this._actorId);
+        return $actorsMM.actor(this._actorId);
     }
 
     /**

@@ -80,7 +80,7 @@ class Sprite_LightLayer extends Sprite {
         return 80;
     }
     get highOpa() {
-        return 185;
+        return 165;
     }
 }
 

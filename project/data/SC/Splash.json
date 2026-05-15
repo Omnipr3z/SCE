@@ -1,10 +1,10 @@
 {
+    "okBtnPos": "bottomRight",
     "skipMode":{
         "enabled": true,
         "mode": "saveExisting",
         "buttonBitmap": "skipButton",
-        "buttonX": 750,
-        "buttonY": 550
+        "btnPos": "bottomLeft"
     },
     "gameInfos": true,
     "name":"splash",

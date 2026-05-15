@@ -58,9 +58,9 @@ class Sprite_CinematicLayer extends Sprite {
         this._duration = 0;
 
         this._fadeSpeed = 3;
-        this._moveSpeed = 8;
+        this._moveSpeed = 0.05;
         this._rotationSpeed = 0.6;
-        this._zoomSpeed = 0.05;
+        this._zoomSpeed = 0.005;
         this._frameDuration = 4;
     }
 
@@ -81,8 +81,10 @@ class Sprite_CinematicLayer extends Sprite {
      * Met à jour la position du sprite vers sa cible.
      */
     updateMovement() {
-        this.x = this.x.approach(this._xGoal, this._moveSpeed);
-        this.y = this.y.approach(this._yGoal, this._moveSpeed);
+        const xGoal = eval(this._xGoal) || 0;
+        const yGoal = eval(this._yGoal) || 0;
+        this.x = Number(this.x).approach(xGoal, this._moveSpeed) || xGoal;
+        this.y = Number(this.y).approach(yGoal, this._moveSpeed) || yGoal;
     }
 
     /**
@@ -162,7 +164,10 @@ class Sprite_CinematicLayer extends Sprite {
      * @returns {boolean}
      */
     isMoving() {
-        return this.x !== this._xGoal || this.y !== this._yGoal;
+        
+        const xGoal = eval(this._xGoal) || 0;
+        const yGoal = eval(this._yGoal) || 0;
+        return this.x !== xGoal || this.y !== yGoal;
     }
 
     /**
@@ -232,13 +237,19 @@ class Sprite_CinematicLayer extends Sprite {
             // On convertit les degrés (plus intuitifs) en radians pour le moteur.
             this._rotationGoal = props.rotationGoal * (Math.PI / 180);
         }
+
+        if (props.moveSpeed !== undefined) this._moveSpeed = props.moveSpeed;
         if (props.rotationSpeed !== undefined) this._rotationSpeed = props.rotationSpeed;
+        if (props.zoomSpeed !== undefined) this._zoomSpeed = props.zoomSpeed;
+        if (props.fadeSpeed !== undefined) this._fadeSpeed = props.fadeSpeed;
+
         if (props.duration !== undefined) this._duration = props.duration;
         // --- Propriétés pour l'animation par frames ---
         if (props.lastFrame !== undefined) this._lastFrame = props.lastFrame;
         if (props.frameDuration !== undefined) this._frameDuration = props.frameDuration;
         // Si une nouvelle animation est définie, on réinitialise la frame actuelle pour la démarrer.
         if (props.lastFrame !== undefined) this._currentFrame = 0;
+        
 
         const afterState = {
             xGoal: this._xGoal,

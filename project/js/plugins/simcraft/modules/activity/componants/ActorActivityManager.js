@@ -25,7 +25,7 @@ class ActorActivityManager {
     }
 
     get mainManager() {
-        return $actorsMainManagers.actor(this._actorId);
+        return $actorsMM.actor(this._actorId);
     }
 
     /**
@@ -57,12 +57,14 @@ class ActorActivityManager {
      * @param {Object} params Paramètres optionnels pour l'activité.
      */
     startActivity(activityKey, params = {}) {
-        if (!this.canUseActivity(activityKey)) return;
+        if (!this.canUseActivity(activityKey)){
+            return;
+        }
 
         const activityClass = SC.Activities[activityKey];
         this._currentActivity = new activityClass(this._actorId, params);
         
-        $debugTool.log(`[Activity] Acteur ${this._actorId} démarre : ${activityKey}`, true);
+        $debugTool.log(`[Activity] Acteur ${this._actorId} démarre : ${activityKey}`);
         
         // Lancement effectif
         this._currentActivity.onStart();
@@ -75,7 +77,10 @@ class ActorActivityManager {
         if (this._currentActivity) {
             this._currentActivity.onStop();
             this._currentActivity = null;
-            $debugTool.log(`[Activity] Acteur ${this._actorId} arrête son activité.`, true);
+            $debugTool.log(`[Activity] Acteur ${this._actorId} arrête son activité.`);
+            const character = this.mainManager.character;
+            character.stopAction();
+            character.playAction("awake_down")
         }
     }
 

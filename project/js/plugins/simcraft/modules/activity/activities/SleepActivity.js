@@ -5,7 +5,7 @@
 class SleepActivity extends ActivityBase {
     
     static canUse(actorId) {
-        const main = $actorsMainManagers.actor(actorId);
+        const main = $actorsMM.actor(actorId);
         if (!main || !main.health) return false;
         
         // Exemple de condition : On ne peut dormir que si la forme est < 90%

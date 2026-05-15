@@ -1,25 +1,12 @@
-// =============================================================================
-//                         !SC - TEST HUD PROVISOIRE
-// =============================================================================
-// Fichier de test pour afficher un HUD de santé sur la carte.
-// Ce fichier est destiné à être temporaire et ne suit pas les standards
-// de l'architecture finale du projet.
 
-(() => {
-
-    
-
-
-    // =========================================================================
-    // Window_HealthHud
-    // Fenêtre affichant les statistiques de santé de l'acteur principal.
     // =========================================================================
     class Window_HealthHud extends Window_Base {
         constructor(rect) {
             super(rect);
             this._actor = null;
             this._healthManager = null;
-            this.opacity = 0; // Fenêtre transparente
+            this._activityManager = null;
+            //this.opacity = 0; // Fenêtre transparente
             this.refresh();
         }
 
@@ -39,11 +26,11 @@
 
         refresh() {
             this._actor = $gamePlayer.actor();
-            this._mainManager = $actorsMainManagers.actor(this._actor ? this._actor.actorId() : -1);
             if (!this._actor) return;
+            this._mainManager = $actorsMM.actor(this._actor ? this._actor.actorId() : -1);
 
-            this._healthManager = $actorHealthManagers.manager(this._actor.actorId());
-            if (!this._healthManager) return;
+            this._healthManager = this._mainManager.health;
+
 
             this.contents.clear();
 
@@ -51,6 +38,8 @@
             const gaugeWidth = this.contentsWidth() - 8;
             let y = 0;
 
+            this.drawStat("SANTÉ", this._healthManager.getHealthScore(), y, gaugeWidth, "#66ff66", "#338033");
+            y += lineHeight;
             this.drawStat("Satiété", this._healthManager.getAlim(), y, gaugeWidth, "#ffb833", "#a06c0c");
             y += lineHeight;
             this.drawStat("Forme", this._healthManager.getForm(), y, gaugeWidth, "#66ff66", "#338033");
@@ -86,7 +75,20 @@
 
             if( $dataMap && $dataMap.meta && $dataMap.meta.inner){
                 y += lineHeight;
-                this.drawText("outside", 6, y, this.contentsWidth() - 12, "center");    
+                this.drawText("inside", 6, y, this.contentsWidth() - 12, "center");    
+            }
+
+            
+            this._activityManager = this._mainManager.activity;
+            if (!this._activityhManager){
+                $debugTool.log("no activityManager", this._mainManager)
+                return;
+            }
+
+            if(this._activityManager._currentActivity){
+                const current = this._activityManager._currentActivity.constructor.name.replace("Activity", "");
+                y += lineHeight;
+                this.drawText(`${current}`, 6, y, this.contentsWidth() - 12, "center");    
             }
         }
 
@@ -108,44 +110,3 @@
             }
         }
     }
-
-    // =========================================================================
-    // Scene_Map - Patch
-    // Ajoute la fenêtre de HUD à la scène de la carte.
-    // =========================================================================
-    const _Scene_Map_createAllWindows = Scene_Map.prototype.createAllWindows;
-    Scene_Map.prototype.createAllWindows = function() {
-        _Scene_Map_createAllWindows.call(this);
-        this.createHealthHudWindow();
-    };
-
-    Scene_Map.prototype.createHealthHudWindow = function() {
-        const rect = new Rectangle(10, 10, 240, Graphics.height - 20);
-        this._healthHudWindow = new Window_HealthHud(rect);
-        this.addWindow(this._healthHudWindow);
-    };
-
-    // Assurons-nous que la fenêtre est bien au-dessus des autres éléments.
-    const _Scene_Map_onMapLoaded = Scene_Map.prototype.onMapLoaded;
-    Scene_Map.prototype.onMapLoaded = function() {
-        _Scene_Map_onMapLoaded.call(this);
-        if (this._healthHudWindow) {
-            this.addChild(this._healthHudWindow); // Ré-ajoute la fenêtre au premier plan
-        }
-    };
-    ActorHealthManager.prototype.testEat = function(){
-        $actorsMainManagers.actor($gameParty.leader().actorId()).health.useHealthItem(
-            {
-                meta: {
-                    alimIncrease: 1,
-                    formIncrease: 0,
-                    cleanIncrease: 0,
-                    hydraIncrease: 0,
-                    activityDuration: 80,
-                    actionName: 'combat_idle'
-                }
-            }
-        )
-    }
-
-})();

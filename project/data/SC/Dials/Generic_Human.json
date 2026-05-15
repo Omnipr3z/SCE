@@ -1,0 +1,70 @@
+{
+    "id": 1,
+    "name": "Generic_Human",
+    "description":"Le data de l'acteur 1",
+    "dials":{
+        "interactions":{
+            "presentation": [
+                [
+                    "Bonjour, je suis %1, %2.",
+                    "Je suis %1, %2.",
+                    "Je m'appelle %1, %2.",
+                    "Mon nom est %1, je suis %2."
+                ],
+                [
+                    "Puis-je connaitre votre nom ?",
+                    "Quel est votre nom ?",
+                    "Comment vous appelez-vous ?",
+                    "A qui ai-je l'honneur ?"
+                ]
+            ]
+        },
+        "reactions": {
+            "presentation": {
+                "neutral": [
+                    [
+                        "Bonjour, je suis %1, %2.",
+                        "Je suis %1, %2.",
+                        "Je m'appelle %1, %2.",
+                        "Mon nom est %1, je suis %2."
+                    ],
+                    [
+                        "Enchanté de faire votre connaissance, %1.",
+                        "Ravi de vous rencontrer, %1.",
+                        "C'est un plaisir de vous rencontrer, %1.",
+                        "Heureux de faire votre connaissance, %1."
+                    ]
+                ],
+                "hostile": [
+                    [
+                        "Je suis %1, %2. Qu'est-ce que tu veux ?",
+                        "Je m'appelle %1, je suis %2. Que me veux-tu ?",
+                        "Mon nom est %1, je suis %2. Pourquoi tu me déranges ?",
+                        "Je suis %1, %2. Qu'est-ce que tu cherches ?"
+                    ],
+                    [
+                        "Qu'est-ce que tu veux de moi ?",
+                        "Pourquoi tu me parles ?",
+                        "Tu as un problème avec moi ?",
+                        "Tu cherches des ennuis ?"
+                    ]
+                ],
+                "flirt": [
+                    [
+                        "Je suis %1, %2. Et toi, qui es-tu ?",
+                        "Je m'appelle %1, je suis %2. Et toi ?",
+                        "Mon nom est %1, je suis %2. Et toi, comment tu t'appelles ?",
+                        "Je suis %1, %2. Et toi, quel est ton nom ?"
+                    ],
+                    [
+                        "Tu es charmant(e), %1.",
+                        "Tu as un sourire ravissant, %1.",
+                        "Tu es vraiment séduisant(e), %1.",
+                        "Tu es très attirant(e), %1."
+                    ]
+                ]
+            }
+        }
+    }
+
+}

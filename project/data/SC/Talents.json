@@ -1,0 +1,50 @@
+{
+    "diplomat": {
+        "name": "Diplomate",
+        "description": "L'art du protocole, de l'étiquette et de la persuasion verbale. Indispensable pour désamorcer les conflits, mentir avec aplomb et manipuler la politique."
+    },
+    "broker": {
+        "name": "Négociateur",
+        "description": "La maîtrise des flux financiers et de l'estimation de valeur. Indispensable pour obtenir des rabais, corrompre des gardes et gérer la contrebande."
+    },
+    "enforcer": {
+        "name": "Intimidateur",
+        "description": "La capacité à imposer sa volonté par la peur ou la menace physique. Indispensable pour extorquer des informations et soumettre les factions belliqueuses."
+    },
+    "shadow": {
+        "name": "Ombre",
+        "description": "L'art de la furtivité et du crime physique. Indispensable pour voler à la tire, crocheter des serrures mécaniques et assassiner discrètement."
+    },
+    "slicer": {
+        "name": "Hacker",
+        "description": "La maîtrise des systèmes informatiques et de la guerre électronique. Indispensable pour pirater des terminaux, voler des données cryptées et contrôler les drones."
+    },
+    "engineer": {
+        "name": "Ingénieur",
+        "description": "Le savoir-faire technique matériel. Indispensable pour réparer les machines, remettre en état des générateurs et saboter des structures."
+    },
+    "medic": {
+        "name": "Médecin",
+        "description": "La science de l'anatomie et de la chimie. Indispensable pour soigner les blessures, réaliser des autopsies et installer des implants cybernétiques."
+    },
+    "scholar": {
+        "name": "Érudit",
+        "description": "La connaissance de l'Histoire, des lois et des sciences théoriques. Indispensable pour déchiffrer des langues, comprendre les ruines et analyser les phénomènes stellaires."
+    },
+    "xenologist": {
+        "name": "Xénologue",
+        "description": "L'étude spécialisée des espèces non-humaines. Indispensable pour comprendre les coutumes étranges, communiquer avec des espèces primitives ou prédire les créatures sauvages."
+    },
+    "psionic": {
+        "name": "Mystique",
+        "description": "La connexion aux énergies psychiques. Indispensable pour l'empathie surnaturelle, les prémonitions et l'utilisation d'artefacts anciens."
+    },
+    "scavenger": {
+        "name": "Baroudeur",
+        "description": "L'instinct de survie en milieu hostile. Indispensable pour le pistage, la fouille de débris (scavenging) et l'orientation sur des planètes inconnues."
+    },
+    "pilot": {
+        "name": "Pilote",
+        "description": "La maîtrise des véhicules atmosphériques et spatiaux. Indispensable pour la navigation, les manœuvres de combat spatial et l'accès aux zones dangereuses."
+    }
+}

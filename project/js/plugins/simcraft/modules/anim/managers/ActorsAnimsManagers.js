@@ -102,6 +102,7 @@ class ActorsAnimsManagers {
         }
         return this._actorManagers.get(actorId);
     }
+
 }
 
 // --- Enregistrement du plugin ---
@@ -121,3 +122,6 @@ SC._temp.pluginRegister = {
     autoSave: false // La gestion de l'état sera probablement transitoire et reconstruite.
 };
 $simcraftLoader.checkPlugin(SC._temp.pluginRegister);
+
+
+

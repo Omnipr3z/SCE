@@ -71,5 +71,17 @@ class Window_ScBase extends Window_Base {
 		if (rate > 0)
 			this.contents.gradientFillRect(x, y, fillW, height, color1, color2);
 	}
+
+    drawTwoWaysGauge(x, y, w, rate, color1, color2, h = 6, color3 = color1, color4 = color2) {
+        this.contents.fillRect(x, y, w, h, ColorManager.gaugeBackColor());
+
+        if(rate > 0) {
+            const fillW = Math.floor(w/ 2 * rate);
+            this.contents.gradientFillRect(x + w/2, y, fillW, h, color1, color2);
+        }else{
+            const fillW = Math.floor(w/ 2 * -rate);
+            this.contents.gradientFillRect(x + w/2 - fillW, y, fillW, h, color4, color3);
+        }
+	}
     
 }

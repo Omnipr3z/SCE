@@ -49,6 +49,12 @@
  * @desc Si 'true', le jeu démarre directement sur la carte, en sautant le splash screen et l'écran-titre.
  * Utile pour accélérer les tests.
  *
+ * @param Debug - Show Debug Window
+ * @text Afficher la fenetre de Debug
+ * @type boolean
+ * @default false
+ * @desc Si 'true', une fenetre de debug est affiché audessu de la Scene Map
+ *
  *
  */
 
@@ -67,7 +73,8 @@ const DEBUG_OPTIONS = {
     env: scCoreConfigRawParams["Debug - Environment Mode"] || "DEV",
     debug: scCoreConfigRawParams["Debug - Enable Debug"] === "true",
     deep: scCoreConfigRawParams["Debug - Deep Debug"] === "true",
-    skipTitle: scCoreConfigRawParams["Debug - Skip Title"] === "true"
+    skipTitle: scCoreConfigRawParams["Debug - Skip Title"] === "true",
+    showDebugWindow: scCoreConfigRawParams["Debug - Show Debug Window"] === "true"
 };
 
 // --- Constantes pour le Logging ---
